@@ -7,8 +7,8 @@ namespace WpfInvaders
 {
     public static class LineRender
     {
-        private const int ScreenWidth = 32;
-        private const int ScreenHeight = 28;
+        public const int ScreenWidth = 32;
+        public const int ScreenHeight = 28;
         public static byte[] Screen = new byte[ScreenWidth * ScreenHeight];
         public static byte[] BitmapChar = new byte[32 * 8];
 
