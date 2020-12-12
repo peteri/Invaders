@@ -6,7 +6,7 @@ namespace WpfInvaders
 {
     public class SpriteData
     {
-        private static byte[][] _characterSprites = new byte[][]
+        private static readonly byte[][] _characterSprites = new byte[][]
         {
             // 8 Bit sprites start here in ASCII order...
             new byte[] {0x00,0x3E,0x45,0x49,0x51,0x3E,0x00,0x00 }, // 0
@@ -66,9 +66,7 @@ namespace WpfInvaders
         private static byte[] InvaderA2 = { 0x00, 0x00, 0x38, 0x7A, 0x7F, 0x6D, 0xEC, 0xFA, 0xFA, 0xEC, 0x6D, 0x7F, 0x7A, 0x38, 0x00, 0x00 };
         private static byte[] InvaderB2 = { 0x00, 0x00, 0x00, 0x0E, 0x18, 0xBE, 0x6D, 0x3D, 0x3C, 0x3D, 0x6D, 0xBE, 0x18, 0x0E, 0x00, 0x00 };
         private static byte[] InvaderC2 = { 0x00, 0x00, 0x00, 0x00, 0x1A, 0x3D, 0x68, 0xFC, 0xFC, 0x68, 0x3D, 0x1A, 0x00, 0x00, 0x00, 0x00 };
-        /*
-         * 
-         * */
+
         static SpriteData()
         {
             int i = 0;
@@ -79,9 +77,40 @@ namespace WpfInvaders
                     Characters[charOffset++] = BitFlip(b);
                 i++;
             }
+            // 0x80+af Invaders Row 1 / 2.
+            GenerateCharacters(0x80, InvaderA1, InvaderA2);
+            // 0xa0-bf Invaders Row 3 / 4 
+            GenerateCharacters(0xa0, InvaderB1, InvaderB2);
+            // 0xc0-df Invaders Row 5
+            GenerateCharacters(0xc0, InvaderC1, InvaderC2);
         }
 
-        static byte BitFlip(byte b)
+        private static void GenerateCharacters(int offset, byte[] invader1, byte[] invader2)
+        {
+            offset = offset * 8;
+            for (int i = 0; i < 8; i++)
+            {
+                // Solo invaders type 1 is in shift postions 0 & 4
+                Characters[offset + i + 0x00] = BitFlip(invader1[i + 0]);                       // 0x00
+                Characters[offset + i + 0x08] = BitFlip(invader1[i + 8]);                       // 0x01
+                Characters[offset + i + 0x10] = BitFlip(i > 4 ? invader1[i - 4] : (byte)0x00);  // 0x02
+                Characters[offset + i + 0x18] = BitFlip(invader1[i + 4]);                       // 0x03 
+                Characters[offset + i + 0x20] = BitFlip(i < 4 ? invader1[i + 12] : (byte)0x00); // 0x05
+                // Solo invaders type 2 is in shift postions 2 & 6
+                Characters[offset + i + 0x28] = BitFlip(i > 2 ? invader2[i - 2] : (byte)0x00);   // 0x06
+                Characters[offset + i + 0x30] = BitFlip(invader2[i + 6]);                   // 0x07
+                Characters[offset + i + 0x38] = BitFlip(i < 6 ? invader2[i + 6] : (byte)0x00);  // 0x08
+                Characters[offset + i + 0x40] = BitFlip(invader2[i + 6]);                       // 0x09 
+                Characters[offset + i + 0x48] = BitFlip(i < 6 ? invader2[i + 14] : (byte)0x00); // 0x0a
+                //// Next up moving left to right....
+                //// Left most invader is a type 1 shifted right by four pixels + a type 2 next door
+                //// So consists of 0x02,0x03,0x0c,0x
+                //line = (uint)((BitFlip(invader1[i + 8]) << 4) | BitFlip(invader1[i + 8]));
+
+            }
+        }
+
+        private static byte BitFlip(byte b)
         {
             return (byte)(
                 ((b & 0x01) != 0 ? 0x80 : 0x00) |

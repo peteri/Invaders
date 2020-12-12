@@ -6,6 +6,6 @@ namespace WpfInvaders
 {
     public class PlayerData
     {
-        public int score;
+        public short Score;
     }
 }
