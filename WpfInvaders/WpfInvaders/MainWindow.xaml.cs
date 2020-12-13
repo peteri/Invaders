@@ -231,15 +231,11 @@ namespace WpfInvaders
                 case SplashMajorState.PrintSpaceInvaders:
                     return PrintDelayedMessage(0x2B14, "SPACE  INVADERS");
                 case SplashMajorState.PrintAdvanceTable:
-                    WriteText(0x10, (0x28 - 0x24), "*SCORE ADVANCE TABLE*");
+                    WriteText(0x10, (0x28 - 0x24), ":SCORE ADVANCE TABLE:");
                     WriteText(0x0e, (0x2c - 0x24), "AB"); // Saucer
-                    WriteText(0x0c, (0x2c - 0x24), "\xc0\xc1"); // Invader type C - sprite 0
-                    WriteText(0x0a, (0x2c - 0x24), "\xa0\xa1"); // Invader type B - sprite 1
-                    WriteText(0x08, (0x2c - 0x24), "\x80\x81"); // Invader type A - sprite 0
-                    WriteText(0x07, (0x2c - 0x24), "U\x80\x81 U"); // Invader type A - sprite 0
-                    WriteText(0x06, (0x2c - 0x24), "U\x85\x86\x87U"); // Invader type A - sprite 0
-                    WriteText(0x05, (0x2c - 0x24), "U\x82\x83\x84U"); // Invader type A - sprite 0
-                    WriteText(0x04, (0x2c - 0x24), "U\x88\x89\x8aU"); // Invader type A - sprite 0
+                    WriteText(0x0c, (0x2c - 0x24), "\x80\x81"); // Invader type C - sprite 0
+                    WriteText(0x0a, (0x2c - 0x24), "\x7c\x7d"); // Invader type B - sprite 1
+                    WriteText(0x08, (0x2c - 0x24), "\x60\x61"); // Invader type A - sprite 0
                     gameData.IsrDelay = 0x40;
                     return SplashMinorState.Wait;
                 case SplashMajorState.PrintMystery:
@@ -266,9 +262,9 @@ namespace WpfInvaders
                 case SplashMajorState.OneOrTwoPlayers:
                     return PrintDelayedMessage(0x2a0d, "<1 OR 2 PLAYERS>");
                 case SplashMajorState.OnePlayOneCoin:
-                    return PrintDelayedMessage(0x2a0a, "*1 PLAYER  1 COIN");
+                    return PrintDelayedMessage(0x2a0a, ":1 PLAYER  1 COIN");
                 case SplashMajorState.TwoPlayerTwoCoins:
-                    return PrintDelayedMessage(0x2a07, "*2 PLAYERS 2 COINS");
+                    return PrintDelayedMessage(0x2a07, ":2 PLAYERS 2 COINS");
                 case SplashMajorState.AnimateCoinExplode:
                     return SplashMinorState.Idle;
                 case SplashMajorState.AfterCoinDelay:

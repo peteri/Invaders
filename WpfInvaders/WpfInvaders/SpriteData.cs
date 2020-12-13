@@ -51,7 +51,7 @@ namespace WpfInvaders
             new byte[] {0x00,0x7F,0x02,0x0C,0x02,0x7F,0x00,0x00 }, // W
             new byte[] {0x00,0x63,0x14,0x08,0x14,0x63,0x00,0x00 }, // X
             new byte[] {0x00,0x60,0x10,0x0F,0x10,0x60,0x00,0x00 }, // Y
-            new byte[] {0x00,0x43,0x45,0x49,0x51,0x61,0x00,0x00 } // Z
+            new byte[] {0x00,0x43,0x45,0x49,0x51,0x61,0x00,0x00 }  // Z
         };
 
         public static byte[] Characters = new byte[256 * 8];
@@ -77,12 +77,16 @@ namespace WpfInvaders
                     Characters[charOffset++] = BitFlip(b);
                 i++;
             }
-            // 0x80+af Invaders Row 1 / 2.
-            GenerateCharacters(0x80, InvaderA1, InvaderA2);
-            // 0xa0-bf Invaders Row 3 / 4 
-            GenerateCharacters(0xa0, InvaderB1, InvaderB2);
-            // 0xc0-df Invaders Row 5
-            GenerateCharacters(0xc0, InvaderC1, InvaderC2);
+            // 0x60-6f Invaders Row 1 / 2.
+            GenerateCharacters(0x60, InvaderA1, InvaderA2);
+            // 0x70-7f Invaders Row 3 / 4 
+            GenerateCharacters(0x70, InvaderB1, InvaderB2);
+            // 0x80-8f Invaders Row 5
+            GenerateCharacters(0x80, InvaderC1, InvaderC2);
+            // 0xc0-cc Saucer shifts 0,2,4,6
+            // 0xd0-e8 Player shifted by 1 pixel up to 8
+            // 0xd0-e8 Play Exp2 shifted by 1 pixel up to 8
+            // 0xe8-ff Play Exp1 shifted by 1 pixel up to 8
         }
 
         private static void GenerateCharacters(int offset, byte[] invader1, byte[] invader2)
@@ -90,23 +94,43 @@ namespace WpfInvaders
             offset = offset * 8;
             for (int i = 0; i < 8; i++)
             {
+                // Invader patterns as they move across the screen for
+                // row 1 and 2 assuming invaders set to start at 0x60
+                // L to R  | R to L
+                // `a`a`a  |  `a`a`a
+                // fg`a`a  |  hi`a`a
+                // fgfg`a  |  hihi`a
+                // fgfgfg  |  hihihi
+                // bcjgfg  | bcehihi
+                // bcdcjg  | bcdcehi
+                // bcdcdce | bcdcdce
+                //  hkcdce | fgbcdce
+                //  hihkce | fgfgbce
+                //  hihihi | fgfgfg 
+                //  `ahihi | `afgfg 
+                //  `a`ahi | `a`afg 
+                //  `a`a`a | `a`a`a 
                 // Solo invaders type 1 is in shift postions 0 & 4
-                Characters[offset + i + 0x00] = BitFlip(invader1[i + 0]);                       // 0x00
-                Characters[offset + i + 0x08] = BitFlip(invader1[i + 8]);                       // 0x01
-                Characters[offset + i + 0x10] = BitFlip(i > 4 ? invader1[i - 4] : (byte)0x00);  // 0x02
-                Characters[offset + i + 0x18] = BitFlip(invader1[i + 4]);                       // 0x03 
-                Characters[offset + i + 0x20] = BitFlip(i < 4 ? invader1[i + 12] : (byte)0x00); // 0x05
+                Characters[offset + i + 0x00] = BitFlip(invader1[i + 0]);                            // 0x00
+                Characters[offset + i + 0x08] = BitFlip(invader1[i + 8]);                            // 0x01
+                // Invader type 1 in shift pos 4 has two endings either BCE for a single
+                // Invader BCDCE for two aliens and BCDCDCE for three. 
+                Characters[offset + i + 0x10] = BitFlip(i > 4 ? invader1[i - 4] : (byte)0x00);       // 0x02
+                Characters[offset + i + 0x18] = BitFlip(invader1[i + 4]);                            // 0x03 
+                Characters[offset + i + 0x20] = BitFlip(i < 4 ? invader1[i + 12] : invader1[i - 4]); // 0x04
+                Characters[offset + i + 0x28] = BitFlip(i < 4 ? invader1[i + 12] : (byte)0x00);      // 0x05
                 // Solo invaders type 2 is in shift postions 2 & 6
-                Characters[offset + i + 0x28] = BitFlip(i > 2 ? invader2[i - 2] : (byte)0x00);   // 0x06
-                Characters[offset + i + 0x30] = BitFlip(invader2[i + 6]);                   // 0x07
-                Characters[offset + i + 0x38] = BitFlip(i < 6 ? invader2[i + 6] : (byte)0x00);  // 0x08
-                Characters[offset + i + 0x40] = BitFlip(invader2[i + 6]);                       // 0x09 
-                Characters[offset + i + 0x48] = BitFlip(i < 6 ? invader2[i + 14] : (byte)0x00); // 0x0a
-                //// Next up moving left to right....
-                //// Left most invader is a type 1 shifted right by four pixels + a type 2 next door
-                //// So consists of 0x02,0x03,0x0c,0x
-                //line = (uint)((BitFlip(invader1[i + 8]) << 4) | BitFlip(invader1[i + 8]));
-
+                Characters[offset + i + 0x30] = BitFlip(i > 2 ? invader2[i - 2] : (byte)0x00);       // 0x06
+                Characters[offset + i + 0x38] = BitFlip(invader2[i + 6]);                            // 0x07
+                Characters[offset + i + 0x40] = BitFlip(invader2[i + 2]);                            // 0x08 
+                Characters[offset + i + 0x48] = BitFlip(i < 6 ? invader2[i + 10] : (byte)0x00);      // 0x09
+                // Couple of weird ones as we go left to right, shifted by four needs
+                // some extra aliens as it overlaps with two and six shifts.
+                Characters[offset + i + 0x50] = BitFlip(i < 4 ? invader1[i + 12] : invader2[i - 2]); // 0x0a
+                Characters[offset + i + 0x58] = BitFlip(i < 6 ? invader2[i + 10] : invader1[i - 4]); // 0x0b
+                // Invader 2 in shift postion 0.
+                Characters[offset + i + 0x60] = BitFlip(invader2[i + 0]);                            // 0x0c
+                Characters[offset + i + 0x68] = BitFlip(invader2[i + 8]);                            // 0x0d
             }
         }
 
