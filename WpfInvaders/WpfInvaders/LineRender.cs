@@ -17,12 +17,14 @@ namespace WpfInvaders
             var returnData = new byte[ScreenWidth];
             int startOfLine = (line / 8) * ScreenWidth;
             int cellLine = line & 0x07;
+
             for (int i = 0; i < ScreenWidth; i++)
             {
                 byte c = Screen[startOfLine++];
                 int index = c * 8 + cellLine;
-                returnData[i] = (c < 32) ? BitmapChar[index] : SpriteData.Characters[index];
-            }
+                byte data = (c < 32) ? BitmapChar[index] : SpriteData.Characters[index];
+                returnData[i] = data;
+             }
             return returnData;
         }
     }
