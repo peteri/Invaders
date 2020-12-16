@@ -18,6 +18,7 @@ namespace WpfInvaders
         public int RefAlienY;
         public int RefAlienX;
         public int RackCount;
+        public int NumAliens;
         internal void ResetShields()
         {
             for (int i = 0; i < 22; i++)
@@ -70,15 +71,24 @@ namespace WpfInvaders
                 }
             }
         }
+
+        internal void CountAliens()
+        {
+            NumAliens = 0;
+            for (int i = 0; i < Aliens.Length; i++)
+                NumAliens += Aliens[i];
+        }
+
         internal void InitAliens()
         {
             for (int i = 0; i < Aliens.Length; i++)
                 Aliens[i] = 1;
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    Aliens[i * 11 + 5] = 0;
-            //    Aliens[i * 11 + 7] = 0;
-            //}
+            //for (int i = 0; i < Aliens.Length; i++)
+            //    Aliens[i] = 0;
+            //Aliens[49] = 1;
+            //Aliens[50] = 1;
+            //Aliens[53] = 1;
+            CountAliens();
         }
     }
 }

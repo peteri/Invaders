@@ -23,7 +23,10 @@ namespace WpfInvaders
                 byte c = Screen[startOfLine++];
                 int index = c * 8 + cellLine;
                 byte data = (c < 32) ? BitmapChar[index] : SpriteData.Characters[index];
-                returnData[i] = data;
+                if ((line==8)||(line == 214) && (data == 0))
+                    returnData[i] = 0x55;
+                else
+                    returnData[i] = data;
              }
             return returnData;
         }

@@ -22,7 +22,6 @@ namespace WpfInvaders
         internal int DelayMessagePosition;
         internal string DelayMessage;
         internal int DelayMessageIndex;
-        internal int PlayerShot;
         internal bool PlayerOk;
         internal bool WaitOnDraw;
         internal bool AlienExploding;
@@ -41,7 +40,9 @@ namespace WpfInvaders
         internal bool AlienShotsEnabled;
         internal int AlienFireDelay;
         public PlayerBase PlayerBase;
+        public PlayerShot PlayerShot;
         public MainWindow MainWindow { get; }
+        public int SingleAlienOffset { get; internal set; }
 
         public GameData(MainWindow mainWindow)
         {
@@ -59,9 +60,15 @@ namespace WpfInvaders
             PlayerOk = true;
             AlienShotsEnabled = false;
             AlienFireDelay = 0x30;
+            // Create timer task objects
             TimerObjects = new List<TimerObject>();
+            // Players base
             PlayerBase = new PlayerBase(MainWindow, this);
             TimerObjects.Add(PlayerBase);
+
+            // Players shot
+            PlayerShot = new PlayerShot(MainWindow, this);
+//            TimerObjects.Add(PlayerShot);
         }
     }
 }
