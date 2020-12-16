@@ -425,6 +425,11 @@ namespace WpfInvaders
                         // Going right to left
                         if (gameData.RefAlienDeltaX == -2)
                         {
+                            // Going left to right... Another alien on our right?
+                            if (LineRender.Screen[currOffset + 64] == (byte)(gameData.AlienCharacterStart + 4))
+                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 2);
+                            else
+                                LineRender.Screen[currOffset + 64] = 0x20;
                         }
                         break;
                     case 4:

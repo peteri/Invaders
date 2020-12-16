@@ -74,6 +74,11 @@ namespace WpfInvaders
         {
             for (int i = 0; i < Aliens.Length; i++)
                 Aliens[i] = 1;
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    Aliens[i * 11 + 5] = 0;
+            //    Aliens[i * 11 + 7] = 0;
+            //}
         }
     }
 }
