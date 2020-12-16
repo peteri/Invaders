@@ -23,7 +23,8 @@
                 </TransformGroup>
             </Image.RenderTransform>
         </Image>
-        <Image Grid.Row="0" Grid.Column="1" Height="448" Width="512" Margin="5" Name="imgScreen" Stretch="UniformToFill" />
+        <!-- Uncomment to see rotated screen -->
+        <!--<Image Grid.Row="0" Grid.Column="1" Height="448" Width="512" Margin="5" Name="imgScreen" Stretch="UniformToFill" />-->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
             <Button Name="Pause" Margin="5" Padding="3" Click="Pause_Click">Pause</Button>
             <Button Name="FrameAdvance" Margin="0,5,5,5" Padding="3" Click="FrameAdvance_Click">Advance Frame</Button>

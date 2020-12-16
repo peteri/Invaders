@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace WpfInvaders
 {
@@ -26,7 +16,7 @@ namespace WpfInvaders
     public partial class MainWindow : Window
     {
         [DllImport("winmm.dll", EntryPoint = "timeBeginPeriod")]
-        public static extern uint MM_BeginPeriod(uint uMilliseconds);
+        private static extern uint MM_BeginPeriod(uint uMilliseconds);
 
         [Flags]
         private enum SwitchState
@@ -84,14 +74,16 @@ namespace WpfInvaders
         private readonly Stopwatch timeInIsrStopwatch;
         private int timerCount = 0;
         private Thread timerThread;
-        private ManualResetEvent dieEvent = new ManualResetEvent(false);
+        private readonly ManualResetEvent dieEvent = new ManualResetEvent(false);
         private volatile bool invokeTick;
 
         public MainWindow()
         {
             InitializeComponent();
+            // Set the multimedia timer to 1ms
+            MM_BeginPeriod(1);
             frame = new WriteableBitmap(256, 224, 96, 96, PixelFormats.BlackWhite, null);
-            imgScreen.Source = frame;
+            //imgScreen.Source = frame;
             imgScreenRotateMirrored.Source = frame;
             playerOne = new PlayerData();
             playerTwo = new PlayerData();
@@ -106,7 +98,6 @@ namespace WpfInvaders
         {
             DrawStatus();
             gameData.alienShotReloadRate = 8;
-            MM_BeginPeriod(8);
             Pause.Content = "Pause";
             gameData.SplashMajorState = SplashMajorState.ToggleAnimateState;
             gameData.SplashMinorState = SplashMinorState.Idle;
@@ -117,11 +108,13 @@ namespace WpfInvaders
 
         private void WaitingTimer()
         {
+            // run at 60Hz by waiting for 16ms 17ms 17ms 
+            // which gives 3 interrupts per 50ms.
             while (!dieEvent.WaitOne(16))
             {
                 if (invokeTick)
                     this.Dispatcher.InvokeAsync(IsrRoutine);
-                if (dieEvent.WaitOne(16))
+                if (dieEvent.WaitOne(17))
                     break;
                 if (invokeTick)
                     this.Dispatcher.InvokeAsync(IsrRoutine);
@@ -135,7 +128,7 @@ namespace WpfInvaders
         private void IsrRoutine()
         {
             timerCount++;
-            if (timerCount == 60)
+            if (timerCount > 59)
             {
                 timerCount = 0;
                 var timeTaken = frameStopwatch.ElapsedMilliseconds;
@@ -162,6 +155,9 @@ namespace WpfInvaders
                     DrawAlien();
                     RunGameObjects();
                     TimeToSaucer();
+                    // Probably wrong right now...
+                    if (gameData.DemoMode)
+                        IsrTasksSplashScreen();
                 }
                 else
                 {
@@ -235,7 +231,7 @@ namespace WpfInvaders
                     break;
                 case SplashMinorState.PlayDemoWaitDeath:
                     PlayerFireOrDemo();
-                    PlayerShotAndBump();
+
                     if (gameData.PlayerAlive == false)
                     {
                         gameData.PlayerShot = 0;
@@ -290,7 +286,6 @@ namespace WpfInvaders
                     playerOne.ResetShields();
                     ShieldsToScreen();
                     DrawBottomLine();
-                    StopIsr();
                     gameData.DemoMode = true;
                     return SplashMinorState.PlayDemoWaitDeath;
                 case SplashMajorState.AfterPlayDelay:
@@ -351,10 +346,49 @@ namespace WpfInvaders
         }
         private void PlayerShotAndBump()
         {
+            PlayerShotHit();
+            RackBump();
+        }
+
+        private void RackBump()
+        {
+            if (gameData.RackDirectionRightToLeft)
+            {
+                if (CheckPlayFieldLineIsBlank(9) == false)
+                {
+                    gameData.RefAlienDeltaX = 2;
+                    gameData.RefAlienDeltaY = -8;
+                    gameData.RackDirectionRightToLeft = false;
+                }
+            }
+            else
+            {
+                if (CheckPlayFieldLineIsBlank(213) == false)
+                {
+                    gameData.RefAlienDeltaX = -2;
+                    gameData.RefAlienDeltaY = -8;
+                    gameData.RackDirectionRightToLeft = true;
+                }
+            }
+        }
+
+        private bool CheckPlayFieldLineIsBlank(int line)
+        {
+            var data = LineRender.RenderLine(line);
+            for (int i = 4; i < 27; i++)
+            {
+                if (data[i] != 0) return false;
+            }
+            return true;
+        }
+
+        private void PlayerShotHit()
+        {
         }
 
         private void PlayerFireOrDemo()
         {
+            PlayerShotAndBump();
         }
 
         private void DrawBottomLine()
@@ -413,6 +447,12 @@ namespace WpfInvaders
             if (currentPlayer.Aliens[gameData.AlienCurIndex] != 0)
             {
                 int currOffset = gameData.AlienCharacterCurY + gameData.AlienCharacterCurX * LineRender.ScreenWidth;
+                // Side effect of the original shift logic is that the row above the current invader is cleared
+                LineRender.Screen[currOffset + 1] = 0x20;
+                LineRender.Screen[currOffset + 33] = 0x20;
+                if (gameData.RackDirectionRightToLeft)
+                    LineRender.Screen[currOffset + 65] = 0x20;
+
                 switch (gameData.AlienCharacterOffset)
                 {
                     case 0:
@@ -423,9 +463,8 @@ namespace WpfInvaders
                         LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 6);
                         LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 7);
                         // Going right to left
-                        if (gameData.RefAlienDeltaX == -2)
+                        if (gameData.RackDirectionRightToLeft)
                         {
-                            // Going left to right... Another alien on our right?
                             if (LineRender.Screen[currOffset + 64] == (byte)(gameData.AlienCharacterStart + 4))
                                 LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 2);
                             else
@@ -433,24 +472,10 @@ namespace WpfInvaders
                         }
                         break;
                     case 4:
-                        if (gameData.RefAlienDeltaX == 2)
-                        {
-                            // Going left to right... Alien on our left?
-                            if (LineRender.Screen[currOffset - 32] != 0x20)
-                                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 4);
-                            else
-                                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 2);
-                            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 3);
-                            // Going left to right... Another alien on our right?
-                            if (LineRender.Screen[currOffset + 64] != 0x20)
-                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 10);
-                            else
-                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 5);
-                        }
-                        else
+                        if (gameData.RackDirectionRightToLeft)
                         {
                             // Going Right to left
-                            if (LineRender.Screen[currOffset] != 0x20)
+                            if (LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 5)
                                 LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 4);
                             else
                                 LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 2);
@@ -460,12 +485,31 @@ namespace WpfInvaders
                             else
                                 LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 4);
                         }
+                        else
+                        {
+                            // Going left to right... Alien on our left?
+                            if (LineRender.Screen[currOffset - 32] == gameData.AlienCharacterStart + 3)
+                                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 4);
+                            else
+                                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 2);
+                            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 3);
+                            // Going left to right... Another alien on our right?
+                            if (LineRender.Screen[currOffset + 64] == gameData.AlienCharacterStart + 6)
+                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 10);
+                            else
+                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 5);
+                        }
                         break;
                     case 6:
-                        if (gameData.RefAlienDeltaX == 2)
+                        if (gameData.RackDirectionRightToLeft)
                         {
-                            // Going Left to right... No alien to left of us make this cell blank
-                            if (LineRender.Screen[currOffset - 32] == 0x20)
+                            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 8);
+                            LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 9);
+                        }
+                        else
+                        {
+                            // Going Left to right... No partial alien to left of us make this cell blank
+                            if ((gameData.AlienCharacterCurX == 0) || (LineRender.Screen[currOffset - 32] != (gameData.AlienCharacterStart + 8)))
                                 LineRender.Screen[currOffset] = 0x20;
                             else
                                 LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 9);
@@ -475,11 +519,6 @@ namespace WpfInvaders
                                 LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 11);
                             else
                                 LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 9);
-                        }
-                        else
-                        {
-                            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 8);
-                            LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 9);
                         }
                         break;
                 }
@@ -509,7 +548,7 @@ namespace WpfInvaders
                     gameData.RefAlienX += gameData.RefAlienDeltaX;
                     gameData.RefAlienY += gameData.RefAlienDeltaY;
                     gameData.RefAlienDeltaY = 0;
-                    StopIsr();
+                    //StopIsr();
                 }
             } while ((currentPlayer.Aliens[gameData.AlienCurIndex] == 0) && (timesThroughAliens < 2));
             if (timesThroughAliens >= 2)
@@ -676,12 +715,10 @@ namespace WpfInvaders
 
         private void SaveScreenShot(string fname)
         {
-            using (FileStream stream = new FileStream(fname, FileMode.Create))
-            {
-                PngBitmapEncoder encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(frame));
-                encoder.Save(stream);
-            }
+            using FileStream stream = new FileStream(fname, FileMode.Create);
+            PngBitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(frame));
+            encoder.Save(stream);
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)

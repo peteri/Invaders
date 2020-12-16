@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using static WpfInvaders.MainWindow;
+﻿using static WpfInvaders.MainWindow;
 
 namespace WpfInvaders
 {
     public class GameData
     {
         // 1=right, 2=left
-        private static byte[] demoCmds = { 1, 1, 0, 0, 1, 0, 2, 1, 0, 2, 1, 0 };
+        private static readonly byte[] demoCmds = { 1, 1, 0, 0, 1, 0, 2, 1, 0, 2, 1, 0 };
         public short HiScore;
         public byte Credits;
         public short IsrDelay;
@@ -41,17 +38,18 @@ namespace WpfInvaders
         internal int AlienCharacterCurY;
         internal int AlienCharacterStart;
         internal int AlienCharacterOffset;
-        public bool BumpRight;
-        public bool BumpLeft;
+        public bool RackDirectionRightToLeft;
 
         internal void ResetVariables()
         {
             RefAlienX = 0x18;
             RefAlienY = 0x78;
             RefAlienDeltaY = 0x00;
+            RackDirectionRightToLeft = false;
             RefAlienDeltaX = 2;
             AlienCurIndex = -1;
             PlayerOk = true;
+            PlayerAlive = true;
         }
     }
 }
