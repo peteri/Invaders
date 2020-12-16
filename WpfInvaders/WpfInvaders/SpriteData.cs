@@ -77,6 +77,9 @@ namespace WpfInvaders
 
         static SpriteData()
         {
+            // 0x00-0x20 Are bitmaps
+            // 0x00-0x30 Unused
+            // 0x40-0x5f Uppercase mostly ASCII
             int i = 0;
             foreach (var sprite in _characterSprites)
             {

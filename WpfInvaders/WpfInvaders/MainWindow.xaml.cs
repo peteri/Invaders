@@ -411,9 +411,73 @@ namespace WpfInvaders
                 ExplodeAlienTimer();
             }
             if (currentPlayer.Aliens[gameData.AlienCurIndex] != 0)
-            {   int currOffset = gameData.AlienCharacterCurY + gameData.AlienCharacterCurX * LineRender.ScreenWidth;
-                LineRender.Screen[currOffset] = (byte)gameData.AlienCharacterStart;
-                LineRender.Screen[currOffset+32] = (byte)(gameData.AlienCharacterStart+1);
+            {
+                int currOffset = gameData.AlienCharacterCurY + gameData.AlienCharacterCurX * LineRender.ScreenWidth;
+                switch (gameData.AlienCharacterOffset)
+                {
+                    case 0:
+                        LineRender.Screen[currOffset] = (byte)gameData.AlienCharacterStart;
+                        LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 1);
+                        break;
+                    case 2:
+                        LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 6);
+                        LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 7);
+                        // Going right to left
+                        if (gameData.RefAlienDeltaX == -2)
+                        {
+                        }
+                        break;
+                    case 4:
+                        if (gameData.RefAlienDeltaX == 2)
+                        {
+                            // Going left to right... Alien on our left?
+                            if (LineRender.Screen[currOffset - 32] != 0x20)
+                                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 4);
+                            else
+                                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 2);
+                            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 3);
+                            // Going left to right... Another alien on our right?
+                            if (LineRender.Screen[currOffset + 64] != 0x20)
+                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 10);
+                            else
+                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 5);
+                        }
+                        else
+                        {
+                            // Going Right to left
+                            if (LineRender.Screen[currOffset] != 0x20)
+                                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 4);
+                            else
+                                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 2);
+                            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 3);
+                            if (LineRender.Screen[currOffset + 64] != 0x20)
+                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 5);
+                            else
+                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 4);
+                        }
+                        break;
+                    case 6:
+                        if (gameData.RefAlienDeltaX == 2)
+                        {
+                            // Going Left to right... No alien to left of us make this cell blank
+                            if (LineRender.Screen[currOffset - 32] == 0x20)
+                                LineRender.Screen[currOffset] = 0x20;
+                            else
+                                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 9);
+                            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 8);
+                            // Alien to the right of us?
+                            if (LineRender.Screen[currOffset + 64] == (gameData.AlienCharacterStart + 4))
+                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 11);
+                            else
+                                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 9);
+                        }
+                        else
+                        {
+                            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 8);
+                            LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 9);
+                        }
+                        break;
+                }
             }
         }
 
@@ -440,6 +504,7 @@ namespace WpfInvaders
                     gameData.RefAlienX += gameData.RefAlienDeltaX;
                     gameData.RefAlienY += gameData.RefAlienDeltaY;
                     gameData.RefAlienDeltaY = 0;
+                    StopIsr();
                 }
             } while ((currentPlayer.Aliens[gameData.AlienCurIndex] == 0) && (timesThroughAliens < 2));
             if (timesThroughAliens >= 2)
@@ -464,7 +529,7 @@ namespace WpfInvaders
         private void CalculateAlienPosition()
         {
             // Find the positon of our alien
-            gameData.AlienCharacterCurY = gameData.RefAlienY>>3;
+            gameData.AlienCharacterCurY = gameData.RefAlienY >> 3;
             int curAlien = gameData.AlienCurIndex;
             int alienRow = 0;
             while (curAlien >= 11)
@@ -473,7 +538,7 @@ namespace WpfInvaders
                 gameData.AlienCharacterCurY += 2;
                 alienRow++;
             }
-            gameData.AlienCharacterCurX = (gameData.RefAlienX >> 3) + (curAlien <<1);
+            gameData.AlienCharacterCurX = (gameData.RefAlienX >> 3) + (curAlien << 1);
             gameData.AlienCharacterOffset = gameData.RefAlienX & 0x7;
             gameData.AlienCharacterStart = 0x60 + ((alienRow >> 1) << 4);
         }

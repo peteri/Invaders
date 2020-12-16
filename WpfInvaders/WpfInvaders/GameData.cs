@@ -49,7 +49,8 @@ namespace WpfInvaders
             RefAlienX = 0x18;
             RefAlienY = 0x78;
             RefAlienDeltaY = 0x00;
-            RefAlienDeltaX = 0x02;
+            RefAlienDeltaX = 2;
+            AlienCurIndex = -1;
             PlayerOk = true;
         }
     }
