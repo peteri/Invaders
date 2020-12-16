@@ -1,11 +1,10 @@
-﻿using static WpfInvaders.MainWindow;
+﻿using System.Collections.Generic;
+using static WpfInvaders.MainWindow;
 
 namespace WpfInvaders
 {
     public class GameData
     {
-        // 1=right, 2=left
-        private static readonly byte[] demoCmds = { 1, 1, 0, 0, 1, 0, 2, 1, 0, 2, 1, 0 };
         public short HiScore;
         public byte Credits;
         public short IsrDelay;
@@ -24,7 +23,6 @@ namespace WpfInvaders
         internal string DelayMessage;
         internal int DelayMessageIndex;
         internal int PlayerShot;
-        internal bool PlayerAlive;
         internal bool PlayerOk;
         internal bool WaitOnDraw;
         internal bool AlienExploding;
@@ -39,6 +37,16 @@ namespace WpfInvaders
         internal int AlienCharacterStart;
         internal int AlienCharacterOffset;
         public bool RackDirectionRightToLeft;
+        public List<TimerObject> TimerObjects;
+        internal bool AlienShotsEnabled;
+        internal int AlienFireDelay;
+        public PlayerBase PlayerBase;
+        public MainWindow MainWindow { get; }
+
+        public GameData(MainWindow mainWindow)
+        {
+            MainWindow = mainWindow;
+        }
 
         internal void ResetVariables()
         {
@@ -49,7 +57,11 @@ namespace WpfInvaders
             RefAlienDeltaX = 2;
             AlienCurIndex = -1;
             PlayerOk = true;
-            PlayerAlive = true;
+            AlienShotsEnabled = false;
+            AlienFireDelay = 0x30;
+            TimerObjects = new List<TimerObject>();
+            PlayerBase = new PlayerBase(MainWindow, this);
+            TimerObjects.Add(PlayerBase);
         }
     }
 }

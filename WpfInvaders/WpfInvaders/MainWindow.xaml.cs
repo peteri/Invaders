@@ -19,7 +19,7 @@ namespace WpfInvaders
         private static extern uint MM_BeginPeriod(uint uMilliseconds);
 
         [Flags]
-        private enum SwitchState
+        public enum SwitchState
         {
             None = 0x00,
             Left = 0x01,
@@ -69,7 +69,7 @@ namespace WpfInvaders
         private readonly PlayerData playerTwo;
         private PlayerData currentPlayer;
         private readonly GameData gameData;
-        private SwitchState switchState;
+        public SwitchState switchState;
         private readonly Stopwatch frameStopwatch;
         private readonly Stopwatch timeInIsrStopwatch;
         private int timerCount = 0;
@@ -87,7 +87,7 @@ namespace WpfInvaders
             imgScreenRotateMirrored.Source = frame;
             playerOne = new PlayerData();
             playerTwo = new PlayerData();
-            gameData = new GameData();
+            gameData = new GameData(this);
             frameStopwatch = Stopwatch.StartNew();
             timeInIsrStopwatch = Stopwatch.StartNew();
             PowerOnReset();
@@ -232,7 +232,7 @@ namespace WpfInvaders
                 case SplashMinorState.PlayDemoWaitDeath:
                     PlayerFireOrDemo();
 
-                    if (gameData.PlayerAlive == false)
+                    if (gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive)
                     {
                         gameData.PlayerShot = 0;
                         gameData.SplashMinorState = SplashMinorState.Idle;
@@ -436,6 +436,20 @@ namespace WpfInvaders
 
         private void RunGameObjects()
         {
+            foreach (var timerObject in gameData.TimerObjects)
+            {
+                if (timerObject.IsActive)
+                {
+                    if (timerObject.Ticks == 0)
+                    {
+                        timerObject.Action();
+                    }
+                    else
+                    {
+                        timerObject.Ticks--;
+                    }
+                }
+            }
         }
 
         private void DrawAlien()
@@ -684,7 +698,7 @@ namespace WpfInvaders
                 LineRender.Screen[i] = 0x20;
         }
 
-        private void StopIsr()
+        public void StopIsr()
         {
             invokeTick = false;
             Pause.Content = "Run";
