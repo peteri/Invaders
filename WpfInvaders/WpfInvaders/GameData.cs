@@ -43,13 +43,14 @@ namespace WpfInvaders
         public PlayerShot PlayerShot;
         public MainWindow MainWindow { get; }
         public int SingleAlienOffset { get; internal set; }
-
+        public PlayerData CurrentPlayer;
+        public Aliens Aliens;
         public GameData(MainWindow mainWindow)
         {
             MainWindow = mainWindow;
         }
 
-        internal void ResetVariables()
+        internal void ResetVariables(PlayerData currentPlayer)
         {
             RefAlienX = 0x18;
             RefAlienY = 0x78;
@@ -60,6 +61,7 @@ namespace WpfInvaders
             PlayerOk = true;
             AlienShotsEnabled = false;
             AlienFireDelay = 0x30;
+            Aliens = new Aliens(this, currentPlayer);
             // Create timer task objects
             TimerObjects = new List<TimerObject>();
             // Players base
