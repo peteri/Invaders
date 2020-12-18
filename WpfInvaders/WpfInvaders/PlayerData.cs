@@ -83,11 +83,6 @@ namespace WpfInvaders
         {
             for (int i = 0; i < Aliens.Length; i++)
                 Aliens[i] = 1;
-            //for (int i = 0; i < Aliens.Length; i++)
-            //    Aliens[i] = 0;
-            //Aliens[49] = 1;
-            //Aliens[50] = 1;
-            //Aliens[53] = 1;
             CountAliens();
         }
     }

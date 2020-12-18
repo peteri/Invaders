@@ -344,10 +344,10 @@ namespace WpfInvaders
                 if ((i & 0x1f) >= 0x1c) i += 6;
             }
         }
+
         private void PlayerShotAndBump()
         {
             PlayerShotHit();
-            RackBump();
         }
 
         private void RackBump()
@@ -463,9 +463,42 @@ namespace WpfInvaders
             {
                 int currOffset = gameData.AlienCharacterCurY + gameData.AlienCharacterCurX * LineRender.ScreenWidth;
                 // Side effect of the original shift logic is that the row above the current invader is cleared
+                // When an alien is drawn.
                 LineRender.Screen[currOffset + 0x01] = 0x20;
                 LineRender.Screen[currOffset + 0x21] = 0x20;
-
+                // If we're advancing Right to left and we only have type C aliens left we go one more
+                // step so we don't wipe out the row above us in the NE direction.
+                if (gameData.RackDirectionRightToLeft)
+                {
+                    if (gameData.AlienCharacterOffset != 0)
+                        LineRender.Screen[currOffset + 0x41] = 0x20;
+                }
+                else
+                {
+                    // If we're advancing left to right and we only have type C aliens left at the edges
+                    // with a partial row of B aliens below i.e. the rack looks like this  
+                    //     BCDCDCDCDCDCE   
+                    //       bcdce bce 
+                    //
+                    // then as the row of type B aliens moves down it looks like this
+                    //     BCDCDCDCDCDCE   
+                    //         dce bce 
+                    //       hi
+                    if (LineRender.Screen[currOffset + 0x41] == gameData.AlienCharacterStart + 0x04)
+                    {
+                        // Turn the d into a b
+                        LineRender.Screen[currOffset + 0x41] = (byte)(gameData.AlienCharacterStart + 0x02);
+                    }
+                    // then as the row of type B aliens moves down it looks like this
+                    //     BCDCDCDCDCDCE   
+                    //           e bce 
+                    //       hihi
+                    if (LineRender.Screen[currOffset + 0x41] == gameData.AlienCharacterStart + 0x05)
+                    {
+                        // Get rid of the e
+                        LineRender.Screen[currOffset + 0x41] = 0x20;
+                    }
+                }
                 if (currentPlayer.NumAliens == 1)
                 {
                     DrawFastSingleAlien(currOffset);
@@ -493,9 +526,20 @@ namespace WpfInvaders
         /// <param name="currOffset">Offset on screen for the current alien.</param>
         private void DrawFastSingleAlien(int currOffset)
         {
+            if (currOffset >= 0x20)
+            {
+                LineRender.Screen[currOffset - 0x1f] = 0x20;
+                LineRender.Screen[currOffset - 0x20] = 0x20;
+            }
             LineRender.Screen[currOffset + 0x00] = 0x1c;
             LineRender.Screen[currOffset + 0x20] = 0x1d;
             LineRender.Screen[currOffset + 0x40] = 0x1e;
+            if (currOffset + 0x60 < LineRender.ScreenWidth * LineRender.ScreenHeight)
+            {
+                LineRender.Screen[currOffset + 0x41] = 0x20;
+                LineRender.Screen[currOffset + 0x61] = 0x20;
+                LineRender.Screen[currOffset + 0x60] = 0x20;
+            }
             gameData.SingleAlienOffset = 12 - gameData.SingleAlienOffset;
             int invaderType = gameData.AlienCharacterStart + gameData.SingleAlienOffset;
             invaderType = invaderType << 3;
@@ -619,6 +663,7 @@ namespace WpfInvaders
                 gameData.AlienCurIndex++;
                 if (gameData.AlienCurIndex == 55)
                 {
+                    RackBump();
                     gameData.AlienCurIndex = 0;
                     timesThroughAliens++;
                     gameData.RefAlienX += gameData.RefAlienDeltaX;
