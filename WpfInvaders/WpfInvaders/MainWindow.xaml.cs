@@ -231,7 +231,7 @@ namespace WpfInvaders
                     break;
                 case SplashMinorState.PlayDemoWaitDeath:
                     PlayerFireOrDemo();
-
+                    PlayerShotAndBump();
                     if (gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive)
                     {
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
@@ -350,16 +350,41 @@ namespace WpfInvaders
             PlayerShotHit();
         }
 
-
-
-
         private void PlayerShotHit()
         {
         }
 
         private void PlayerFireOrDemo()
         {
-            PlayerShotAndBump();
+            // He's dead jim...
+            if (gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive)
+                return;
+            // Base isn't on screen yet
+            if (gameData.PlayerBase.Ticks != 0)
+                return;
+            if (gameData.PlayerShot.Status != PlayerShot.ShotStatus.Available)
+                return;
+            if (gameData.GameMode)
+            {
+                if (gameData.FireBounce)
+                {
+                    if ((switchState & SwitchState.Fire) == 0)
+                        gameData.FireBounce = false;
+                }
+                else
+                {
+                    if ((switchState & SwitchState.Fire) == SwitchState.Fire)
+                    {
+                        gameData.FireBounce = true;
+                        gameData.PlayerShot.Status = PlayerShot.ShotStatus.Initiated;
+                    }
+                }
+            }
+            else
+            {
+                gameData.PlayerShot.Status = PlayerShot.ShotStatus.Initiated;
+                gameData.PlayerBase.IncrementDemoCommand();
+            }
         }
 
         private void DrawBottomLine()

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using static WpfInvaders.MainWindow;
 
 namespace WpfInvaders
 {
@@ -17,13 +16,14 @@ namespace WpfInvaders
         public bool AnimateSplash;
         public byte alienShotReloadRate;
 
-        public SplashMajorState SplashMajorState;
-        public SplashMinorState SplashMinorState;
+        public MainWindow.SplashMajorState SplashMajorState;
+        public MainWindow.SplashMinorState SplashMinorState;
         internal int DelayMessagePosition;
         internal string DelayMessage;
         internal int DelayMessageIndex;
         internal bool PlayerOk;
         internal bool WaitOnDraw;
+        internal bool FireBounce;
         internal bool AlienExploding;
         public int RefAlienDeltaX;
         public int RefAlienDeltaY;
@@ -41,6 +41,9 @@ namespace WpfInvaders
         internal int AlienFireDelay;
         public PlayerBase PlayerBase;
         public PlayerShot PlayerShot;
+        public AlienRollingShot AlienRollingShot;
+        public AlienPlungerShot AlienPlungerShot;
+        public AlienSquiglyShot AlienSquiglyShot;
         public MainWindow MainWindow { get; }
         public int SingleAlienOffset { get; internal set; }
         public PlayerData CurrentPlayer;
@@ -64,13 +67,22 @@ namespace WpfInvaders
             Aliens = new Aliens(this, currentPlayer);
             // Create timer task objects
             TimerObjects = new List<TimerObject>();
+
             // Players base
             PlayerBase = new PlayerBase(MainWindow, this);
             TimerObjects.Add(PlayerBase);
 
             // Players shot
             PlayerShot = new PlayerShot(MainWindow, this);
-//            TimerObjects.Add(PlayerShot);
+            TimerObjects.Add(PlayerShot);
+
+            // Alien shots
+            AlienRollingShot = new AlienRollingShot(MainWindow, this);
+            TimerObjects.Add(AlienRollingShot);
+            AlienPlungerShot = new AlienPlungerShot(MainWindow, this);
+            TimerObjects.Add(AlienPlungerShot);
+            AlienSquiglyShot = new AlienSquiglyShot(MainWindow, this);
+            TimerObjects.Add(AlienSquiglyShot);
         }
     }
 }

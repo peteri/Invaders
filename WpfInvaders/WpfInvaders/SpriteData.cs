@@ -69,13 +69,13 @@
         private static readonly byte[] InvaderA2 = { 0x00, 0x00, 0x38, 0x7A, 0x7F, 0x6D, 0xEC, 0xFA, 0xFA, 0xEC, 0x6D, 0x7F, 0x7A, 0x38, 0x00, 0x00 };
         private static readonly byte[] InvaderB2 = { 0x00, 0x00, 0x00, 0x0E, 0x18, 0xBE, 0x6D, 0x3D, 0x3C, 0x3D, 0x6D, 0xBE, 0x18, 0x0E, 0x00, 0x00 };
         private static readonly byte[] InvaderC2 = { 0x00, 0x00, 0x00, 0x00, 0x1A, 0x3D, 0x68, 0xFC, 0xFC, 0x68, 0x3D, 0x1A, 0x00, 0x00, 0x00, 0x00 };
-
         public static byte[] Characters = new byte[256 * 8];
 
         static SpriteData()
         {
             // 0x00-0x20 Are bitmaps
-            // 0x00-0x30 Unused
+            // 0x00-0x30 Alien explosion shifted0,2,4,6
+            GenerateSpritesShifted(0xa8, SaucerExp, 2);
             // 0x40-0x5f Uppercase mostly ASCII
             int i = 0;
             foreach (var sprite in _characterSprites)
@@ -85,13 +85,13 @@
                     Characters[charOffset++] = BitFlip(b);
                 i++;
             }
-            // 0x60-6f Invaders Row 1 / 2.
+            // 0x60-0x6f Invaders Row 1 / 2.
             GenerateAlienShifts(0x60, InvaderA1, InvaderA2);
-            // 0x70-7f Invaders Row 3 / 4 
+            // 0x70-0x7f Invaders Row 3 / 4 
             GenerateAlienShifts(0x70, InvaderB1, InvaderB2);
-            // 0x80-8f Invaders Row 5
+            // 0x80-0x8f Invaders Row 5
             GenerateAlienShifts(0x80, InvaderC1, InvaderC2);
-            // 0x98-a8 Saucer shifts 0,2,4,6
+            // 0x98-0xa8 Saucer shifts 0,2,4,6
             GenerateSpritesShifted(0x98, Saucer, 2);
             // 0xa8-b7 Saucer explosion shifts 0,2,4,6
             GenerateSpritesShifted(0xa8, SaucerExp, 2);
@@ -103,6 +103,12 @@
             GenerateSpritesShifted(0xe8, PlayerExp2, 1);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <param name="sprite"></param>
+        /// <param name="step"></param>
         private static void GenerateSpritesShifted(int offset, byte[] sprite, int step)
         {
             offset *= 8;
@@ -121,6 +127,12 @@
             }
         }
 
+        /// <summary>
+        /// Generates the shifted characters necessary for an alien.
+        /// </summary>
+        /// <param name="offset">Offset in the character table to start storing.</param>
+        /// <param name="invader1">Pattern for invader type 1.</param>
+        /// <param name="invader2">Pattern for invader type 2.</param>
         private static void GenerateAlienShifts(int offset, byte[] invader1, byte[] invader2)
         {
             offset *= 8;
@@ -168,6 +180,11 @@
             }
         }
 
+        /// <summary>
+        /// Flips a byte around to match the video hardware.
+        /// </summary>
+        /// <param name="b">Byte to flip.</param>
+        /// <returns>Flipped byte of data.</returns>
         public static byte BitFlip(byte b)
         {
             return (byte)(

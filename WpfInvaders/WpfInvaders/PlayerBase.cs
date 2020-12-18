@@ -27,7 +27,7 @@ namespace WpfInvaders
         public enum PlayerAlive { Alive, BlowUpOne, BlowUpTwo }
         private readonly MainWindow mainWindow;
         private readonly GameData gameData;
-        private int demoCommand = 0;
+        private static int demoCommand = 0;
         public int PlayerX;
         public int PlayerY;
         public PlayerAlive Alive { get; set; }
@@ -91,6 +91,13 @@ namespace WpfInvaders
                 LineRender.Screen[screenOffset] = (byte)(playerSprite + i);
                 screenOffset += LineRender.ScreenWidth;
             }
+        }
+
+        internal void IncrementDemoCommand()
+        {
+            demoCommand++;
+            if (demoCommand >= demoCmds.Length)
+                demoCommand = 0;
         }
     }
 }
