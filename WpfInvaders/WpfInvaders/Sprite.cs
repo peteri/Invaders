@@ -1,4 +1,6 @@
-﻿namespace WpfInvaders
+﻿using System;
+
+namespace WpfInvaders
 {
     public class Sprite
     {
@@ -22,7 +24,7 @@
                 {
                     for (int k = 0; k < width; k++)
                     {
-                        ushort d = SpriteData.BitFlip(data[i * width + k]);
+                        ushort d = data[i * width + k];
                         this.data[i, j, k] = (ushort)(d << j);
                     }
                 }
@@ -33,10 +35,10 @@
         {
             if ((line >= X) && (line < X + width))
             {
-                int x = X - line;
+                int x = line - X;
                 int y = Y >> 3;
-                byte c1 = (byte)(data[Image, Y & 0x7, x] & 0xff);
-                byte c2 = (byte)(data[Image, Y & 0x7, x] >> 8);
+                byte c1 = SpriteData.BitFlip((byte)(data[Image, Y & 0x7, x] & 0xff));
+                byte c2 = SpriteData.BitFlip((byte)(data[Image, Y & 0x7, x] >> 8));
                 collided |= (byte)(lineData[y] & c1);
                 collided |= (byte)(lineData[y + 1] & c2);
                 lineData[y] |= c1;
@@ -54,6 +56,14 @@
         public void ClearCollided()
         {
             collided = 0;
+        }
+
+        /// <summary>
+        /// Do battle damage to any shields...
+        /// </summary>
+        internal void BattleDamage()
+        {
+
         }
     }
 }

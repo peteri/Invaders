@@ -25,10 +25,13 @@ namespace WpfInvaders
         internal bool WaitOnDraw;
         internal bool FireBounce;
         internal bool AlienExploding;
+        internal bool SaucerActive;
         public int RefAlienDeltaX;
         public int RefAlienDeltaY;
         public int RefAlienY;
         public int RefAlienX;
+        public int ShotCount;
+        public int SaucerScoreIndex;
 
         public int AlienCurIndex;
         internal int AlienCharacterCurX;
@@ -46,6 +49,9 @@ namespace WpfInvaders
         public AlienSquiglyShot AlienSquiglyShot;
         public MainWindow MainWindow { get; }
         public int SingleAlienOffset { get; internal set; }
+        public int SaucerDelta;
+        public int SaucerX;
+
         public PlayerData CurrentPlayer;
         public Aliens Aliens;
         public GameData(MainWindow mainWindow)
@@ -61,6 +67,8 @@ namespace WpfInvaders
             RackDirectionRightToLeft = false;
             RefAlienDeltaX = 2;
             AlienCurIndex = -1;
+            ShotCount = 0;
+            SaucerScoreIndex = 0;
             PlayerOk = true;
             AlienShotsEnabled = false;
             AlienFireDelay = 0x30;
@@ -83,6 +91,25 @@ namespace WpfInvaders
             TimerObjects.Add(AlienPlungerShot);
             AlienSquiglyShot = new AlienSquiglyShot(MainWindow, this);
             TimerObjects.Add(AlienSquiglyShot);
+        }
+
+        public void IncremeentSaucerScoreAndShotCount()
+        {
+            ShotCount++;
+            SaucerScoreIndex++;
+            if (!SaucerActive)
+            {
+                if ((ShotCount & 0x01)==0)
+                {
+                    SaucerDelta = 2;
+                    SaucerX = 29;
+                }
+                else
+                {
+                    SaucerDelta = -2;
+                    SaucerX = 0xe0;
+                }
+            }
         }
     }
 }

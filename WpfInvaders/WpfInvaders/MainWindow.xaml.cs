@@ -139,8 +139,17 @@ namespace WpfInvaders
             }
             timeInIsrStopwatch.Start();
             RenderScreen();
+            HandleSpriteCollisions();
             GameTick();
             timeInIsrStopwatch.Stop();
+        }
+
+        private void HandleSpriteCollisions()
+        {
+            if (gameData?.PlayerShot?.ShotSprite.Collided() ?? false)
+            {
+                gameData.AlienExploding = true;
+            }
         }
 
         private void GameTick()
@@ -352,6 +361,13 @@ namespace WpfInvaders
 
         private void PlayerShotHit()
         {
+            if (gameData.PlayerShot.Status != PlayerShot.ShotStatus.NormalMove)
+                return;
+            if (gameData.PlayerShot.ShotSprite.Y >= 0xd8)
+            {
+                gameData.PlayerShot.Status = PlayerShot.ShotStatus.HitSomething;
+                return;
+            }
         }
 
         private void PlayerFireOrDemo()
