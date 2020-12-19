@@ -160,13 +160,29 @@ namespace WpfInvaders
             {
                 if (gameData.GameMode || gameData.DemoMode)
                 {
+                    // Pretend we're on the first half of the screen
+                    gameData.VblankStatus = 0;
+                    // Move every except the player
+                    RunGameObjects(true);
+                    // Normally the game loop runs for ever
+                    // But do it here instead as we only have one isr
+                    // required to get the players first shot off
+                    // correctly in demo mode.
+                    GameLoopStep();
                     gameData.Aliens.CursorNextAlien();
+
+                    // Now we do the bottom half of screen isr case
+                    gameData.VblankStatus = 0x80;
+                    // Copy the shot sync like the normal routines do
+                    gameData.ShotSync = gameData.AlienRollingShot.ExtraCount;
+                    // Draw the alien
                     gameData.Aliens.DrawAlien();
-                    RunGameObjects();
+                    // Move everyone including the player
+                    RunGameObjects(false);
+                    // Adjust time to saucer
                     TimeToSaucer();
-                    // Probably wrong right now...
-                    if (gameData.DemoMode)
-                        IsrTasksSplashScreen();
+                    // Rerun the code that normally would run in a tight loop
+                    GameLoopStep();
                 }
                 else
                 {
@@ -187,6 +203,12 @@ namespace WpfInvaders
             {
                 RunWaitTask();
             }
+        }
+
+        private void GameLoopStep()
+        {
+            PlayerFireOrDemo();
+            PlayerShotHit();
         }
 
         private void RenderScreen()
@@ -239,8 +261,6 @@ namespace WpfInvaders
                         gameData.SplashMinorState = SplashMinorState.PrintMessageCharacter;
                     break;
                 case SplashMinorState.PlayDemoWaitDeath:
-                    PlayerFireOrDemo();
-                    PlayerShotAndBump();
                     if (gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive)
                     {
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
@@ -354,11 +374,6 @@ namespace WpfInvaders
             }
         }
 
-        private void PlayerShotAndBump()
-        {
-            PlayerShotHit();
-        }
-
         private void PlayerShotHit()
         {
             if (gameData.PlayerShot.Status != PlayerShot.ShotStatus.NormalMove)
@@ -366,6 +381,19 @@ namespace WpfInvaders
             if (gameData.PlayerShot.ShotSprite.Y >= 0xd8)
             {
                 gameData.PlayerShot.Status = PlayerShot.ShotStatus.HitSomething;
+                gameData.AlienExploding = false;
+            }
+            if (!gameData.AlienExploding)
+                return;
+            if (gameData.PlayerShot.ShotSprite.Y >= 0xce)
+            { 
+                // Explode Saucer
+            }
+            if (gameData.PlayerShot.ShotSprite.Y < gameData.RefAlienY)
+            {
+                // bullet can't be in the aliens
+                gameData.PlayerShot.Status = PlayerShot.ShotStatus.HitSomething;
+                gameData.AlienExploding = false;
                 return;
             }
         }
@@ -446,10 +474,12 @@ namespace WpfInvaders
         {
         }
 
-        private void RunGameObjects()
+        private void RunGameObjects(bool SkipPlayer)
         {
             foreach (var timerObject in gameData.TimerObjects)
             {
+                if (SkipPlayer && timerObject == gameData.PlayerBase)
+                    continue;
                 if (timerObject.IsActive)
                 {
                     if (timerObject.Ticks == 0)
@@ -463,9 +493,6 @@ namespace WpfInvaders
                 }
             }
         }
-
-
-
 
         private void HandleCoinSwitch()
         {

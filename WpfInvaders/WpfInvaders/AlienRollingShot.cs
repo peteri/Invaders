@@ -10,6 +10,7 @@ namespace WpfInvaders
 
         public AlienRollingShot(MainWindow mainWindow, GameData gameData) : base(mainWindow, gameData, RollingShotSprite)
         {
+            ExtraCount = 2;
         }
     }
 }

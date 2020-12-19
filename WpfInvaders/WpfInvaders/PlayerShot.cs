@@ -29,6 +29,8 @@ namespace WpfInvaders
 
         public override void Action()
         {
+            if ((ShotSprite.Y & 0x80) != gameData.VblankStatus)
+                return;
             switch (Status)
             {
                 case ShotStatus.Available:
@@ -38,8 +40,8 @@ namespace WpfInvaders
                     ShotSprite.Visible = true;
                     ShotSprite.Y = 0x28;
                     ShotSprite.X = gameData.PlayerBase.PlayerX + 8;
-                    mainWindow.StopIsr();
                     Status = ShotStatus.NormalMove;
+                    mainWindow.StopIsr();
                     break;
                 case ShotStatus.NormalMove:
                     ShotSprite.Y += 4;
@@ -71,10 +73,12 @@ namespace WpfInvaders
         {
             if (Status == ShotStatus.HitSomething)
             {
-                // Do battle damage to any shields+
-                ShotSprite.BattleDamage();
+                // Do battle damage to any shields
+                // Originally would have been done by
+                // erasing the sprite...
+                ShotExplodeSprite.BattleDamage();
                 Status = ShotStatus.Available;
-
+                ShotSprite.Y = 0x28;
             }
             explosionTimer = 0x10;
             gameData.IncremeentSaucerScoreAndShotCount();

@@ -49,11 +49,15 @@ namespace WpfInvaders
         public AlienSquiglyShot AlienSquiglyShot;
         public MainWindow MainWindow { get; }
         public int SingleAlienOffset { get; internal set; }
+        public int VblankStatus { get; internal set; }
+
         public int SaucerDelta;
         public int SaucerX;
 
         public PlayerData CurrentPlayer;
         public Aliens Aliens;
+        internal int ShotSync;
+
         public GameData(MainWindow mainWindow)
         {
             MainWindow = mainWindow;

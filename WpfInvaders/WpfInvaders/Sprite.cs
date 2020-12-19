@@ -5,27 +5,28 @@ namespace WpfInvaders
     public class Sprite
     {
         public bool Visible;
-        ushort[,,] data;
+        byte[,,,] data;
         public int X;
         public int Y;
         public int Image;
         int width;
         byte collided;
 
-        public Sprite(byte[] data, int images)
+        public Sprite(byte[] spriteImages, int images)
         {
             Visible = false;
             Image = 0;
-            width = data.Length / images;
-            this.data = new ushort[images, 8, width];
+            width = spriteImages.Length / images;
+            this.data = new byte[images, 8, width, 2];
             for (int i = 0; i < images; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
                     for (int k = 0; k < width; k++)
                     {
-                        ushort d = data[i * width + k];
-                        this.data[i, j, k] = (ushort)(d << j);
+                        ushort d = spriteImages[i * width + k];
+                        data[i, j, k, 0] = SpriteData.BitFlip((byte)((d << j) & 0xff));
+                        data[i, j, k, 1] = SpriteData.BitFlip((byte)((d << j) >> 8));
                     }
                 }
             }
@@ -37,8 +38,8 @@ namespace WpfInvaders
             {
                 int x = line - X;
                 int y = Y >> 3;
-                byte c1 = SpriteData.BitFlip((byte)(data[Image, Y & 0x7, x] & 0xff));
-                byte c2 = SpriteData.BitFlip((byte)(data[Image, Y & 0x7, x] >> 8));
+                byte c1 = data[Image, Y & 0x7, x, 0];
+                byte c2 = data[Image, Y & 0x7, x, 1];
                 collided |= (byte)(lineData[y] & c1);
                 collided |= (byte)(lineData[y + 1] & c2);
                 lineData[y] |= c1;
@@ -63,7 +64,26 @@ namespace WpfInvaders
         /// </summary>
         internal void BattleDamage()
         {
+            int xOffs = X & 0x07;
+            int cellOffs = (Y >> 3) + (X >> 3) * LineRender.ScreenWidth;
 
+            for (int i = 0; i < width; i++)
+            {
+                byte c1 = data[Image, Y & 0x7, i, 0];
+                byte c2 = data[Image, Y & 0x7, i, 1];
+                byte b = LineRender.Screen[cellOffs];
+                if (b < 0x20)
+                    LineRender.BitmapChar[b * 8 + xOffs] &= (byte)(~c1);
+                b = LineRender.Screen[cellOffs+1];
+                if (b < 0x20)
+                    LineRender.BitmapChar[b * 8 + xOffs] &= (byte)(~c2);
+                xOffs++;
+                if (xOffs == 8)
+                {
+                    xOffs = 0;
+                    cellOffs++;
+                };
+            }
         }
     }
 }

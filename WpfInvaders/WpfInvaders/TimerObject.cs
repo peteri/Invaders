@@ -11,10 +11,12 @@ namespace WpfInvaders
         {
             IsActive = isActive;
             Ticks = ticks;
+            ExtraCount = 0;
         }
 
-        public bool IsActive { get; set; }
-        public int Ticks { get; set; }
+        public bool IsActive;
+        public int Ticks;
+        public int ExtraCount;
 
         public abstract void Action();
     }
