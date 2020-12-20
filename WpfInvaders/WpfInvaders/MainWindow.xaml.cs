@@ -16,7 +16,9 @@ namespace WpfInvaders
     public partial class MainWindow : Window
     {
         [DllImport("winmm.dll", EntryPoint = "timeBeginPeriod")]
-        private static extern uint MM_BeginPeriod(uint uMilliseconds);
+        private static extern uint TimeBeginPeriod(uint uMilliseconds);
+        [DllImport("winmm.dll", EntryPoint = "timeEndPeriod")]
+        private static extern uint TimeEndPeriod(uint uMilliseconds);
 
         [Flags]
         public enum SwitchState
@@ -80,8 +82,6 @@ namespace WpfInvaders
         public MainWindow()
         {
             InitializeComponent();
-            // Set the multimedia timer to 1ms
-            MM_BeginPeriod(1);
             frame = new WriteableBitmap(256, 224, 96, 96, PixelFormats.BlackWhite, null);
             //imgScreen.Source = frame;
             imgScreenRotateMirrored.Source = frame;
@@ -108,6 +108,8 @@ namespace WpfInvaders
 
         private void WaitingTimer()
         {
+            // Set the multimedia timer to 1ms
+            TimeBeginPeriod(1);
             // run at 60Hz by waiting for 16ms 17ms 17ms 
             // which gives 3 interrupts per 50ms.
             while (!dieEvent.WaitOne(16))
@@ -123,6 +125,7 @@ namespace WpfInvaders
                 if (invokeTick)
                     this.Dispatcher.InvokeAsync(IsrRoutine);
             }
+            TimeEndPeriod(1);
         }
 
         private void IsrRoutine()
@@ -386,7 +389,7 @@ namespace WpfInvaders
             if (!gameData.AlienExploding)
                 return;
             if (gameData.PlayerShot.ShotSprite.Y >= 0xce)
-            { 
+            {
                 // Explode Saucer
             }
             if (gameData.PlayerShot.ShotSprite.Y < gameData.RefAlienY)

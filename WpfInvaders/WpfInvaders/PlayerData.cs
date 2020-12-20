@@ -23,17 +23,17 @@ namespace WpfInvaders
         {
             for (int i = 0; i < 22; i++)
             {
-                Sheild1[i] = SpriteData.BitFlip(SpriteData.Shield[i * 2 + 1]);
-                Sheild1[i + 24] = SpriteData.BitFlip(SpriteData.Shield[i * 2]);
+                Sheild1[i] = CharacterRom.BitFlip(CharacterRom.Shield[i * 2 + 1]);
+                Sheild1[i + 24] = CharacterRom.BitFlip(CharacterRom.Shield[i * 2]);
 
-                Sheild2[i + 5] = SpriteData.BitFlip(SpriteData.Shield[i * 2 + 1]);
-                Sheild2[i + 32 + 5] = SpriteData.BitFlip(SpriteData.Shield[i * 2]);
+                Sheild2[i + 5] = CharacterRom.BitFlip(CharacterRom.Shield[i * 2 + 1]);
+                Sheild2[i + 32 + 5] = CharacterRom.BitFlip(CharacterRom.Shield[i * 2]);
 
-                Sheild3[i + 2] = SpriteData.BitFlip(SpriteData.Shield[i * 2 + 1]);
-                Sheild3[i + 24 + 2] = SpriteData.BitFlip(SpriteData.Shield[i * 2]);
+                Sheild3[i + 2] = CharacterRom.BitFlip(CharacterRom.Shield[i * 2 + 1]);
+                Sheild3[i + 24 + 2] = CharacterRom.BitFlip(CharacterRom.Shield[i * 2]);
 
-                Sheild4[i + 7] = SpriteData.BitFlip(SpriteData.Shield[i * 2 + 1]);
-                Sheild4[i + 32 + 7] = SpriteData.BitFlip(SpriteData.Shield[i * 2]);
+                Sheild4[i + 7] = CharacterRom.BitFlip(CharacterRom.Shield[i * 2 + 1]);
+                Sheild4[i + 32 + 7] = CharacterRom.BitFlip(CharacterRom.Shield[i * 2]);
             }
             CopyShieldToBitmapChar();
         }

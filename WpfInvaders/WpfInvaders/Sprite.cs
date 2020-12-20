@@ -25,8 +25,8 @@ namespace WpfInvaders
                     for (int k = 0; k < width; k++)
                     {
                         ushort d = spriteImages[i * width + k];
-                        data[i, j, k, 0] = SpriteData.BitFlip((byte)((d << j) & 0xff));
-                        data[i, j, k, 1] = SpriteData.BitFlip((byte)((d << j) >> 8));
+                        data[i, j, k, 0] = CharacterRom.BitFlip((byte)((d << j) & 0xff));
+                        data[i, j, k, 1] = CharacterRom.BitFlip((byte)((d << j) >> 8));
                     }
                 }
             }

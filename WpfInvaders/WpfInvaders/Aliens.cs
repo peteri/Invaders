@@ -204,7 +204,7 @@ namespace WpfInvaders
             for (int i = 0; i < 24; i++)
             {
                 if ((i >= gameData.AlienCharacterOffset) && (i < (gameData.AlienCharacterOffset + 16)))
-                    LineRender.BitmapChar[0xe0 + i] = SpriteData.Characters[invaderType++];
+                    LineRender.BitmapChar[0xe0 + i] = CharacterRom.Characters[invaderType++];
                 else
                     LineRender.BitmapChar[0xe0 + i] = 0;
             }
