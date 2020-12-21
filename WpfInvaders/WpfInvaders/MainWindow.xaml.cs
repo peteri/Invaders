@@ -144,7 +144,6 @@ namespace WpfInvaders
             RenderScreen();
             HandleSpriteCollisions();
             GameTick();
-            RenderScreen();
             timeInIsrStopwatch.Stop();
         }
 
@@ -164,6 +163,7 @@ namespace WpfInvaders
             {
                 if (gameData.GameMode || gameData.DemoMode)
                 {
+                    GameLoopStep();
                     // Pretend we're on the first half of the screen
                     gameData.VblankStatus = 0;
                     // Move every except the player
@@ -174,6 +174,14 @@ namespace WpfInvaders
                     // correctly in demo mode.
                     GameLoopStep();
                     gameData.Aliens.CursorNextAlien();
+
+                    // Mame draws the screen at this point
+                    // when single stepping...
+                    RenderScreen();
+                    // Clear the collision flags as in our real world
+                    // application we won't bother doing this.
+                    foreach (var sprite in LineRender.Sprites)
+                        sprite.ClearCollided();
 
                     // Now we do the bottom half of screen isr case
                     gameData.VblankStatus = 0x80;
@@ -480,10 +488,6 @@ namespace WpfInvaders
 
         private void RunGameObjects(bool SkipPlayer)
         {
-            if (gameData.PlayerBase.Ticks == 1)
-            {
-                StopIsr();
-            }
             foreach (var timerObject in gameData.TimerObjects)
             {
                 if (SkipPlayer && timerObject == gameData.PlayerBase)
@@ -652,7 +656,7 @@ namespace WpfInvaders
                     StopIsr();
                     new CharacterMapWindow().Show();
                     break;
-                case Key.F5: DiagnosticPages.ShowShiftedInvaders(this,0); break;
+                case Key.F5: DiagnosticPages.ShowShiftedInvaders(this, 0); break;
                 case Key.F6: DiagnosticPages.ShowShiftedInvaders(this, 1); break;
                 case Key.F7: DiagnosticPages.ShowShiftedInvaders(this, 2); break;
                 case Key.F8: DiagnosticPages.ShowShiftedInvaders(this, 3); break;

@@ -81,7 +81,7 @@ namespace WpfInvaders
                 if (xOffs == 8)
                 {
                     xOffs = 0;
-                    cellOffs++;
+                    cellOffs+=LineRender.ScreenWidth;
                 };
             }
         }

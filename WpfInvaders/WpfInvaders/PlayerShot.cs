@@ -41,6 +41,7 @@ namespace WpfInvaders
                     ShotSprite.Y = 0x28;
                     ShotSprite.X = gameData.PlayerBase.PlayerX + 8;
                     Status = ShotStatus.NormalMove;
+                    mainWindow.StopIsr();
                     break;
                 case ShotStatus.NormalMove:
                     ShotSprite.Y += 4;
@@ -55,8 +56,8 @@ namespace WpfInvaders
                     if (explosionTimer == 0x0f)
                     {
                         ShotSprite.Visible = false;
-                        ShotExplodeSprite.X = ShotSprite.X-2;
-                        ShotExplodeSprite.Y = ShotSprite.Y-3;
+                        ShotExplodeSprite.X = ShotSprite.X-3;
+                        ShotExplodeSprite.Y = ShotSprite.Y-2;
                         ShotExplodeSprite.Visible = true;
                     }
                     break;

@@ -19,6 +19,7 @@ namespace WpfInvaders
         {
             throw new NotImplementedException();
         }
+
         private void KillPlayer()
         {
             throw new NotImplementedException();
