@@ -15,10 +15,10 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <Image Grid.Row="0" Grid.Column="0" Height="816" Width="816" Margin="5" Name="imgCharMapRotated" Stretch="None" RenderTransformOrigin="0.5,0.5">
+        <Image Grid.Row="0" Grid.Column="0" Height="864" Width="864" Margin="5" Name="imgCharMapRotated" Stretch="None" RenderTransformOrigin="0.5,0.5">
             <Image.RenderTransform>
                 <TransformGroup>
-                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    <ScaleTransform ScaleX="2" ScaleY="2"/>
                     <RotateTransform Angle="0"/>
                 </TransformGroup>
             </Image.RenderTransform>

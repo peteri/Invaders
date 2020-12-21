@@ -144,6 +144,7 @@ namespace WpfInvaders
             RenderScreen();
             HandleSpriteCollisions();
             GameTick();
+            RenderScreen();
             timeInIsrStopwatch.Stop();
         }
 
@@ -214,7 +215,7 @@ namespace WpfInvaders
             PlayerShotHit();
         }
 
-        private void RenderScreen()
+        internal void RenderScreen()
         {
             // Draw the screen.
             for (int line = 0; line < 224; line++)
@@ -479,6 +480,10 @@ namespace WpfInvaders
 
         private void RunGameObjects(bool SkipPlayer)
         {
+            if (gameData.PlayerBase.Ticks == 1)
+            {
+                StopIsr();
+            }
             foreach (var timerObject in gameData.TimerObjects)
             {
                 if (SkipPlayer && timerObject == gameData.PlayerBase)
@@ -538,7 +543,7 @@ namespace WpfInvaders
             DrawNumCredits();
         }
 
-        private void WriteText(int y, int x, string text)
+        internal void WriteText(int y, int x, string text)
         {
             foreach (char c in text)
                 LineRender.Screen[y + (x++) * LineRender.ScreenWidth] = (byte)c;
@@ -588,7 +593,7 @@ namespace WpfInvaders
             WriteText(y, x, b.ToString("X2"));
         }
 
-        private void ClearScreen()
+        internal void ClearScreen()
         {
             for (int i = 0; i < (LineRender.ScreenHeight * LineRender.ScreenWidth); i++)
                 LineRender.Screen[i] = 0x20;
@@ -631,85 +636,6 @@ namespace WpfInvaders
             encoder.Save(stream);
         }
 
-        private void ShowExplodedInvaders()
-        {
-            StopIsr();
-            ClearScreen();
-            WriteText(31, 10, "EXPLOSIONS");
-            WriteText(29, 10, "\x21\x22  ; 0");
-            WriteText(28, 10, "\x23\x24  ; 2");
-            WriteText(27, 10, "\x25\x26\x27 ; 4");
-            WriteText(26, 10, "\x28\x29\x2a ; 6");
-            WriteText(24, 0, "\x21\x22\x60\x61\x60\x61 \x60\x61\x21\x22\x60\x61 \x60\x61\x60\x61\x21\x22 ; 0");
-            WriteText(22, 0, "\x23\x24\x66\x67\x66\x67 \x66\x67\x23\x24\x66\x67 \x66\x67\x66\x67\x23\x24 ; 2");
-            WriteText(20, 0, "\x25\x26\x2b\x63\x64\x63\x65\x62\x63\x2c\x26\x2b\x63\x65\x62\x63\x64\x63\x2c\x26\x27; 4A");
-            WriteText(18, 0, "\x25\x26\x2d\x73\x74\x73\x75\x72\x73\x2e\x26\x2d\x73\x75\x72\x73\x74\x73\x2e\x26\x27; 4B");
-            WriteText(16, 0, "\x25\x26\x27\x83\x84\x83\x85\x82\x83\x2f\x26\x27\x83\x85\x82\x83\x84\x83\x2f\x26\x27; 4C");
-            WriteText(14, 0, "\x28\x29\x2a\x68\x69\x68\x69 \x68\x5b\x29\x2a\x68\x69 \x68\x69\x68\x5b\x29\x2a; 6A");
-            WriteText(12, 0, "\x28\x29\x2a\x78\x79\x78\x79 \x78\x5c\x29\x2a\x78\x79 \x78\x79\x78\x5c\x29\x2a; 6B");
-            WriteText(10, 0, "\x28\x29\x2a\x88\x89\x88\x89 \x88\x5d\x29\x2a\x88\x89 \x88\x89\x88\x5d\x29\x2a; 6C");
-            RenderScreen();
-        }
-
-        private void ShowShiftedInvaders(int explode)
-        {
-            StopIsr();
-            ClearScreen();
-            DrawShiftedAliens(0x1f, "L TO R ; R TO L");
-
-            DrawShiftedAliens(0x1d, "\x60\x61\x60\x61\x60\x61\x20;\x20\x60\x61\x60\x61\x60\x61");
-            DrawShiftedAliens(0x1b, "\x66\x67\x66\x67\x60\x61\x20;\x20\x68\x69\x60\x61\x60\x61");
-            DrawShiftedAliens(0x19, "\x66\x67\x66\x67\x60\x61\x20;\x20\x68\x69\x68\x69\x60\x61");
-            
-            DrawShiftedAliens(0x17, "\x66\x67\x66\x67\x66\x67\x20;\x20\x68\x69\x68\x69\x68\x69");
-            DrawShiftedAliens(0x15, "\x62\x63\x6A\x67\x66\x67\x20;\x62\x63\x65\x68\x69\x68\x69");
-            DrawShiftedAliens(0x13, "\x62\x63\x64\x63\x6A\x67\x20;\x62\x63\x64\x63\x65\x68\x69");
-            
-            DrawShiftedAliens(0x11, "\x62\x63\x64\x63\x64\x63\x65;\x62\x63\x64\x63\x64\x63\x65");
-            DrawShiftedAliens(0x0f, "\x20\x68\x6B\x63\x64\x63\x65;\x66\x67\x62\x63\x64\x63\x65");
-            DrawShiftedAliens(0x0d, "\x20\x68\x69\x68\x6B\x63\x65;\x66\x67\x66\x67\x62\x63\x65");
-            
-            DrawShiftedAliens(0x0b, "\x20\x68\x69\x68\x69\x68\x69;\x66\x67\x66\x67\x66\x67\x20");
-            DrawShiftedAliens(0x09, "\x20\x60\x61\x68\x69\x68\x69;\x60\x61\x66\x67\x66\x67\x20");
-            DrawShiftedAliens(0x07, "\x20\x60\x61\x60\x61\x68\x69;\x60\x61\x60\x61\x66\x67\x20");
-            DrawShiftedAliens(0x05, "\x20\x60\x61\x60\x61\x60\x61;\x60\x61\x60\x61\x60\x61\x20");
-
-            RenderScreen();
-        }
-
-        private void DrawShiftedAliens(int y, string text)
-        {
-            string LtoR = text.Substring(0, 7);
-            string RtoL = text.Substring(8, 7);
-            int curOffset = y;
-            foreach (char c in RtoL)
-            {
-                if ((c >= 0x60) && (c <= 0x69))
-                    LineRender.Screen[curOffset] = (byte)((c & 0x0f) + 0x30);
-                if ((c >= 0x6a) && (c <= 0x6f))
-                    LineRender.Screen[curOffset] = (byte)((c & 0x0f) + 0x37);
-                curOffset += LineRender.ScreenWidth;
-            }
-            // Draw the invaders
-            foreach (char c in RtoL)
-            {
-                LineRender.Screen[curOffset] = (byte)c;
-                curOffset += LineRender.ScreenWidth;
-            }
-            foreach (char c in LtoR)
-            {
-                LineRender.Screen[curOffset] = (byte)c;
-                curOffset += LineRender.ScreenWidth;
-            }
-            foreach (char c in LtoR)
-            {
-                if ((c >= 0x60) && (c <= 0x69))
-                    LineRender.Screen[curOffset] = (byte)((c & 0x0f) + 0x30);
-                if ((c >= 0x6a) && (c <= 0x6f))
-                    LineRender.Screen[curOffset] = (byte)((c & 0x0f) + 0x37);
-                curOffset += LineRender.ScreenWidth;
-            }
-        }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
@@ -722,16 +648,15 @@ namespace WpfInvaders
                 case Key.D1: clearMask = SwitchState.PlayOnePlayer; break;
                 case Key.D2: clearMask = SwitchState.PlayTwoPlayer; break;
                 case Key.D3: clearMask = SwitchState.Coin; break;
-                case Key.F4: 
-                    var x = new CharacterMapWindow();
-                    x.Show();
+                case Key.F4:
                     StopIsr();
+                    new CharacterMapWindow().Show();
                     break;
-                case Key.F5: ShowShiftedInvaders(0); break;
-                case Key.F6: ShowShiftedInvaders(1); break;
-                case Key.F7: ShowShiftedInvaders(2); break;
-                case Key.F8: ShowShiftedInvaders(3); break;
-                case Key.F9: ShowExplodedInvaders(); break;
+                case Key.F5: DiagnosticPages.ShowShiftedInvaders(this,0); break;
+                case Key.F6: DiagnosticPages.ShowShiftedInvaders(this, 1); break;
+                case Key.F7: DiagnosticPages.ShowShiftedInvaders(this, 2); break;
+                case Key.F8: DiagnosticPages.ShowShiftedInvaders(this, 3); break;
+                case Key.F9: DiagnosticPages.ShowExplodedInvaders(this); break;
                 case Key.F12: SaveScreenShot("c:\\temp\\invader.png"); break;
             }
             switchState &= ~clearMask;
