@@ -34,10 +34,16 @@ namespace WpfInvaders
         public int SaucerScoreIndex;
 
         public int AlienCurIndex;
+        // Location of the next alien to draw
         internal int AlienCharacterCurX;
         internal int AlienCharacterCurY;
         internal int AlienCharacterStart;
-        internal int AlienCharacterOffset;
+        internal int AlienCharacterCurXOffset;
+        // Location of an alien to explode
+        internal int AlienExplodeX;
+        internal int AlienExplodeXOffset;
+        internal int AlienExplodeY;
+
         public bool RackDirectionRightToLeft;
         public List<TimerObject> TimerObjects;
         internal bool AlienShotsEnabled;
@@ -57,6 +63,8 @@ namespace WpfInvaders
         public PlayerData CurrentPlayer;
         public Aliens Aliens;
         internal int ShotSync;
+        internal bool SaucerHit;
+        internal int AlienExplodeTimer;
 
         public GameData(MainWindow mainWindow)
         {

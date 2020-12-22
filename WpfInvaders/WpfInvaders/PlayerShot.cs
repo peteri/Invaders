@@ -14,7 +14,7 @@ namespace WpfInvaders
         public readonly Sprite ShotExplodeSprite;
         private int explosionTimer=0x10;
 
-        public enum ShotStatus { Available, Initiated, NormalMove, HitSomething, AlienExploding, AlienExploded };
+        public enum ShotStatus { Available, Initiated, NormalMove, HitSomething, AlienExploded, AlienExploding };
 
         public ShotStatus Status;
         public PlayerShot(MainWindow mainWindow, GameData gameData) : base(true, 0)
@@ -63,6 +63,7 @@ namespace WpfInvaders
                     break;
                 case ShotStatus.AlienExploding:
                     break;
+                case ShotStatus.AlienExploded:
                 default:
                     EndBlowUp();
                     break;

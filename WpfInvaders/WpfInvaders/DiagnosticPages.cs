@@ -26,63 +26,166 @@ namespace WpfInvaders
             mainWindow.RenderScreen();
         }
 
-        internal static void ShowShiftedInvaders(MainWindow mainWindow,int explode)
+        internal static void ShowShiftedInvaders(MainWindow mainWindow,int alienType)
         {
             mainWindow.StopIsr();
             mainWindow.ClearScreen();
-            DrawShiftedAliens(0x1f, "L TO R ; R TO L");
+            DrawShiftedAliens(alienType, 0x1f, "#R#TO#L#L#TO#R#");
 
-            DrawShiftedAliens(0x1d, "\x60\x61\x60\x61\x60\x61\x20;\x20\x60\x61\x60\x61\x60\x61");
-            DrawShiftedAliens(0x1b, "\x66\x67\x66\x67\x60\x61\x20;\x20\x68\x69\x60\x61\x60\x61");
-            DrawShiftedAliens(0x19, "\x66\x67\x66\x67\x60\x61\x20;\x20\x68\x69\x68\x69\x60\x61");
+            DrawShiftedAliens(alienType, 0x1d, "#010101-010101#");
+            DrawShiftedAliens(alienType, 0x1b, "7890101-230101#");
+            DrawShiftedAliens(alienType, 0x19, "78E8901-232301#");
 
-            DrawShiftedAliens(0x17, "\x66\x67\x66\x67\x66\x67\x20;\x20\x68\x69\x68\x69\x68\x69");
-            DrawShiftedAliens(0x15, "\x62\x63\x6A\x67\x66\x67\x20;\x62\x63\x65\x68\x69\x68\x69");
-            DrawShiftedAliens(0x13, "\x62\x63\x64\x63\x6A\x67\x20;\x62\x63\x64\x63\x65\x68\x69");
+            DrawShiftedAliens(alienType, 0x17, "78E8E89-232323#");
+            DrawShiftedAliens(alienType, 0x15, "45D8E89-45B323#");
+            DrawShiftedAliens(alienType, 0x13, "45A5D89-45A5B3#");
 
-            DrawShiftedAliens(0x11, "\x62\x63\x64\x63\x64\x63\x65;\x62\x63\x64\x63\x64\x63\x65");
-            DrawShiftedAliens(0x0f, "\x20\x68\x6B\x63\x64\x63\x65;\x66\x67\x62\x63\x64\x63\x65");
-            DrawShiftedAliens(0x0d, "\x20\x68\x69\x68\x6B\x63\x65;\x66\x67\x66\x67\x62\x63\x65");
+            DrawShiftedAliens(alienType, 0x11, "45A5A56-45A5A56");
+            DrawShiftedAliens(alienType, 0x0f, "2345A56-78C5A56");
+            DrawShiftedAliens(alienType, 0x0d, "2323456-78E8C56");
 
-            DrawShiftedAliens(0x0b, "\x20\x68\x69\x68\x69\x68\x69;\x66\x67\x66\x67\x66\x67\x20");
-            DrawShiftedAliens(0x09, "\x20\x60\x61\x68\x69\x68\x69;\x60\x61\x66\x67\x66\x67\x20");
-            DrawShiftedAliens(0x07, "\x20\x60\x61\x60\x61\x68\x69;\x60\x61\x60\x61\x66\x67\x20");
-            DrawShiftedAliens(0x05, "\x20\x60\x61\x60\x61\x60\x61;\x60\x61\x60\x61\x60\x61\x20");
+            DrawShiftedAliens(alienType, 0x0b, "232323#-78E8E89");
+            DrawShiftedAliens(alienType, 0x09, "012323#-#0F8E89");
+            DrawShiftedAliens(alienType, 0x07, "010123#-#010F89");
+            DrawShiftedAliens(alienType, 0x05, "010101#-#010101");
 
             mainWindow.RenderScreen();
         }
 
-        private static void DrawShiftedAliens(int y, string text)
+        private static void DrawShiftedAliens(int alienType, int y, string text)
         {
-            string LtoR = text.Substring(0, 7);
-            string RtoL = text.Substring(8, 7);
+            string RtoL = text.Substring(0, 7);
+            string LtoR = text.Substring(8, 7);
             int curOffset = y;
             foreach (char c in RtoL)
             {
-                if ((c >= 0x60) && (c <= 0x69))
-                    LineRender.Screen[curOffset] = (byte)((c & 0x0f) + 0x30);
-                if ((c >= 0x6a) && (c <= 0x6f))
-                    LineRender.Screen[curOffset] = (byte)((c & 0x0f) + 0x37);
+                if ((c >= 0x30) && (c <= 0x47))
+                    LineRender.Screen[curOffset] = (byte)c;
                 curOffset += LineRender.ScreenWidth;
             }
+
             // Draw the invaders
             foreach (char c in RtoL)
             {
-                LineRender.Screen[curOffset] = (byte)c;
+                byte d = (byte)c;
+                if ((c >= 0x30) && (c <= 0x47))
+                {
+                    d = (byte)(c - '0');
+                    if (d > 0x9) d -= 7;
+                    d += (byte)alienType;
+                }
+                LineRender.Screen[curOffset] = d;
                 curOffset += LineRender.ScreenWidth;
             }
+
             foreach (char c in LtoR)
             {
-                LineRender.Screen[curOffset] = (byte)c;
+                byte d = (byte)c;
+                if ((c >= 0x30) && (c <= 0x47))
+                {
+                    d = (byte)(c - '0');
+                    if (d > 0x9) d -= 7;
+                    d += (byte)alienType;
+                }
+                LineRender.Screen[curOffset] = d;
                 curOffset += LineRender.ScreenWidth;
             }
+
             foreach (char c in LtoR)
             {
-                if ((c >= 0x60) && (c <= 0x69))
-                    LineRender.Screen[curOffset] = (byte)((c & 0x0f) + 0x30);
-                if ((c >= 0x6a) && (c <= 0x6f))
-                    LineRender.Screen[curOffset] = (byte)((c & 0x0f) + 0x37);
+                if ((c >= 0x30) && (c <= 0x47))
+                    LineRender.Screen[curOffset] = (byte)c;
                 curOffset += LineRender.ScreenWidth;
+            }
+        }
+
+        internal static void ShowExplodedInvaders(MainWindow mainWindow, GameData gameData, int explode, int alienTypeStart)
+        {
+            mainWindow.StopIsr();
+            mainWindow.ClearScreen();
+            var player = new PlayerData();
+            var aliens = new Aliens2(gameData, player);
+            for (int i = 0; i < 55; i++)
+                player.Aliens[i] = (byte)((i < 3) ? 1 : 0);
+
+            gameData.AlienCharacterStart = alienTypeStart;
+            gameData.AlienCurIndex = 1;
+
+            for (int i = 0; i < 12; i++)
+            {
+                int y = 29 - i * 2;
+                DrawAlienRow(gameData, aliens, 0x10, y, i + 1, true);
+                DrawAlienRow(gameData, aliens, 0x70, y, i + 1, false);
+            }
+            // This chunk displays the low nybble underneath
+            //for (int i = 0; i < 12; i++)
+            //{
+            //    int y = 30 - i * 2;
+            //    for (int x = 0; x < LineRender.ScreenHeight; x++)
+            //    {
+            //        int offs = y + x * LineRender.ScreenWidth;
+            //        int c = LineRender.Screen[offs];
+            //        if (c > 0x20)
+            //        {
+            //            c = (c & 0x0f) + 0x30;
+            //            if (c > 0x39) c += 7;
+            //            LineRender.Screen[offs - 1] = (byte)c;
+            //        }
+            //    }
+            //}
+            //for (int i = 0; i < 12; i++)
+            //{
+            //    int y = 30 - i * 2;
+            //    int xOffs = (i / 3) + 1;
+            //    EraseAlien(gameData, aliens, 0x10, y, xOffs, explode, true);
+            //    EraseAlien(gameData, aliens, 0x70, y, xOffs, explode, false);
+            //    EraseAlien(gameData, aliens, 0x58, y, xOffs, 0, true);
+            //    EraseAlien(gameData, aliens, 0xb8, y, xOffs, 0, false);
+            //}
+            mainWindow.RenderScreen();
+        }
+
+        private static void EraseAlien(GameData gameData, Aliens2 aliens, int x, int y, int xOffs, int explode, bool rightToLeft)
+        {
+            gameData.AlienExplodeY = y;
+            gameData.RackDirectionRightToLeft = rightToLeft;
+            int deltaX = (rightToLeft ? -2 : 2) * xOffs;
+            gameData.AlienExplodeX = (x + deltaX + explode * 0x10) >> 3;
+            gameData.AlienExplodeXOffset = (x + deltaX + explode * 0x10) & 0x07;
+            aliens.ExplodeAlien();
+        }
+
+        private static void DrawAlienRow(GameData gameData, Aliens2 aliens, int x, int y, int aliensToMove, bool rightToLeft)
+        {
+            gameData.AlienCharacterCurY = y;
+            gameData.RackDirectionRightToLeft = rightToLeft;
+            int deltaX = rightToLeft ? -2 : 2;
+
+            for (int i = 0; i < 3; i++)
+            {
+                gameData.AlienCharacterCurX = (x + i * 0x10) >> 3;
+                gameData.AlienCharacterCurXOffset = (x + i * 0x10) & 0x07;
+                aliens.DrawAlien();
+            }
+
+            gameData.AlienCharacterCurX = (x + 0x48) >> 3;
+            gameData.AlienCharacterCurXOffset = (x + 0x48) & 0x07;
+            aliens.DrawAlien();
+
+            while (aliensToMove > 0)
+            {
+                x = x + deltaX;
+                for (int i = 0; i < 3; i++)
+                {
+                    gameData.AlienCharacterCurX = (x + i * 0x10) >> 3;
+                    gameData.AlienCharacterCurXOffset = (x + i * 0x10) & 0x07;
+                    aliens.DrawAlien();
+                    gameData.AlienCharacterCurX = (x + 0x48) >> 3;
+                    gameData.AlienCharacterCurXOffset = (x + 0x48) & 0x07;
+                    aliens.DrawAlien();
+                    aliensToMove--;
+                    if (aliensToMove == 0) break;
+                }
             }
         }
 

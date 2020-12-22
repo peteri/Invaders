@@ -78,6 +78,9 @@ namespace WpfInvaders
         private Thread timerThread;
         private readonly ManualResetEvent dieEvent = new ManualResetEvent(false);
         private volatile bool invokeTick;
+        // Holding down Right Ctrl gives type B aliens
+        // Holding down Left  Ctrl gives type C aliens
+        private int DiagnosticsAlientType = 0x80;
 
         public MainWindow()
         {
@@ -142,7 +145,6 @@ namespace WpfInvaders
             }
             timeInIsrStopwatch.Start();
             RenderScreen();
-            HandleSpriteCollisions();
             GameTick();
             timeInIsrStopwatch.Stop();
         }
@@ -163,6 +165,7 @@ namespace WpfInvaders
             {
                 if (gameData.GameMode || gameData.DemoMode)
                 {
+                    HandleSpriteCollisions();
                     GameLoopStep();
                     // Pretend we're on the first half of the screen
                     gameData.VblankStatus = 0;
@@ -236,7 +239,7 @@ namespace WpfInvaders
 
         private void RunWaitTask()
         {
-            var message = (gameData.Credits > 1) ? "1 OR 2PLAYERS BUTTON" : "ONLY 1PLAYER  BUTTON";
+            var message = (gameData.Credits > 1) ? "1#OR#2PLAYERS#BUTTON" : "ONLY#1PLAYER##BUTTON";
             WriteText(0x10, 0x04, message);
             // TODO: Poll player one and two buttons....
         }
@@ -296,9 +299,9 @@ namespace WpfInvaders
                 case SplashMajorState.PrintPlay:
                     return PrintDelayedMessage(0x0c17, gameData.AnimateSplash ? "PLA@" : "PLAY");
                 case SplashMajorState.PrintSpaceInvaders:
-                    return PrintDelayedMessage(0x0714, "SPACE  INVADERS");
+                    return PrintDelayedMessage(0x0714, "SPACE##INVADERS");
                 case SplashMajorState.PrintAdvanceTable:
-                    WriteText(0x10, 4, ":SCORE ADVANCE TABLE:");
+                    WriteText(0x10, 4, ":SCORE#ADVANCE#TABLE:");
                     WriteText(0x0e, 7, "\xa0\xa1\xa2"); // Saucer 
                     WriteText(0x0c, 8, "\x80\x81"); // Invader type C - sprite 0
                     WriteText(0x0a, 8, "\x7c\x7d"); // Invader type B - sprite 1
@@ -306,13 +309,13 @@ namespace WpfInvaders
                     gameData.IsrDelay = 0x40;
                     return SplashMinorState.Wait;
                 case SplashMajorState.PrintMystery:
-                    return PrintDelayedMessage(0x0a0e, "=? MYSTERY");
+                    return PrintDelayedMessage(0x0a0e, "=?#MYSTERY");
                 case SplashMajorState.Print30Points:
-                    return PrintDelayedMessage(0x0a0c, "=30 POINTS");
+                    return PrintDelayedMessage(0x0a0c, "=30#POINTS");
                 case SplashMajorState.Print20Points:
-                    return PrintDelayedMessage(0x0a0a, "=20 POINTS");
+                    return PrintDelayedMessage(0x0a0a, "=20#POINTS");
                 case SplashMajorState.Print10Points:
-                    return PrintDelayedMessage(0x0a08, "=10 POINTS");
+                    return PrintDelayedMessage(0x0a08, "=10#POINTS");
                 case SplashMajorState.ScoreTableTwoSecondDelay:
                     return SplashDelay(0x80);
                 case SplashMajorState.AnimateY:
@@ -333,14 +336,14 @@ namespace WpfInvaders
                     return SplashDelay(0x40);
                 case SplashMajorState.InsertCoin:
                     ClearPlayField();
-                    WriteText(0x11, 0x08, gameData.AnimateSplash ? "INSERT CCOIN" : "INSERT  COIN");
+                    WriteText(0x11, 0x08, gameData.AnimateSplash ? "INSERT#CCOIN" : "INSERT##COIN");
                     return SplashMinorState.Idle;
                 case SplashMajorState.OneOrTwoPlayers:
-                    return PrintDelayedMessage(0x060d, "<1 OR 2 PLAYERS>");
+                    return PrintDelayedMessage(0x060d, "<1#OR#2#PLAYERS>");
                 case SplashMajorState.OnePlayOneCoin:
-                    return PrintDelayedMessage(0x060a, ":1 PLAYER  1 COIN");
+                    return PrintDelayedMessage(0x060a, ":1#PLAYER##1#COIN");
                 case SplashMajorState.TwoPlayerTwoCoins:
-                    return PrintDelayedMessage(0x0607, ":2 PLAYERS 2 COINS");
+                    return PrintDelayedMessage(0x0607, ":2#PLAYERS#2#COINS");
                 case SplashMajorState.AnimateCoinExplode:
                     return SplashMinorState.Idle;
                 case SplashMajorState.AfterCoinDelay:
@@ -380,7 +383,7 @@ namespace WpfInvaders
             int i = 2;
             while (i < (LineRender.ScreenHeight * LineRender.ScreenWidth))
             {
-                LineRender.Screen[i] = 0x20;
+                LineRender.Screen[i] = 0x23;
                 i++;
                 if ((i & 0x1f) >= 0x1c) i += 6;
             }
@@ -399,15 +402,28 @@ namespace WpfInvaders
                 return;
             if (gameData.PlayerShot.ShotSprite.Y >= 0xce)
             {
-                // Explode Saucer
+                gameData.SaucerHit = true;
+                gameData.PlayerShot.Status = PlayerShot.ShotStatus.AlienExploded;
+                gameData.AlienExploding = false;
+
             }
-            if (gameData.PlayerShot.ShotSprite.Y < gameData.RefAlienY)
+            bool playerHitAlien = false;
+            if (gameData.PlayerShot.ShotSprite.Y >= gameData.RefAlienY)
+            {
+                // Could be in the rack?
+            }
+
+            if (playerHitAlien)
+            {
+            }
+            else
             {
                 // bullet can't be in the aliens
                 gameData.PlayerShot.Status = PlayerShot.ShotStatus.HitSomething;
                 gameData.AlienExploding = false;
                 return;
             }
+
         }
 
         private void PlayerFireOrDemo()
@@ -455,8 +471,8 @@ namespace WpfInvaders
 
         private void ShieldsToScreen()
         {
-            WriteText(0x7, 4, "\x00\x01\x02  \x06\x07\x08\x09  \x0e\x0f\x10  \x14\x15\x16\x17");
-            WriteText(0x6, 4, "\x03\x04\x05  \x0a\x0b\x0c\x0d  \x11\x12\x13  \x18\x19\x1a\x1b");
+            WriteText(0x7, 4, "\x00\x01\x02##\x06\x07\x08\x09##\x0e\x0f\x10##\x14\x15\x16\x17");
+            WriteText(0x6, 4, "\x03\x04\x05##\x0a\x0b\x0c\x0d##\x11\x12\x13##\x18\x19\x1a\x1b");
         }
 
         private void RemoveShip()
@@ -476,7 +492,7 @@ namespace WpfInvaders
             }
             while (x != 0x11)
             {
-                WriteText(y, x, "  ");
+                WriteText(y, x, "##");
                 x += 2;
             }
         }
@@ -560,7 +576,7 @@ namespace WpfInvaders
 
         private void CreditLabel()
         {
-            WriteText(0x01, 0x11, "CREDIT ");
+            WriteText(0x01, 0x11, "CREDIT#");
         }
 
         private void HighScore()
@@ -584,7 +600,7 @@ namespace WpfInvaders
         private void DrawScreenHead()
         {
             // Note semi-colon is really minus
-            WriteText(0x1e, 0x00, " SCORE<1> HI;SCORE SCORE<2> ");
+            WriteText(0x1e, 0x00, "#SCORE<1>#HI;SCORE#SCORE<2>#");
         }
 
         private void WriteHexWord(int y, int x, short w)
@@ -600,7 +616,7 @@ namespace WpfInvaders
         internal void ClearScreen()
         {
             for (int i = 0; i < (LineRender.ScreenHeight * LineRender.ScreenWidth); i++)
-                LineRender.Screen[i] = 0x20;
+                LineRender.Screen[i] = 0x23;
         }
 
         public void StopIsr()
@@ -640,7 +656,6 @@ namespace WpfInvaders
             encoder.Save(stream);
         }
 
-
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
             SwitchState clearMask = SwitchState.None;
@@ -656,10 +671,12 @@ namespace WpfInvaders
                     StopIsr();
                     new CharacterMapWindow().Show();
                     break;
-                case Key.F5: DiagnosticPages.ShowShiftedInvaders(this, 0); break;
-                case Key.F6: DiagnosticPages.ShowShiftedInvaders(this, 1); break;
-                case Key.F7: DiagnosticPages.ShowShiftedInvaders(this, 2); break;
-                case Key.F8: DiagnosticPages.ShowShiftedInvaders(this, 3); break;
+                case Key.RightCtrl: DiagnosticsAlientType = 0x80; break;
+                case Key.LeftCtrl: DiagnosticsAlientType = 0x80; break;
+                case Key.F5: DiagnosticPages.ShowShiftedInvaders(this, DiagnosticsAlientType); break;
+                case Key.F6: DiagnosticPages.ShowExplodedInvaders(this, gameData, 0, DiagnosticsAlientType); break;
+                case Key.F7: DiagnosticPages.ShowExplodedInvaders(this, gameData, 1, DiagnosticsAlientType); break;
+                case Key.F8: DiagnosticPages.ShowExplodedInvaders(this, gameData, 2, DiagnosticsAlientType); break;
                 case Key.F9: DiagnosticPages.ShowExplodedInvaders(this); break;
                 case Key.F12: SaveScreenShot("c:\\temp\\invader.png"); break;
             }
@@ -677,6 +694,9 @@ namespace WpfInvaders
                 case Key.D1: setMask = SwitchState.PlayOnePlayer; break;
                 case Key.D2: setMask = SwitchState.PlayTwoPlayer; break;
                 case Key.D3: setMask = SwitchState.Coin; break;
+                // Used by diagnostics
+                case Key.RightCtrl: DiagnosticsAlientType = 0x90; break;
+                case Key.LeftCtrl: DiagnosticsAlientType = 0xa0; break;
             }
             switchState |= setMask;
         }
