@@ -24,6 +24,8 @@ namespace WpfInvaders
             Command.None
         };
 
+        private static readonly int[] PlayerBaseCharacters = { 0x56, 0x5c, 0x65, 0x6e, 0x77, 0xc0, 0xd0, 0xe0 };
+
         public enum PlayerAlive { Alive, BlowUpOne, BlowUpTwo }
         private readonly MainWindow mainWindow;
         private readonly GameData gameData;
@@ -43,7 +45,6 @@ namespace WpfInvaders
 
         public override void Action()
         {
-            int spriteBase = 0xb8;
             if (Alive != PlayerAlive.Alive)
             {
                 // Make the player die...
@@ -85,15 +86,16 @@ namespace WpfInvaders
             int screenX = PlayerX >> 3;
             int screenY = PlayerY >> 3; // Constant really
             int screenOffset = screenX * LineRender.ScreenWidth + screenY;
-            int playerSprite = spriteBase + ((PlayerX & 0x07) * 3);
-            for (int i = 0; i < 3; i++)
+            int playerSprite = PlayerBaseCharacters[PlayerX & 0x07];
+            int count = (PlayerX & 0x07) == 0 ? 2 : 3;
+            for (int i = 0; i < count; i++)
             {
                 LineRender.Screen[screenOffset] = (byte)(playerSprite + i);
                 screenOffset += LineRender.ScreenWidth;
             }
         }
 
-        internal void IncrementDemoCommand()
+        internal static void IncrementDemoCommand()
         {
             demoCommand++;
             if (demoCommand >= demoCmds.Length)

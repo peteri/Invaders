@@ -66,7 +66,7 @@ namespace WpfInvaders
                 buffer = new byte[BytesPerPixel * 8 * 8];
                 for (int j = 0; j < 8; j++)
                 {
-                    int c = (i < 10) ? i + 0x30 : i + 0x37;
+                    int c = i + 0x30;
                     byte b = CharacterRom.Characters[c * 8 + j];
                     int offs = j * BytesPerPixel;
                     for (int k = 0; k < 8; k++)

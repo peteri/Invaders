@@ -241,7 +241,7 @@ namespace WpfInvaders
             }
             gameData.AlienCharacterCurX = (gameData.RefAlienX >> 3) + (curAlien << 1);
             gameData.AlienCharacterCurXOffset = gameData.RefAlienX & 0x7;
-            gameData.AlienCharacterStart = 0x60 + ((alienRow >> 1) << 4);
+            gameData.AlienCharacterStart = 0x80 + ((alienRow >> 1) << 4);
         }
 
         public void DrawAlien()
@@ -257,14 +257,14 @@ namespace WpfInvaders
                 int currOffset = gameData.AlienCharacterCurY + gameData.AlienCharacterCurX * LineRender.ScreenWidth;
                 // Side effect of the original shift logic is that the row above the current invader is cleared
                 // When an alien is drawn.
-                LineRender.Screen[currOffset + 0x01] = 0x20;
-                LineRender.Screen[currOffset + 0x21] = 0x20;
+                LineRender.Screen[currOffset + 0x01] = 0x23;
+                LineRender.Screen[currOffset + 0x21] = 0x23;
                 // If we're advancing Right to left and we only have type C aliens left we go one more
                 // step so we don't wipe out the row above us in the NE direction.
                 if (gameData.RackDirectionRightToLeft)
                 {
                     if (gameData.AlienCharacterCurXOffset != 0)
-                        LineRender.Screen[currOffset + 0x41] = 0x20;
+                        LineRender.Screen[currOffset + 0x41] = 0x23;
                 }
                 else
                 {
@@ -289,7 +289,7 @@ namespace WpfInvaders
                     if (LineRender.Screen[currOffset + 0x41] == gameData.AlienCharacterStart + 0x05)
                     {
                         // Get rid of the e
-                        LineRender.Screen[currOffset + 0x41] = 0x20;
+                        LineRender.Screen[currOffset + 0x41] = 0x23;
                     }
                 }
                 if (currentPlayer.NumAliens == 1)
@@ -363,15 +363,19 @@ namespace WpfInvaders
         /// <param name="currOffset">Offset on screen for the current alien.</param>
         private void DrawAlienOffsetTwo(int currOffset)
         {
-            LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 6);
-            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 7);
+            // Alien to left of us is type 1 shifted by four
+            if (LineRender.Screen[currOffset - 32] == (byte)(gameData.AlienCharacterStart + 0x06))
+                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0x0b);
+            else
+                LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0x02);
+            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 0x3);
             // Going right to left
             if (gameData.RackDirectionRightToLeft)
             {
-                if (LineRender.Screen[currOffset + 64] == (byte)(gameData.AlienCharacterStart + 4))
-                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 2);
+                if (LineRender.Screen[currOffset + 64] == (byte)(gameData.AlienCharacterStart + 0x0a))
+                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 0x04);
                 else
-                    LineRender.Screen[currOffset + 64] = 0x20;
+                    LineRender.Screen[currOffset + 64] = 0x23;
             }
         }
 
@@ -384,26 +388,29 @@ namespace WpfInvaders
             if (gameData.RackDirectionRightToLeft)
             {
                 // Going Right to left
-                if (LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 5)
-                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 4);
+                if (LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 0xd )
+                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0xa);
                 else
-                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 2);
-                LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 3);
-                LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 5);
+                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 4);
+                LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 5);
+                if (LineRender.Screen[currOffset + 64] == (gameData.AlienCharacterStart + 0xe))
+                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 0xd);
+                else
+                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 6);
             }
             else
             {
                 // Going left to right... Alien on our left?
-                if (LineRender.Screen[currOffset - 32] == gameData.AlienCharacterStart + 3)
+                if (LineRender.Screen[currOffset - 32] == gameData.AlienCharacterStart + 0x05)
+                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0x0a);
+                else
                     LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 4);
-                else
-                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 2);
-                LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 3);
+                LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 5);
                 // Going left to right... Another alien on our right?
-                if (LineRender.Screen[currOffset + 64] == gameData.AlienCharacterStart + 6)
-                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 10);
+                if (LineRender.Screen[currOffset + 64] == gameData.AlienCharacterStart + 2)
+                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 0x0b);
                 else
-                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 5);
+                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 6);
             }
         }
 
@@ -415,6 +422,10 @@ namespace WpfInvaders
         {
             if (gameData.RackDirectionRightToLeft)
             {
+                if (LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 9)
+                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0x0e);
+                else
+                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 7);
                 LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 8);
                 LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 9);
             }
@@ -422,15 +433,15 @@ namespace WpfInvaders
             {
                 // Going Left to right... No partial alien to left of us make this cell blank
                 if ((gameData.AlienCharacterCurX == 0) || (LineRender.Screen[currOffset - 32] != (gameData.AlienCharacterStart + 8)))
-                    LineRender.Screen[currOffset] = 0x20;
+                    LineRender.Screen[currOffset] = 0x07;
                 else
-                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 9);
+                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0x0e);
                 LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 8);
                 // Alien to the right of us?
-                if (LineRender.Screen[currOffset + 64] == (gameData.AlienCharacterStart + 4))
-                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 11);
+                if (LineRender.Screen[currOffset + 64] == (gameData.AlienCharacterStart + 0x0a))
+                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 0x0c);
                 else
-                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 9);
+                    LineRender.Screen[currOffset + 64] = (byte)(gameData.AlienCharacterStart + 0x09);
             }
         }
 

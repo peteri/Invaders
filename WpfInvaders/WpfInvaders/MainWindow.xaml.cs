@@ -239,7 +239,7 @@ namespace WpfInvaders
 
         private void RunWaitTask()
         {
-            var message = (gameData.Credits > 1) ? "1#OR#2PLAYERS#BUTTON" : "ONLY#1PLAYER##BUTTON";
+            var message = (gameData.Credits > 1) ? "1 OR 2PLAYERS BUTTON" : "ONLY 1PLAYER  BUTTON";
             WriteText(0x10, 0x04, message);
             // TODO: Poll player one and two buttons....
         }
@@ -262,7 +262,7 @@ namespace WpfInvaders
                     }
                     else
                     {
-                        byte c = (byte)gameData.DelayMessage[gameData.DelayMessageIndex++];
+                        byte c = CharacterRom.Map[gameData.DelayMessage[gameData.DelayMessageIndex++]];
                         int y = gameData.DelayMessagePosition & 0xff;
                         int x = gameData.DelayMessagePosition >> 8;
                         gameData.DelayMessagePosition += 0x100;
@@ -299,23 +299,23 @@ namespace WpfInvaders
                 case SplashMajorState.PrintPlay:
                     return PrintDelayedMessage(0x0c17, gameData.AnimateSplash ? "PLA@" : "PLAY");
                 case SplashMajorState.PrintSpaceInvaders:
-                    return PrintDelayedMessage(0x0714, "SPACE##INVADERS");
+                    return PrintDelayedMessage(0x0714, "SPACE  INVADERS");
                 case SplashMajorState.PrintAdvanceTable:
-                    WriteText(0x10, 4, ":SCORE#ADVANCE#TABLE:");
-                    WriteText(0x0e, 7, "\xa0\xa1\xa2"); // Saucer 
-                    WriteText(0x0c, 8, "\x80\x81"); // Invader type C - sprite 0
-                    WriteText(0x0a, 8, "\x7c\x7d"); // Invader type B - sprite 1
-                    WriteText(0x08, 8, "\x60\x61"); // Invader type A - sprite 0
+                    WriteText(0x10, 4, "*SCORE ADVANCE TABLE*");
+                    WriteUnmappedText(0x0e, 7, "\x20\x21\x22"); // Saucer 
+                    WriteUnmappedText(0x0c, 8, "\xa0\xa1"); // Invader type C - sprite 0
+                    WriteUnmappedText(0x0a, 8, "\xbc\xbd"); // Invader type B - sprite 1
+                    WriteUnmappedText(0x08, 8, "\x80\x81"); // Invader type A - sprite 0
                     gameData.IsrDelay = 0x40;
                     return SplashMinorState.Wait;
                 case SplashMajorState.PrintMystery:
-                    return PrintDelayedMessage(0x0a0e, "=?#MYSTERY");
+                    return PrintDelayedMessage(0x0a0e, "=? MYSTERY");
                 case SplashMajorState.Print30Points:
-                    return PrintDelayedMessage(0x0a0c, "=30#POINTS");
+                    return PrintDelayedMessage(0x0a0c, "=30 POINTS");
                 case SplashMajorState.Print20Points:
-                    return PrintDelayedMessage(0x0a0a, "=20#POINTS");
+                    return PrintDelayedMessage(0x0a0a, "=20 POINTS");
                 case SplashMajorState.Print10Points:
-                    return PrintDelayedMessage(0x0a08, "=10#POINTS");
+                    return PrintDelayedMessage(0x0a08, "=10 POINTS");
                 case SplashMajorState.ScoreTableTwoSecondDelay:
                     return SplashDelay(0x80);
                 case SplashMajorState.AnimateY:
@@ -336,14 +336,14 @@ namespace WpfInvaders
                     return SplashDelay(0x40);
                 case SplashMajorState.InsertCoin:
                     ClearPlayField();
-                    WriteText(0x11, 0x08, gameData.AnimateSplash ? "INSERT#CCOIN" : "INSERT##COIN");
+                    WriteText(0x11, 0x08, gameData.AnimateSplash ? "INSERT CCOIN" : "INSERT  COIN");
                     return SplashMinorState.Idle;
                 case SplashMajorState.OneOrTwoPlayers:
-                    return PrintDelayedMessage(0x060d, "<1#OR#2#PLAYERS>");
+                    return PrintDelayedMessage(0x060d, "<1 OR 2 PLAYERS>");
                 case SplashMajorState.OnePlayOneCoin:
-                    return PrintDelayedMessage(0x060a, ":1#PLAYER##1#COIN");
+                    return PrintDelayedMessage(0x060a, "*1 PLAYER  1 COIN");
                 case SplashMajorState.TwoPlayerTwoCoins:
-                    return PrintDelayedMessage(0x0607, ":2#PLAYERS#2#COINS");
+                    return PrintDelayedMessage(0x0607, "*2 PLAYERS 2 COINS");
                 case SplashMajorState.AnimateCoinExplode:
                     return SplashMinorState.Idle;
                 case SplashMajorState.AfterCoinDelay:
@@ -455,7 +455,7 @@ namespace WpfInvaders
             else
             {
                 gameData.PlayerShot.Status = PlayerShot.ShotStatus.Initiated;
-                gameData.PlayerBase.IncrementDemoCommand();
+                PlayerBase.IncrementDemoCommand();
             }
         }
 
@@ -464,15 +464,15 @@ namespace WpfInvaders
             int i = 2;
             for (int j = 0; j < LineRender.ScreenHeight; j++)
             {
-                LineRender.Screen[i] = (byte)'_';
+                LineRender.Screen[i] = 0x53;
                 i += LineRender.ScreenWidth;
             }
         }
 
         private void ShieldsToScreen()
         {
-            WriteText(0x7, 4, "\x00\x01\x02##\x06\x07\x08\x09##\x0e\x0f\x10##\x14\x15\x16\x17");
-            WriteText(0x6, 4, "\x03\x04\x05##\x0a\x0b\x0c\x0d##\x11\x12\x13##\x18\x19\x1a\x1b");
+            WriteUnmappedText(0x7, 4, "\x00\x01\x02##\x06\x07\x08\x09##\x0e\x0f\x10##\x14\x15\x16\x17");
+            WriteUnmappedText(0x6, 4, "\x03\x04\x05##\x0a\x0b\x0c\x0d##\x11\x12\x13##\x18\x19\x1a\x1b");
         }
 
         private void RemoveShip()
@@ -486,13 +486,13 @@ namespace WpfInvaders
             int numShips = currentPlayer.ShipsRem;
             while (numShips != 0)
             {
-                WriteText(y, x, "\xb8\xb9");
+                WriteUnmappedText(y, x, "\x56\x57");
                 x += 2;
                 numShips--;
             }
             while (x != 0x11)
             {
-                WriteText(y, x, "##");
+                WriteText(y, x, "  ");
                 x += 2;
             }
         }
@@ -563,10 +563,16 @@ namespace WpfInvaders
             DrawNumCredits();
         }
 
-        internal void WriteText(int y, int x, string text)
+        internal void WriteUnmappedText(int y, int x, string text)
         {
             foreach (char c in text)
                 LineRender.Screen[y + (x++) * LineRender.ScreenWidth] = (byte)c;
+        }
+
+        internal void WriteText(int y, int x, string text)
+        {
+            foreach (char c in text)
+                LineRender.Screen[y + (x++) * LineRender.ScreenWidth] = CharacterRom.Map[c];
         }
 
         private void DrawNumCredits()
@@ -576,7 +582,7 @@ namespace WpfInvaders
 
         private void CreditLabel()
         {
-            WriteText(0x01, 0x11, "CREDIT#");
+            WriteText(0x01, 0x11, "CREDIT ");
         }
 
         private void HighScore()
@@ -599,8 +605,7 @@ namespace WpfInvaders
 
         private void DrawScreenHead()
         {
-            // Note semi-colon is really minus
-            WriteText(0x1e, 0x00, "#SCORE<1>#HI;SCORE#SCORE<2>#");
+            WriteText(0x1e, 0x00, " SCORE<1> HI-SCORE SCORE<2> ");
         }
 
         private void WriteHexWord(int y, int x, short w)
@@ -677,7 +682,6 @@ namespace WpfInvaders
                 case Key.F6: DiagnosticPages.ShowExplodedInvaders(this, gameData, 0, DiagnosticsAlientType); break;
                 case Key.F7: DiagnosticPages.ShowExplodedInvaders(this, gameData, 1, DiagnosticsAlientType); break;
                 case Key.F8: DiagnosticPages.ShowExplodedInvaders(this, gameData, 2, DiagnosticsAlientType); break;
-                case Key.F9: DiagnosticPages.ShowExplodedInvaders(this); break;
                 case Key.F12: SaveScreenShot("c:\\temp\\invader.png"); break;
             }
             switchState &= ~clearMask;
