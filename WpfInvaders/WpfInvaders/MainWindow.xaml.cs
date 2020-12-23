@@ -587,19 +587,16 @@ namespace WpfInvaders
 
         private void HighScore()
         {
-            // Original write is to 2f1c
             WriteHexWord(0x1c, 0x0b, gameData.HiScore);
         }
 
         private void PlayerTwoScore()
         {
-            // Original write is to 391c
             WriteHexWord(0x1c, 0x15, playerTwo.Score);
         }
 
         private void PlayerOneScore()
         {
-            // Original write is to 271c
             WriteHexWord(0x1c, 0x03, playerOne.Score);
         }
 

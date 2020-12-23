@@ -106,30 +106,29 @@ namespace WpfInvaders
                 DrawAlienRow(gameData, aliens, 0x70, y, i + 1, false);
             }
             // This chunk displays the low nybble underneath
-            //for (int i = 0; i < 12; i++)
-            //{
-            //    int y = 30 - i * 2;
-            //    for (int x = 0; x < LineRender.ScreenHeight; x++)
-            //    {
-            //        int offs = y + x * LineRender.ScreenWidth;
-            //        int c = LineRender.Screen[offs];
-            //        if (c > 0x20)
-            //        {
-            //            c = (c & 0x0f) + 0x30;
-            //            if (c > 0x39) c += 7;
-            //            LineRender.Screen[offs - 1] = (byte)c;
-            //        }
-            //    }
-            //}
-            //for (int i = 0; i < 12; i++)
-            //{
-            //    int y = 30 - i * 2;
-            //    int xOffs = (i / 3) + 1;
-            //    EraseAlien(gameData, aliens, 0x10, y, xOffs, explode, true);
-            //    EraseAlien(gameData, aliens, 0x70, y, xOffs, explode, false);
-            //    EraseAlien(gameData, aliens, 0x58, y, xOffs, 0, true);
-            //    EraseAlien(gameData, aliens, 0xb8, y, xOffs, 0, false);
-            //}
+            for (int i = 0; i < 12; i++)
+            {
+                int y = 29 - i * 2;
+                for (int x = 0; x < LineRender.ScreenHeight; x++)
+                {
+                    int offs = y + x * LineRender.ScreenWidth;
+                    int c = LineRender.Screen[offs];
+                    if (c > 0x23)
+                    {
+                        c = (c & 0x0f) + 0x30;
+                        LineRender.Screen[offs - 1] = (byte)c;
+                    }
+                }
+            }
+            for (int i = 0; i < 12; i++)
+            {
+                int y = 29 - i * 2;
+                int xOffs = (i / 3) + 1;
+                EraseAlien(gameData, aliens, 0x10, y, xOffs, explode, true);
+                EraseAlien(gameData, aliens, 0x70, y, xOffs, explode, false);
+                EraseAlien(gameData, aliens, 0x58, y, xOffs, 0, true);
+                EraseAlien(gameData, aliens, 0xb8, y, xOffs, 0, false);
+            }
             mainWindow.RenderScreen();
         }
 

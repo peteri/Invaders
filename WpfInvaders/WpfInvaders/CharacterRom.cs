@@ -58,9 +58,9 @@ namespace WpfInvaders
         private static readonly byte[] InvaderA1 = { 0x00, 0x00, 0x39, 0x79, 0x7A, 0x6E, 0xEC, 0xFA, 0xFA, 0xEC, 0x6E, 0x7A, 0x79, 0x39, 0x00, 0x00 };
         private static readonly byte[] InvaderB1 = { 0x00, 0x00, 0x00, 0x78, 0x1D, 0xBE, 0x6C, 0x3C, 0x3C, 0x3C, 0x6C, 0xBE, 0x1D, 0x78, 0x00, 0x00 };
         private static readonly byte[] InvaderC1 = { 0x00, 0x00, 0x00, 0x00, 0x19, 0x3A, 0x6D, 0xFA, 0xFA, 0x6D, 0x3A, 0x19, 0x00, 0x00, 0x00, 0x00 };
-        private static readonly byte[] InvaderA2 = { 0x00, 0x81, 0x38, 0x7A, 0x7F, 0x6D, 0xEC, 0xFA, 0xFA, 0xEC, 0x6D, 0x7F, 0x7A, 0x38, 0x00, 0x00 };
-        private static readonly byte[] InvaderB2 = { 0x00, 0x81, 0x00, 0x0E, 0x18, 0xBE, 0x6D, 0x3D, 0x3C, 0x3D, 0x6D, 0xBE, 0x18, 0x0E, 0x00, 0x00 };
-        private static readonly byte[] InvaderC2 = { 0x00, 0x81, 0x00, 0x00, 0x1A, 0x3D, 0x68, 0xFC, 0xFC, 0x68, 0x3D, 0x1A, 0x00, 0x00, 0x00, 0x00 };
+        private static readonly byte[] InvaderA2 = { 0x00, 0x00, 0x38, 0x7A, 0x7F, 0x6D, 0xEC, 0xFA, 0xFA, 0xEC, 0x6D, 0x7F, 0x7A, 0x38, 0x00, 0x00 };
+        private static readonly byte[] InvaderB2 = { 0x00, 0x00, 0x00, 0x0E, 0x18, 0xBE, 0x6D, 0x3D, 0x3C, 0x3D, 0x6D, 0xBE, 0x18, 0x0E, 0x00, 0x00 };
+        private static readonly byte[] InvaderC2 = { 0x00, 0x00, 0x00, 0x00, 0x1A, 0x3D, 0x68, 0xFC, 0xFC, 0x68, 0x3D, 0x1A, 0x00, 0x00, 0x00, 0x00 };
         public static byte[] Characters = new byte[256 * 8];
 
         static CharacterRom()
@@ -90,9 +90,9 @@ namespace WpfInvaders
             GeneratePlayerShifted(0xc0, Player, PlayerExp1, PlayerExp2, 5, 24);
             GeneratePlayerShifted(0xd0, Player, PlayerExp1, PlayerExp2, 6, 24);
             GeneratePlayerShifted(0xe0, Player, PlayerExp1, PlayerExp2, 7, 24);
-            GenerateAlienShifts2(0x80, InvaderA1, InvaderA2);
-            GenerateAlienShifts2(0x90, InvaderB1, InvaderB2);
-            GenerateAlienShifts2(0xa0, InvaderC1, InvaderC2);
+            GenerateAlienShifts(0x80, InvaderA1, InvaderA2);
+            GenerateAlienShifts(0x90, InvaderB1, InvaderB2);
+            GenerateAlienShifts(0xa0, InvaderC1, InvaderC2);
             GenerateExplosionsShifted2(0xb0);
             Array.Fill<byte>(Map, 0xff);
             i = 0x30;
@@ -190,7 +190,7 @@ namespace WpfInvaders
         /// <param name="offset">Offset in the character table to start storing.</param>
         /// <param name="invader1">Pattern for invader type 1.</param>
         /// <param name="invader2">Pattern for invader type 2.</param>
-        private static void GenerateAlienShifts2(int offset, byte[] invader1, byte[] invader2)
+        private static void GenerateAlienShifts(int offset, byte[] invader1, byte[] invader2)
         {
             offset *= 8;
             for (int i = 0; i < 8; i++)
@@ -221,13 +221,19 @@ namespace WpfInvaders
                 // Overlaps with explosions
 
                 // Overlaps for shifted by 4
-                Characters[offset + i + 0x250] = BitFlip(i < 4 ? invader1[i + 12] : invader1[i - 4]); // 0x0a 
-                Characters[offset + i + 0x258] = BitFlip(i < 2 ? invader1[i + 12] : invader2[i - 2]); // 0x0b 
-                Characters[offset + i + 0x260] = BitFlip(i < 6 ? invader2[i + 10] : invader1[i - 4]); // 0x0c 
-                Characters[offset + i + 0x268] = BitFlip(i < 4 ? invader1[i + 12] : (i < 6) ? (byte)0 : invader2[i - 6]); // 0x0d 
+                Characters[offset + i + 0x250] = BitFlip(i < 4 ? InvaderExp[i + 12] : invader1[i - 4]); // 0x0a 
+                Characters[offset + i + 0x258] = BitFlip(i < 2 ? InvaderExp[i + 12] : invader2[i - 2]); // 0x0b 
+                Characters[offset + i + 0x260] = BitFlip(i < 6 ? InvaderExp[i + 10] : invader1[i - 4]); // 0x0c 
+                Characters[offset + i + 0x268] = BitFlip(i < 4 ? invader1[i + 12] : (i < 6) ? (byte)0 : InvaderExp[i - 6]); // 0x0d 
                 // Overlaps for shifted by 6
                 Characters[offset + i + 0x270] = BitFlip(i < 6 ? invader2[i + 10] : InvaderExp[i - 6]); // 0x0e 
                 Characters[offset + i + 0x278] = BitFlip(i < 6 ? invader1[i + 8] : InvaderExp[i - 6]); // 0x0f 
+                                                                                                       //
+                Characters[0xc9 * 8 + i] = BitFlip(i < 4 ? InvaderExp[i + 12] : (i < 6) ? (byte)0 : invader2[i - 6]); // 0x0d 
+                // Overlaps for shifted by 6
+                Characters[0xd9 * 8 + i] = BitFlip(i < 6 ? InvaderExp[i + 10] : invader2[i - 6]); // 0x0e 
+                Characters[0xe9 * 8 + i] = BitFlip(i < 6 ? InvaderExp[i + 8] : invader2[i - 6]); // 0x0f 
+
             }
         }
     }

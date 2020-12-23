@@ -41,7 +41,7 @@ namespace WpfInvaders
         internal void ExplodeAlien()
         {
             int alienPos = (gameData.AlienExplodeY + gameData.AlienExplodeX * LineRender.ScreenWidth);
-            byte alienType = LineRender.Screen[alienPos + LineRender.ScreenWidth];
+            byte alienType = LineRender.Screen[alienPos];
             if (alienType < 0x20)
             {
                 // It's a solo alien so we're bitmapped
@@ -50,108 +50,36 @@ namespace WpfInvaders
                 int count = 0;
                 switch (gameData.AlienExplodeXOffset)
                 {
-                    case 0: srcOffs = 0x21 * 8; count = 0x10; break;
-                    case 2: srcOffs = 0x23 * 8; count = 0x10; break;
-                    case 4: srcOffs = 0x25 * 8; count = 0x18; break;
-                    case 5: srcOffs = 0x28 * 8; count = 0x18; break;
+                    case 0: srcOffs = 0xb0 * 8; count = 0x10; break;
+                    case 2: srcOffs = 0xb2 * 8; count = 0x10; break;
+                    case 4: srcOffs = 0xb4 * 8; count = 0x18; break;
+                    case 6: srcOffs = 0xb7 * 8; count = 0x18; break;
                 }
                 for (int i = 0; i < count; i++)
                     LineRender.BitmapChar[destOffs++] = CharacterRom.Characters[srcOffs++];
             }
             else
             {
-                switch (alienType & 0x0f)
+                var subType = alienType & 0x0f;
+                if (subType != 9 && subType!=0x0e)
                 {
-                    // Shifted by 0 pixels
-                    case 0x00:
-                        alienPos += LineRender.ScreenWidth;
-                        LineRender.Screen[alienPos] = 0x21;
-                        alienPos += LineRender.ScreenWidth;
-                        LineRender.Screen[alienPos] = 0x22;
-                        break;
-                    // Shifted by 0 pixels
-                    case 0x01:
-                        LineRender.Screen[alienPos] = 0x21;
-                        alienPos += LineRender.ScreenWidth;
-                        LineRender.Screen[alienPos] = 0x22;
-                        break;
-                    // Shifted by two pixels
-                    case 0x07:
-                        // Alien to left of us is a shift by four alien?
-                        if ((LineRender.Screen[alienPos] & 0xf) == 0x0a)
-                            LineRender.Screen[alienPos] = (byte)((LineRender.Screen[alienPos] & 0xf0) | 0x0e);
-                        else
-                            LineRender.Screen[alienPos] = 0x23;
-                        alienPos += LineRender.ScreenWidth;
-                        LineRender.Screen[alienPos] = 0x24;
-                        break;
-                    case 0x03:
-                        int alienToLeft = LineRender.Screen[alienPos];
-                        switch (alienToLeft)
-                        {
-                            case 0x62: LineRender.Screen[alienPos] = 0x25; break;
-                            case 0x72: LineRender.Screen[alienPos] = 0x25; break;
-                            case 0x82: LineRender.Screen[alienPos] = 0x25; break;
-
-                            case 0x64: LineRender.Screen[alienPos] = 0x2c; break;
-                            case 0x74: LineRender.Screen[alienPos] = 0x2e; break;
-                            case 0x84: LineRender.Screen[alienPos] = 0x25; break;
-
-                            case 0x6b: LineRender.Screen[alienPos] = 0x6f; break;
-                            case 0x7b: LineRender.Screen[alienPos] = 0x7f; break;
-                            case 0x9b: LineRender.Screen[alienPos] = 0x8f; break;
-                        }
-                        alienPos += LineRender.ScreenWidth;
-                        LineRender.Screen[alienPos] = 0x26;
-                        alienPos += LineRender.ScreenWidth;
-                        int alienToRight = LineRender.Screen[alienPos];
-                        switch (alienToRight)
-                        {
-                            case 0x65: LineRender.Screen[alienPos] = 0x27; break;
-                            case 0x75: LineRender.Screen[alienPos] = 0x27; break;
-                            case 0x85: LineRender.Screen[alienPos] = 0x27; break;
-
-                            case 0x64: LineRender.Screen[alienPos] = 0x2b; break;
-                            case 0x74: LineRender.Screen[alienPos] = 0x2d; break;
-                            case 0x84: LineRender.Screen[alienPos] = 0x20; break;
-
-                            case 0x6a: LineRender.Screen[alienPos] = 0x93; break;
-                            case 0x7a: LineRender.Screen[alienPos] = 0x94; break;
-                            case 0x8a: LineRender.Screen[alienPos] = 0x95; break;
-                        }
-                        break;
-                    case 0x08:
-                        switch (LineRender.Screen[alienPos])
-                        {
-                            case 0x69: LineRender.Screen[alienPos] = 0x5b; break;
-                            case 0x79: LineRender.Screen[alienPos] = 0x5c; break;
-                            case 0x89: LineRender.Screen[alienPos] = 0x5d; break;
-                            case 0x65: LineRender.Screen[alienPos] = 0x90; break;
-                            case 0x75: LineRender.Screen[alienPos] = 0x91; break;
-                            case 0x85: LineRender.Screen[alienPos] = 0x92; break;
-                            default: LineRender.Screen[alienPos] = 0x28; break;
-                        }
-                        alienPos += LineRender.ScreenWidth;
-                        LineRender.Screen[alienPos] = 0x29;
-                        alienPos += LineRender.ScreenWidth;
-                        switch (LineRender.Screen[alienPos])
-                        {
-                            case 0x6b:
-                                LineRender.Screen[alienPos] = 0x5e; break;
-                            case 0x7b:
-                                LineRender.Screen[alienPos] = 0x96; break;
-                            case 0x8b:
-                                LineRender.Screen[alienPos] = 0x97; break;
-                            default:
-                                LineRender.Screen[alienPos] = 0x2a; break;
-                        }
-                        break;
-                    case 0x09:
-                        LineRender.Screen[alienPos] = 0x29;
-                        alienPos += LineRender.ScreenWidth;
-                        LineRender.Screen[alienPos] = 0x2a;
-                        break;
+                    if ((LineRender.Screen[alienPos] & 0x0f) < 0x0a)
+                        LineRender.Screen[alienPos] |= (byte)0xb0;
+                    else
+                        LineRender.Screen[alienPos] += (byte)0x40;
                 }
+                alienPos += LineRender.ScreenWidth;
+                if ((LineRender.Screen[alienPos] & 0x0f) < 0x0a)
+                    LineRender.Screen[alienPos] |= (byte)0xb0;
+                else
+                    LineRender.Screen[alienPos] += (byte)0x40;
+                if (gameData.AlienExplodeXOffset < 3)
+                    return;
+                alienPos += LineRender.ScreenWidth;
+                if ((LineRender.Screen[alienPos] & 0x0f) < 0x0a)
+                    LineRender.Screen[alienPos] |= (byte)0xb0;
+                else
+                    LineRender.Screen[alienPos] += (byte)0x40;
             }
         }
 
@@ -353,8 +281,16 @@ namespace WpfInvaders
         /// <param name="currOffset">Offset on screen for the current alien.</param>
         private void DrawAlienOffsetZero(int currOffset)
         {
+            // cleanup shift to left of us
+            if (LineRender.Screen[currOffset - 32] == (byte)(gameData.AlienCharacterStart + 0x07))
+                LineRender.Screen[currOffset - 32] = 0x23;
+            if (LineRender.Screen[currOffset - 32] == (byte)(gameData.AlienCharacterStart + 0x0f))
+                LineRender.Screen[currOffset - 32] = (byte)(gameData.AlienCharacterStart + 0x1);
             LineRender.Screen[currOffset] = (byte)gameData.AlienCharacterStart;
-            LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 1);
+            if (LineRender.Screen[currOffset + 64] == (byte)(gameData.AlienCharacterStart + 0x08))
+                LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 0x0f);
+            else
+                LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 1);
         }
 
         /// <summary>
@@ -388,7 +324,7 @@ namespace WpfInvaders
             if (gameData.RackDirectionRightToLeft)
             {
                 // Going Right to left
-                if (LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 0xd )
+                if (LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 0xd)
                     LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0xa);
                 else
                     LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 4);
@@ -433,7 +369,7 @@ namespace WpfInvaders
             {
                 // Going Left to right... No partial alien to left of us make this cell blank
                 if ((gameData.AlienCharacterCurX == 0) || (LineRender.Screen[currOffset - 32] != (gameData.AlienCharacterStart + 8)))
-                    LineRender.Screen[currOffset] = 0x07;
+                    LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0x07);
                 else
                     LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0x0e);
                 LineRender.Screen[currOffset + 32] = (byte)(gameData.AlienCharacterStart + 8);
