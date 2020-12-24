@@ -181,16 +181,22 @@ namespace WpfInvaders
                 // Invader C2
                 Characters[offset + i + 0x70] = BitFlip(InvaderC2[i + 0]);
                 Characters[offset + i + 0x78] = BitFlip(InvaderC2[i + 8]);
-                // Odd stuff to the left of a 0xY5
+                // A type one alien shifted by four pixels (0xn5) is flanked on either side
+                // by bits of two aliens the ones on left (0x0a or 0x0c) need special case
+                // handling (the ones on the right are done by adding 0x40)
+                // 0xnA
                 Characters[0x27 * 8 + i] = BitFlip(i < 4 ? InvaderA1[i + 12] : InvaderExp[i - 4]);
                 Characters[0x28 * 8 + i] = BitFlip(i < 4 ? InvaderB1[i + 12] : InvaderExp[i - 4]);
                 Characters[0x2b * 8 + i] = BitFlip(i < 4 ? InvaderC1[i + 12] : InvaderExp[i - 4]);
+                // 0xnC
                 Characters[0x2c * 8 + i] = BitFlip(i < 4 ? InvaderA2[i + 10] : InvaderExp[i - 4]);
                 Characters[0x54 * 8 + i] = BitFlip(i < 4 ? InvaderB2[i + 10] : InvaderExp[i - 4]);
                 Characters[0x55 * 8 + i] = BitFlip(i < 4 ? InvaderC2[i + 10] : InvaderExp[i - 4]);
-                Characters[0xf3 * 8 + i] = BitFlip(i < 2 ? InvaderA1[i + 12] : InvaderExp[i - 2]);
-                Characters[0xf7 * 8 + i] = BitFlip(i < 2 ? InvaderB1[i + 12] : InvaderExp[i - 2]);
-                Characters[0x5e * 8 + i] = BitFlip(i < 2 ? InvaderC1[i + 12] : InvaderExp[i - 2]);
+                // When going Left to right a type two alien can have two bits of a type 1 
+                // 0xnB
+                Characters[0xc9 * 8 + i] = BitFlip(i < 2 ? InvaderA1[i + 12] : InvaderExp[i - 2]);
+                Characters[0xd9 * 8 + i] = BitFlip(i < 2 ? InvaderB1[i + 12] : InvaderExp[i - 2]);
+                Characters[0xe9 * 8 + i] = BitFlip(i < 2 ? InvaderC1[i + 12] : InvaderExp[i - 2]);
             }
         }
 
@@ -238,12 +244,6 @@ namespace WpfInvaders
                 // Overlaps for shifted by 6
                 Characters[offset + i + 0x270] = BitFlip(i < 6 ? invader2[i + 10] : InvaderExp[i - 6]); // 0x0e 
                 Characters[offset + i + 0x278] = BitFlip(i < 6 ? invader1[i + 8] : InvaderExp[i - 6]); // 0x0f 
-                                                                                                       //
-                Characters[0xe9 * 8 + i] = BitFlip(i < 4 ? InvaderExp[i + 12] : (i < 6) ? (byte)0 : invader2[i - 6]); // 0x0d 
-                // Overlaps for shifted by 6
-                Characters[0xd9 * 8 + i] = BitFlip(i < 6 ? InvaderExp[i + 10] : invader2[i - 6]); // 0x0e 
-                Characters[0xc9 * 8 + i] = BitFlip(i < 6 ? InvaderExp[i + 8] : invader2[i - 6]); // 0x0f 
-
             }
         }
     }
