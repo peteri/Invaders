@@ -27,14 +27,17 @@ namespace WpfInvaders
             if (LineRender.Screen[alienPos] < 0x20)
             {
                 // It was a bitmapped single alien so erase with spaces
-                LineRender.Screen[alienPos] = 0x20;
+                LineRender.Screen[alienPos] = 0x23;
                 alienPos += LineRender.ScreenWidth;
-                LineRender.Screen[alienPos] = 0x20;
+                LineRender.Screen[alienPos] = 0x23;
                 alienPos += LineRender.ScreenWidth;
-                LineRender.Screen[alienPos] = 0x20;
+                LineRender.Screen[alienPos] = 0x23;
             }
             else
             {
+//                LineRender.Screen[alienPos] = 0x23;
+                alienPos += LineRender.ScreenWidth;
+                LineRender.Screen[alienPos] = 0x23;
             }
         }
 

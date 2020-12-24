@@ -650,7 +650,7 @@ namespace WpfInvaders
             IsrRoutine();
         }
 
-        private void SaveScreenShot(string fname)
+        internal void SaveScreenShot(string fname)
         {
             using FileStream stream = new FileStream(fname, FileMode.Create);
             PngBitmapEncoder encoder = new PngBitmapEncoder();

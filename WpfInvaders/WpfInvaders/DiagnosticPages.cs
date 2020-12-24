@@ -120,19 +120,43 @@ namespace WpfInvaders
                     }
                 }
             }
+            mainWindow.RenderScreen();
+            mainWindow.SaveScreenShot("c:\\temp\\before-explode.png");
             for (int i = 0; i < 12; i++)
             {
                 int y = 29 - i * 2;
                 int xOffs = (i / 3) + 1;
-                EraseAlien(gameData, aliens, 0x10, y, xOffs, explode, true);
-                EraseAlien(gameData, aliens, 0x70, y, xOffs, explode, false);
-                EraseAlien(gameData, aliens, 0x58, y, xOffs, 0, true);
-                EraseAlien(gameData, aliens, 0xb8, y, xOffs, 0, false);
+                ExplodeAlien(gameData, aliens, 0x10, y, xOffs, explode, true);
+                ExplodeAlien(gameData, aliens, 0x70, y, xOffs, explode, false);
+                ExplodeAlien(gameData, aliens, 0x58, y, xOffs, 0, true);
+                ExplodeAlien(gameData, aliens, 0xb8, y, xOffs, 0, false);
             }
             mainWindow.RenderScreen();
+            mainWindow.SaveScreenShot("c:\\temp\\before-erase.png");
+            System.Threading.Thread.Sleep(500);
+            for (int i = 0; i < 12; i++)
+            {
+                int y = 29 - i * 2;
+                int xOffs = (i / 3) + 1;
+                EraseExplosion(gameData, aliens, 0x10, y, xOffs, explode, true);
+                EraseExplosion(gameData, aliens, 0x70, y, xOffs, explode, false);
+                EraseExplosion(gameData, aliens, 0x58, y, xOffs, 0, true);
+                EraseExplosion(gameData, aliens, 0xb8, y, xOffs, 0, false);
+            }
+            mainWindow.RenderScreen();
+            mainWindow.SaveScreenShot("c:\\temp\\after-erase.png");
+        }
+        private static void EraseExplosion(GameData gameData, Aliens aliens, int x, int y, int xOffs, int explode, bool rightToLeft)
+        {
+            gameData.AlienExplodeY = y;
+            gameData.RackDirectionRightToLeft = rightToLeft;
+            int deltaX = (rightToLeft ? -2 : 2) * xOffs;
+            gameData.AlienExplodeX = (x + deltaX + explode * 0x10) >> 3;
+            gameData.AlienExplodeXOffset = (x + deltaX + explode * 0x10) & 0x07;
+            aliens.EraseExplosion();
         }
 
-        private static void EraseAlien(GameData gameData, Aliens aliens, int x, int y, int xOffs, int explode, bool rightToLeft)
+        private static void ExplodeAlien(GameData gameData, Aliens aliens, int x, int y, int xOffs, int explode, bool rightToLeft)
         {
             gameData.AlienExplodeY = y;
             gameData.RackDirectionRightToLeft = rightToLeft;
