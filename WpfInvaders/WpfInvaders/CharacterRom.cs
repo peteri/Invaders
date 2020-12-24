@@ -44,9 +44,9 @@ namespace WpfInvaders
             new byte[] {0x00,0x03,0x04,0x78,0x04,0x03,0x00,0x00 }, // ⅄ (upside down Y) =0x53
             new byte[] {0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01 }  // _ = 0x54
         };
-        
+
         public static byte[] Map = new byte[128];
-        
+
         public static readonly byte[] Shield = { 0xFF,0x0F,0xFF,0x1F,0xFF,0x3F,0xFF,0x7F,0xFF,0xFF,0xFC,0xFF,0xF8,0xFF,0xF0,0xFF,0xF0,0xFF,0xF0,0xFF,0xF0,0xFF,
                                         0xF0,0xFF,0xF0,0xFF,0xF0,0xFF,0xF8,0xFF,0xFC,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x7F,0xFF,0x3F,0xFF,0x1F,0xFF,0x0F};
         private static readonly byte[] Saucer = { 0x00, 0x00, 0x00, 0x00, 0x04, 0x0C, 0x1E, 0x37, 0x3E, 0x7C, 0x74, 0x7E, 0x7E, 0x74, 0x7C, 0x3E, 0x37, 0x1E, 0x0C, 0x04, 0x00, 0x00, 0x00, 0x00 };
@@ -181,6 +181,16 @@ namespace WpfInvaders
                 // Invader C2
                 Characters[offset + i + 0x70] = BitFlip(InvaderC2[i + 0]);
                 Characters[offset + i + 0x78] = BitFlip(InvaderC2[i + 8]);
+                // Odd stuff to the left of a 0xY5
+                Characters[0x27 * 8 + i] = BitFlip(i < 4 ? InvaderA1[i + 12] : InvaderExp[i - 4]);
+                Characters[0x28 * 8 + i] = BitFlip(i < 4 ? InvaderB1[i + 12] : InvaderExp[i - 4]);
+                Characters[0x2b * 8 + i] = BitFlip(i < 4 ? InvaderC1[i + 12] : InvaderExp[i - 4]);
+                Characters[0x2c * 8 + i] = BitFlip(i < 4 ? InvaderA2[i + 10] : InvaderExp[i - 4]);
+                Characters[0x54 * 8 + i] = BitFlip(i < 4 ? InvaderB2[i + 10] : InvaderExp[i - 4]);
+                Characters[0x55 * 8 + i] = BitFlip(i < 4 ? InvaderC2[i + 10] : InvaderExp[i - 4]);
+                Characters[0xf3 * 8 + i] = BitFlip(i < 2 ? InvaderA1[i + 12] : InvaderExp[i - 2]);
+                Characters[0xf7 * 8 + i] = BitFlip(i < 2 ? InvaderB1[i + 12] : InvaderExp[i - 2]);
+                Characters[0x5e * 8 + i] = BitFlip(i < 2 ? InvaderC1[i + 12] : InvaderExp[i - 2]);
             }
         }
 
@@ -229,10 +239,10 @@ namespace WpfInvaders
                 Characters[offset + i + 0x270] = BitFlip(i < 6 ? invader2[i + 10] : InvaderExp[i - 6]); // 0x0e 
                 Characters[offset + i + 0x278] = BitFlip(i < 6 ? invader1[i + 8] : InvaderExp[i - 6]); // 0x0f 
                                                                                                        //
-                Characters[0xc9 * 8 + i] = BitFlip(i < 4 ? InvaderExp[i + 12] : (i < 6) ? (byte)0 : invader2[i - 6]); // 0x0d 
+                Characters[0xe9 * 8 + i] = BitFlip(i < 4 ? InvaderExp[i + 12] : (i < 6) ? (byte)0 : invader2[i - 6]); // 0x0d 
                 // Overlaps for shifted by 6
                 Characters[0xd9 * 8 + i] = BitFlip(i < 6 ? InvaderExp[i + 10] : invader2[i - 6]); // 0x0e 
-                Characters[0xe9 * 8 + i] = BitFlip(i < 6 ? InvaderExp[i + 8] : invader2[i - 6]); // 0x0f 
+                Characters[0xc9 * 8 + i] = BitFlip(i < 6 ? InvaderExp[i + 8] : invader2[i - 6]); // 0x0f 
 
             }
         }

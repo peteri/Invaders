@@ -61,25 +61,106 @@ namespace WpfInvaders
             else
             {
                 var subType = alienType & 0x0f;
-                if (subType != 9 && subType!=0x0e)
+                if ((subType != 9) && (subType != 1))
                 {
                     if ((LineRender.Screen[alienPos] & 0x0f) < 0x0a)
+                    {
+                        if ((LineRender.Screen[alienPos] & 0x0f) == 0x08)
+                        {
+                            switch (LineRender.Screen[alienPos - 32] & 0x0f)
+                            {
+                                case 0x0f:
+                                case 0x0e: LineRender.Screen[alienPos - 32] += 0x40; break;
+                            }
+                        }
                         LineRender.Screen[alienPos] |= (byte)0xb0;
+                    }
                     else
-                        LineRender.Screen[alienPos] += (byte)0x40;
+                    {
+                        if ((LineRender.Screen[alienPos + 32] & 0x0f) != 0x05)
+                        {
+                            switch (LineRender.Screen[alienPos])
+                            {
+                                case 0x8b: LineRender.Screen[alienPos] = 0xf3; break;
+                                case 0x9b: LineRender.Screen[alienPos] = 0xf7; break;
+                                case 0xab: LineRender.Screen[alienPos] = 0x5e; break;
+                                default: LineRender.Screen[alienPos] += (byte)0x40; break;
+                            }
+                        }
+                        else
+                        {
+                            // Handle A to the right of a 5
+                            switch (LineRender.Screen[alienPos])
+                            {
+                                case 0x8a: LineRender.Screen[alienPos] = 0x27; break;
+                                case 0x9a: LineRender.Screen[alienPos] = 0x28; break;
+                                case 0xaa: LineRender.Screen[alienPos] = 0x2b; break;
+                                case 0x8c: LineRender.Screen[alienPos] = 0x2c; break;
+                                case 0x9c: LineRender.Screen[alienPos] = 0x54; break;
+                                case 0xac: LineRender.Screen[alienPos] = 0x55; break;
+                            }
+                        }
+                    }
                 }
+
                 alienPos += LineRender.ScreenWidth;
                 if ((LineRender.Screen[alienPos] & 0x0f) < 0x0a)
+                {
                     LineRender.Screen[alienPos] |= (byte)0xb0;
+                    if ((LineRender.Screen[alienPos] & 0x0f) == 0x05)
+                    {
+                        if ((LineRender.Screen[alienPos + 32] & 0x0f) == 0x0a)
+                        {
+                            LineRender.Screen[alienPos + 32] += 0x40;
+                            return;
+                        }
+                    }
+                }
                 else
-                    LineRender.Screen[alienPos] += (byte)0x40;
+                {
+                    switch (LineRender.Screen[alienPos] & 0x0f)
+                    {
+                        case 0x0e:
+                            LineRender.Screen[alienPos] = (byte)0xd9; break;
+                        case 0x0f:
+                            LineRender.Screen[alienPos] = (byte)0xc9; break;
+                        default:
+                            LineRender.Screen[alienPos] += (byte)0x40; break;
+                    }
+                }
+
+                if ((LineRender.Screen[alienPos] & 0x0f) == 0x03) return;
+                alienPos += LineRender.ScreenWidth;
                 if (gameData.AlienExplodeXOffset < 3)
+                {
+                    if ((LineRender.Screen[alienPos] & 0x0f) == 0x06)
+                    {
+                        LineRender.Screen[alienPos] = 0xb6;
+                    }
                     return;
-                alienPos += LineRender.ScreenWidth;
+                }
                 if ((LineRender.Screen[alienPos] & 0x0f) < 0x0a)
+                {
                     LineRender.Screen[alienPos] |= (byte)0xb0;
+                }
                 else
-                    LineRender.Screen[alienPos] += (byte)0x40;
+                {
+                    byte x = LineRender.Screen[alienPos];
+                    switch (x)
+                    {
+                        case 0x8e:
+                        case 0x9e:
+                        case 0xae:
+                            x = 0xd9; break;
+                        case 0x8d:
+                        case 0x9d:
+                        case 0xad:
+                            x = 0xe9; break;
+                        default:
+                            x += 0x40; break;
+                    }
+                    LineRender.Screen[alienPos] = (byte)x;
+                }
             }
         }
 
