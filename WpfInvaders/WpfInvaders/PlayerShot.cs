@@ -41,7 +41,6 @@ namespace WpfInvaders
                     ShotSprite.Y = 0x28;
                     ShotSprite.X = gameData.PlayerBase.PlayerX + 8;
                     Status = ShotStatus.NormalMove;
-                    mainWindow.StopIsr();
                     break;
                 case ShotStatus.NormalMove:
                     ShotSprite.Y += 4;
@@ -78,9 +77,9 @@ namespace WpfInvaders
                 // Originally would have been done by
                 // erasing the sprite...
                 ShotExplodeSprite.BattleDamage();
-                Status = ShotStatus.Available;
-                ShotSprite.Y = 0x28;
             }
+            Status = ShotStatus.Available;
+            ShotSprite.Y = 0x28;
             explosionTimer = 0x10;
             gameData.IncremeentSaucerScoreAndShotCount();
         }

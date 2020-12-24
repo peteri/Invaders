@@ -60,7 +60,6 @@ namespace WpfInvaders
         public int SaucerDelta;
         public int SaucerX;
 
-        public PlayerData CurrentPlayer;
         public Aliens Aliens;
         internal int ShotSync;
         internal bool SaucerHit;

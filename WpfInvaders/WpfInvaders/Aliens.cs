@@ -16,6 +16,8 @@ namespace WpfInvaders
         private void ExplodeAlienTimer()
         {
             gameData.AlienExplodeTimer--;
+            if (gameData.AlienExplodeTimer != 0)
+                return;
             EraseExplosion();
             gameData.PlayerShot.Status = PlayerShot.ShotStatus.AlienExploded;
             gameData.AlienExploding = false;
@@ -55,9 +57,15 @@ namespace WpfInvaders
                 alienPos += LineRender.ScreenWidth;
                 switch (LineRender.Screen[alienPos])
                 {
-                    case 0xca: LineRender.Screen[alienPos] = 0x84; break;
-                    case 0xcb: LineRender.Screen[alienPos] = 0x82; break;
+                    case 0xca:
                     case 0xcc: LineRender.Screen[alienPos] = 0x84; break;
+                    case 0xcb: LineRender.Screen[alienPos] = 0x82; break;
+                    case 0xda:
+                    case 0xdc: LineRender.Screen[alienPos] = 0x94; break;
+                    case 0xdb: LineRender.Screen[alienPos] = 0x92; break;
+                    case 0xea:
+                    case 0xec: LineRender.Screen[alienPos] = 0xa4; break;
+                    case 0xeb: LineRender.Screen[alienPos] = 0xa2; break;
                     case 0xb1:
                     case 0xb6:
                     case 0xb9: LineRender.Screen[alienPos] = 0x23; break;
@@ -87,6 +95,8 @@ namespace WpfInvaders
             }
             else
             {
+                if ((alienType < 0x80) || (alienType > 0xaf))
+                    return;
                 var subType = alienType & 0x0f;
                 if ((subType != 9) && (subType != 1))
                 {
@@ -360,8 +370,8 @@ namespace WpfInvaders
             }
             gameData.SingleAlienIsTypeOne = !gameData.SingleAlienIsTypeOne;
             int invaderType = gameData.SingleAlienIsTypeOne ?
-                gameData.AlienCharacterStart : 
-                (gameData.AlienCharacterStart>>3)+ 0xaa;
+                gameData.AlienCharacterStart :
+                (gameData.AlienCharacterStart >> 3) + 0xaa;
             invaderType = invaderType << 3;
 
             for (int i = 0; i < 24; i++)

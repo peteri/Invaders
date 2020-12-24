@@ -410,13 +410,34 @@ namespace WpfInvaders
             bool playerHitAlien = false;
             if (gameData.PlayerShot.ShotSprite.Y >= gameData.RefAlienY)
             {
-                // Could be in the rack?
+                int rowY = gameData.RefAlienY;
+                int alienIndex = 0;
+                while (rowY < gameData.PlayerShot.ShotSprite.Y)
+                {
+                    rowY += 0x10;
+                    alienIndex += 11;
+                }
+                int colX = gameData.RefAlienX;
+                while (colX < (gameData.PlayerShot.ShotSprite.X-0x10))
+                {
+                    colX += 0x10;
+                    alienIndex++;
+                }
+                if (currentPlayer.Aliens[alienIndex] != 0)
+                {
+                    currentPlayer.Aliens[alienIndex] = 0;
+                    gameData.AlienExplodeTimer = 0x10;
+                    gameData.AlienExplodeX = colX >> 3;
+                    gameData.AlienExplodeXOffset = colX & 0x07;
+                    gameData.AlienExplodeY = rowY >> 3;
+                    gameData.Aliens.ExplodeAlien();
+                    gameData.PlayerShot.ShotSprite.Visible = false;
+                    gameData.PlayerShot.Status = PlayerShot.ShotStatus.AlienExploding;
+                    playerHitAlien = true;
+                }
             }
 
-            if (playerHitAlien)
-            {
-            }
-            else
+            if (!playerHitAlien)
             {
                 // bullet can't be in the aliens
                 gameData.PlayerShot.Status = PlayerShot.ShotStatus.HitSomething;
