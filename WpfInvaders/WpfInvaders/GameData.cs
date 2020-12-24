@@ -54,7 +54,7 @@ namespace WpfInvaders
         public AlienPlungerShot AlienPlungerShot;
         public AlienSquiglyShot AlienSquiglyShot;
         public MainWindow MainWindow { get; }
-        public int SingleAlienOffset { get; internal set; }
+        public bool SingleAlienIsTypeOne { get; internal set; }
         public int VblankStatus { get; internal set; }
 
         public int SaucerDelta;

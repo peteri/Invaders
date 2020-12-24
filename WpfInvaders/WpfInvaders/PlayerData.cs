@@ -40,6 +40,7 @@ namespace WpfInvaders
 
         internal void CopyShieldToBitmapChar()
         {
+#warning TOOD Deal with the alien rack erasing stuff!
             for (int j = 0; j < 8; j++)
             {
                 for (int i = 0; i < 6; i++)

@@ -35,9 +35,33 @@ namespace WpfInvaders
             }
             else
             {
-                LineRender.Screen[alienPos] = 0x23;
+                byte previousCharacter = LineRender.Screen[alienPos - LineRender.ScreenWidth];
+                switch (previousCharacter & 0x0f)
+                {
+                    case 0x00:
+                        break;
+                    case 0x0e:
+                    case 0x0f:
+                        LineRender.Screen[alienPos - LineRender.ScreenWidth] -= 0x40;
+                        LineRender.Screen[alienPos] = 0x23;
+                        break;
+                    case 0x08: LineRender.Screen[alienPos] = (byte)((previousCharacter & 0xf0) | 0x09); break;
+                    case 0x05: LineRender.Screen[alienPos] = (byte)((previousCharacter & 0xf0) | 0x06); break;
+                    default: LineRender.Screen[alienPos] = 0x23; break;
+                }
+
                 alienPos += LineRender.ScreenWidth;
                 LineRender.Screen[alienPos] = 0x23;
+                alienPos += LineRender.ScreenWidth;
+                switch (LineRender.Screen[alienPos])
+                {
+                    case 0xca: LineRender.Screen[alienPos] = 0x84; break;
+                    case 0xcb: LineRender.Screen[alienPos] = 0x82; break;
+                    case 0xcc: LineRender.Screen[alienPos] = 0x84; break;
+                    case 0xb1:
+                    case 0xb6:
+                    case 0xb9: LineRender.Screen[alienPos] = 0x23; break;
+                }
             }
         }
 
@@ -84,6 +108,7 @@ namespace WpfInvaders
                         {
                             switch (LineRender.Screen[alienPos])
                             {
+                                // These three special cases get us a bit of character ROM back.
                                 case 0x8b: LineRender.Screen[alienPos] = 0xc9; break;
                                 case 0x9b: LineRender.Screen[alienPos] = 0xd9; break;
                                 case 0xab: LineRender.Screen[alienPos] = 0xe9; break;
@@ -270,25 +295,25 @@ namespace WpfInvaders
                 {
                     // If we're advancing left to right and we only have type C aliens left at the edges
                     // with a partial row of B aliens below i.e. the rack looks like this  
-                    //     BCDCDCDCDCDCE   
-                    //       bcdce bce 
+                    //     45a5a5a5a5a56   
+                    //       45a56 456 
                     //
                     // then as the row of type B aliens moves down it looks like this
-                    //     BCDCDCDCDCDCE   
-                    //         dce bce 
-                    //       hi
-                    if (LineRender.Screen[currOffset + 0x41] == gameData.AlienCharacterStart + 0x04)
+                    //     45a5a5a5a5a56   
+                    //         a56 456 
+                    //       78
+                    if (LineRender.Screen[currOffset + 0x41] == gameData.AlienCharacterStart + 0x0a)
                     {
-                        // Turn the d into a b
-                        LineRender.Screen[currOffset + 0x41] = (byte)(gameData.AlienCharacterStart + 0x02);
+                        // Turn the a into a 4
+                        LineRender.Screen[currOffset + 0x41] = (byte)(gameData.AlienCharacterStart + 0x04);
                     }
                     // then as the row of type B aliens moves down it looks like this
-                    //     BCDCDCDCDCDCE   
-                    //           e bce 
-                    //       hihi
-                    if (LineRender.Screen[currOffset + 0x41] == gameData.AlienCharacterStart + 0x05)
+                    //     45a5a5a5a5a56      
+                    //           6 456 
+                    //       7878
+                    if (LineRender.Screen[currOffset + 0x41] == gameData.AlienCharacterStart + 0x06)
                     {
-                        // Get rid of the e
+                        // Get rid of the 6
                         LineRender.Screen[currOffset + 0x41] = 0x23;
                     }
                 }
@@ -305,7 +330,7 @@ namespace WpfInvaders
                         case 4: DrawAlienOffsetFour(currOffset); break;
                         case 6: DrawAlienOffsetSix(currOffset); break;
                     }
-                    gameData.SingleAlienOffset = ((gameData.AlienCharacterCurXOffset & 0x02) == 0) ? 12 : 0;
+                    gameData.SingleAlienIsTypeOne = (gameData.AlienCharacterCurXOffset & 0x02) == 0;
                 }
             }
             gameData.WaitOnDraw = false;
@@ -321,20 +346,22 @@ namespace WpfInvaders
         {
             if (currOffset >= 0x20)
             {
-                LineRender.Screen[currOffset - 0x1f] = 0x20;
-                LineRender.Screen[currOffset - 0x20] = 0x20;
+                LineRender.Screen[currOffset - 0x1f] = 0x23;
+                LineRender.Screen[currOffset - 0x20] = 0x23;
             }
             LineRender.Screen[currOffset + 0x00] = 0x1c;
             LineRender.Screen[currOffset + 0x20] = 0x1d;
             LineRender.Screen[currOffset + 0x40] = 0x1e;
             if (currOffset + 0x60 < LineRender.ScreenWidth * LineRender.ScreenHeight)
             {
-                LineRender.Screen[currOffset + 0x41] = 0x20;
-                LineRender.Screen[currOffset + 0x61] = 0x20;
-                LineRender.Screen[currOffset + 0x60] = 0x20;
+                LineRender.Screen[currOffset + 0x41] = 0x23;
+                LineRender.Screen[currOffset + 0x61] = 0x23;
+                LineRender.Screen[currOffset + 0x60] = 0x23;
             }
-            gameData.SingleAlienOffset = 12 - gameData.SingleAlienOffset;
-            int invaderType = gameData.AlienCharacterStart + gameData.SingleAlienOffset;
+            gameData.SingleAlienIsTypeOne = !gameData.SingleAlienIsTypeOne;
+            int invaderType = gameData.SingleAlienIsTypeOne ?
+                gameData.AlienCharacterStart : 
+                (gameData.AlienCharacterStart>>3)+ 0xaa;
             invaderType = invaderType << 3;
 
             for (int i = 0; i < 24; i++)
