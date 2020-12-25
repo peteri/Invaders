@@ -50,9 +50,9 @@ namespace WpfInvaders
         internal int AlienFireDelay;
         public PlayerBase PlayerBase;
         public PlayerShot PlayerShot;
-        public AlienRollingShot AlienRollingShot;
-        public AlienPlungerShot AlienPlungerShot;
-        public AlienSquiglyShot AlienSquiglyShot;
+        public AlienShotRolling AlienShotRolling;
+        public AlienShotPlunger AlienShotPlunger;
+        public AlienShotSquigly AlienShotSquigly;
         public MainWindow MainWindow { get; }
         public bool SingleAlienIsTypeOne { get; internal set; }
         public int VblankStatus { get; internal set; }
@@ -64,6 +64,7 @@ namespace WpfInvaders
         internal int ShotSync;
         internal bool SaucerHit;
         internal int AlienExplodeTimer;
+        internal bool PlungerShotActive;
 
         public GameData(MainWindow mainWindow)
         {
@@ -78,6 +79,7 @@ namespace WpfInvaders
             RackDirectionRightToLeft = false;
             RefAlienDeltaX = 2;
             AlienCurIndex = -1;
+            PlungerShotActive = true;
             ShotCount = 0;
             SaucerScoreIndex = 0;
             PlayerOk = true;
@@ -96,12 +98,12 @@ namespace WpfInvaders
             TimerObjects.Add(PlayerShot);
 
             // Alien shots
-            AlienRollingShot = new AlienRollingShot(MainWindow, this);
-            TimerObjects.Add(AlienRollingShot);
-            AlienPlungerShot = new AlienPlungerShot(MainWindow, this);
-            TimerObjects.Add(AlienPlungerShot);
-            AlienSquiglyShot = new AlienSquiglyShot(MainWindow, this);
-            TimerObjects.Add(AlienSquiglyShot);
+            AlienShotRolling = new AlienShotRolling(MainWindow, this);
+            TimerObjects.Add(AlienShotRolling);
+            AlienShotPlunger = new AlienShotPlunger(MainWindow, this);
+            TimerObjects.Add(AlienShotPlunger);
+            AlienShotSquigly = new AlienShotSquigly(MainWindow, this);
+            TimerObjects.Add(AlienShotSquigly);
         }
 
         public void IncremeentSaucerScoreAndShotCount()

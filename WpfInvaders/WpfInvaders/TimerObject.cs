@@ -6,6 +6,11 @@ namespace WpfInvaders
 {
     public abstract class TimerObject
     {
+        // Unclear if we really need active?
+        // Might want to keep it for the saucer.
+        public bool IsActive;
+        public int Ticks;
+        public int ExtraCount;
 
         public TimerObject(bool isActive, int ticks)
         {
@@ -13,10 +18,6 @@ namespace WpfInvaders
             Ticks = ticks;
             ExtraCount = 0;
         }
-
-        public bool IsActive;
-        public int Ticks;
-        public int ExtraCount;
 
         public abstract void Action();
     }

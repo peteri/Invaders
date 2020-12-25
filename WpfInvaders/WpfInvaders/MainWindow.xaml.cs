@@ -69,7 +69,7 @@ namespace WpfInvaders
         private readonly WriteableBitmap frame;
         private readonly PlayerData playerOne;
         private readonly PlayerData playerTwo;
-        private PlayerData currentPlayer;
+        internal PlayerData CurrentPlayer;
         private readonly GameData gameData;
         public SwitchState switchState;
         private readonly Stopwatch frameStopwatch;
@@ -189,7 +189,7 @@ namespace WpfInvaders
                     // Now we do the bottom half of screen isr case
                     gameData.VblankStatus = 0x80;
                     // Copy the shot sync like the normal routines do
-                    gameData.ShotSync = gameData.AlienRollingShot.ExtraCount;
+                    gameData.ShotSync = gameData.AlienShotRolling.ExtraCount;
                     // Draw the alien
                     gameData.Aliens.DrawAlien();
                     // Move everyone including the player
@@ -323,10 +323,10 @@ namespace WpfInvaders
                 case SplashMajorState.PlayDemo:
                     ClearPlayField();
                     playerOne.ShipsRem = 3;
-                    currentPlayer = playerOne;
+                    CurrentPlayer = playerOne;
                     RemoveShip();
-                    gameData.ResetVariables(currentPlayer);
-                    currentPlayer.InitAliens();
+                    gameData.ResetVariables(CurrentPlayer);
+                    CurrentPlayer.InitAliens();
                     playerOne.ResetShields();
                     ShieldsToScreen();
                     DrawBottomLine();
@@ -423,9 +423,9 @@ namespace WpfInvaders
                     colX += 0x10;
                     alienIndex++;
                 }
-                if (currentPlayer.Aliens[alienIndex] != 0)
+                if (CurrentPlayer.Aliens[alienIndex] != 0)
                 {
-                    currentPlayer.Aliens[alienIndex] = 0;
+                    CurrentPlayer.Aliens[alienIndex] = 0;
                     gameData.AlienExplodeTimer = 0x10;
                     gameData.AlienExplodeX = colX >> 3;
                     gameData.AlienExplodeXOffset = colX & 0x07;
@@ -498,13 +498,13 @@ namespace WpfInvaders
 
         private void RemoveShip()
         {
-            if (currentPlayer.ShipsRem == 0)
+            if (CurrentPlayer.ShipsRem == 0)
                 return;
-            WriteText(0x01, 0x01, (currentPlayer.ShipsRem & 0x0f).ToString());
-            currentPlayer.ShipsRem--;
+            WriteText(0x01, 0x01, (CurrentPlayer.ShipsRem & 0x0f).ToString());
+            CurrentPlayer.ShipsRem--;
             int x = 0x03;
             int y = 0x01;
-            int numShips = currentPlayer.ShipsRem;
+            int numShips = CurrentPlayer.ShipsRem;
             while (numShips != 0)
             {
                 WriteUnmappedText(y, x, "\x56\x57");
@@ -533,7 +533,14 @@ namespace WpfInvaders
                 {
                     if (timerObject.Ticks == 0)
                     {
-                        timerObject.Action();
+                        if (timerObject.ExtraCount != 0)
+                        {
+                            timerObject.ExtraCount--;
+                        }
+                        else
+                        {
+                            timerObject.Action();
+                        }
                     }
                     else
                     {
