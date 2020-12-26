@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WpfInvaders
 {
-    public class PlayerBase : TimerObject
+    internal class PlayerBase : TimerObject
     {
         private enum Command { None, Right, Left }
         // 1=right, 2=left
@@ -26,17 +26,17 @@ namespace WpfInvaders
 
         private static readonly int[] PlayerBaseCharacters = { 0x56, 0x5c, 0x65, 0x6e, 0x77, 0xc0, 0xd0, 0xe0 };
 
-        public enum PlayerAlive { Alive, BlowUpOne, BlowUpTwo }
+        internal enum PlayerAlive { Alive, BlowUpOne, BlowUpTwo }
         private readonly MainWindow mainWindow;
         private readonly GameData gameData;
         private static int demoCommand = 0;
         private int blowUpCounter;
         private int blowUpChanges;
-        public int PlayerX;
-        public int PlayerY;
-        public PlayerAlive Alive { get; set; }
+        internal int PlayerX;
+        internal int PlayerY;
+        internal PlayerAlive Alive { get; set; }
 
-        public PlayerBase(MainWindow mainWindow, GameData gameData) : base(true, 128)
+        internal PlayerBase(MainWindow mainWindow, GameData gameData) : base(true, 128)
         {
             this.mainWindow = mainWindow;
             this.gameData = gameData;
@@ -56,7 +56,7 @@ namespace WpfInvaders
             blowUpChanges = 0x0c;
         }
 
-        public override void Action()
+        internal override void Action()
         {
             if (Alive != PlayerAlive.Alive)
             {

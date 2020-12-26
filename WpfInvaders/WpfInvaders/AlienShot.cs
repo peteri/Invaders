@@ -4,7 +4,7 @@ using System.Text;
 
 namespace WpfInvaders
 {
-    public abstract class AlienShot : TimerObject
+    internal abstract class AlienShot : TimerObject
     {
 
         //        ShotReloadRate:
@@ -21,16 +21,16 @@ namespace WpfInvaders
 
         protected readonly MainWindow mainWindow;
         protected readonly GameData gameData;
-        private static byte[] alienShotExplosion = { 0x4A, 0x15, 0xBE, 0x3F, 0x5E, 0x25 };
-        public bool ShotActive = false;
-        public bool ShotBlowingUp = false;
+        private static readonly byte[] alienShotExplosion = { 0x4A, 0x15, 0xBE, 0x3F, 0x5E, 0x25 };
+        internal bool ShotActive = false;
+        internal bool ShotBlowingUp = false;
         protected int ShotStepCount;
         private int ShotBlowCount;
-        public Sprite Shot;
-        public Sprite ShotExplosion;
-        public int DeltaY;
+        internal Sprite Shot;
+        internal Sprite ShotExplosion;
+        internal int DeltaY;
 
-        public AlienShot(MainWindow mainWindow, GameData gameData, byte[] sprite) : base(true, 0)
+        internal AlienShot(MainWindow mainWindow, GameData gameData, byte[] sprite) : base(true, 0)
         {
             Shot = new Sprite(sprite, 4);
             LineRender.Sprites.Add(Shot);
@@ -116,7 +116,6 @@ namespace WpfInvaders
                 }
                 if (ShotBlowCount == 0)
                 {
-#warning Need to do some battle damage from eraseing the aliens shot as well.
                     Shot.BattleDamage();
                     ShotExplosion.BattleDamage();
                     ShotExplosion.Visible = false;

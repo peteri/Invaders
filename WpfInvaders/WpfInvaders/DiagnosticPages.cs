@@ -9,7 +9,7 @@ namespace WpfInvaders
         internal static void ShowShiftedInvaders(MainWindow mainWindow,int alienType)
         {
             mainWindow.StopIsr();
-            mainWindow.ClearScreen();
+            MainWindow.ClearScreen();
             DrawShiftedAliens(alienType, 0x1f, " R TO L L TO R ");
 
             DrawShiftedAliens(alienType, 0x1d, " 010101-010101 ");
@@ -90,7 +90,7 @@ namespace WpfInvaders
         internal static void ShowExplodedInvaders(MainWindow mainWindow, GameData gameData, int explode, int alienTypeStart)
         {
             mainWindow.StopIsr();
-            mainWindow.ClearScreen();
+            MainWindow.ClearScreen();
             var player = new PlayerData();
             var aliens = new Aliens(gameData, player);
             for (int i = 0; i < 55; i++)

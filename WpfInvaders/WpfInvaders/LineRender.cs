@@ -2,15 +2,15 @@
 
 namespace WpfInvaders
 {
-    public static class LineRender
+    internal static class LineRender
     {
-        public const int ScreenWidth = 32;
-        public const int ScreenHeight = 28;
-        public static byte[] Screen = new byte[ScreenWidth * ScreenHeight];
-        public static byte[] BitmapChar = new byte[32 * 8];
-        public static List<Sprite> Sprites = new List<Sprite>();
+        internal const int ScreenWidth = 32;
+        internal const int ScreenHeight = 28;
+        internal static byte[] Screen = new byte[ScreenWidth * ScreenHeight];
+        internal static byte[] BitmapChar = new byte[32 * 8];
+        internal static List<Sprite> Sprites = new List<Sprite>();
 
-        public static byte[] RenderLine(int line)
+        internal static byte[] RenderLine(int line)
         {
             var returnData = new byte[ScreenWidth];
             int startOfLine = (line / 8) * ScreenWidth;
@@ -33,7 +33,7 @@ namespace WpfInvaders
             return returnData;
         }
 
-        public static void AddSprite(Sprite sprite)
+        internal static void AddSprite(Sprite sprite)
         {
             Sprites.Add(sprite);
         }

@@ -4,17 +4,17 @@ using System.Text;
 
 namespace WpfInvaders
 {
-    public class AlienShotSquigly : AlienShot
+    internal class AlienShotSquigly : AlienShot
     {
         private static byte[] SquiglyShotSprite = { 0x44, 0xaa, 0x10, 0x88, 0x54, 0x22, 0x10, 0xaa, 0x44, 0x22, 0x54, 0x88 };
         private static byte[] shotColumns = { 0x0B, 0x01, 0x06, 0x03, 0x01, 0x01, 0x0B, 0x09, 0x02, 0x08, 0x02, 0x0B, 0x04, 0x07, 0x0A };
         private int currentShotColumn;
-        public AlienShotSquigly(MainWindow mainWindow, GameData gameData) : base(mainWindow, gameData, SquiglyShotSprite)
+        internal AlienShotSquigly(MainWindow mainWindow, GameData gameData) : base(mainWindow, gameData, SquiglyShotSprite)
         {
             ResetShotData();
         }
 
-        public override void Action()
+        internal override void Action()
         {
             if (gameData.ShotSync != 2)
                 return;

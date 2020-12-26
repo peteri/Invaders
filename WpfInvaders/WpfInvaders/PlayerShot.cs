@@ -4,22 +4,20 @@ using System.Text;
 
 namespace WpfInvaders
 {
-    public class PlayerShot : TimerObject
+    internal class PlayerShot : TimerObject
     {
-        private static byte[] shotSprite = { 0x0f };
-        private static byte[] shotExplodeSprite = { 0x99, 0x3C, 0x7E, 0x3D, 0xBC, 0x3E, 0x7C, 0x99 };
-        private readonly MainWindow mainWindow;
+        private static readonly byte[] shotSprite = { 0x0f };
+        private static readonly byte[] shotExplodeSprite = { 0x99, 0x3C, 0x7E, 0x3D, 0xBC, 0x3E, 0x7C, 0x99 };
         private readonly GameData gameData;
-        public readonly Sprite ShotSprite;
-        public readonly Sprite ShotExplodeSprite;
+        internal readonly Sprite ShotSprite;
+        internal readonly Sprite ShotExplodeSprite;
         private int explosionTimer=0x10;
 
-        public enum ShotStatus { Available, Initiated, NormalMove, HitSomething, AlienExploded, AlienExploding };
+        internal enum ShotStatus { Available, Initiated, NormalMove, HitSomething, AlienExploded, AlienExploding };
 
-        public ShotStatus Status;
-        public PlayerShot(MainWindow mainWindow, GameData gameData) : base(true, 0)
+        internal ShotStatus Status;
+        internal PlayerShot(GameData gameData) : base(true, 0)
         {
-            this.mainWindow = mainWindow;
             this.gameData = gameData;
             ShotSprite = new Sprite(shotSprite, 1);
             LineRender.AddSprite(ShotSprite);
@@ -27,7 +25,7 @@ namespace WpfInvaders
             LineRender.AddSprite(ShotExplodeSprite);
         }
 
-        public override void Action()
+        internal override void Action()
         {
             if ((ShotSprite.X & 0x80) != gameData.VblankStatus)
                 return;

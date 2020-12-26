@@ -2,22 +2,22 @@
 
 namespace WpfInvaders
 {
-    public class GameData
+    internal class GameData
     {
-        public short HiScore;
-        public byte Credits;
-        public short IsrDelay;
-        public bool CoinSwitch;
+        internal short HiScore;
+        internal byte Credits;
+        internal short IsrDelay;
+        internal bool CoinSwitch;
 
-        public bool SuspendPlay;
-        public bool GameMode;
-        public bool DemoMode;
-        public bool WaitStartLoop;
-        public bool AnimateSplash;
-        public byte alienShotReloadRate;
+        internal bool SuspendPlay;
+        internal bool GameMode;
+        internal bool DemoMode;
+        internal bool WaitStartLoop;
+        internal bool AnimateSplash;
+        internal byte alienShotReloadRate;
 
-        public MainWindow.SplashMajorState SplashMajorState;
-        public MainWindow.SplashMinorState SplashMinorState;
+        internal MainWindow.SplashMajorState SplashMajorState;
+        internal MainWindow.SplashMinorState SplashMinorState;
         internal int DelayMessagePosition;
         internal string DelayMessage;
         internal int DelayMessageIndex;
@@ -27,14 +27,14 @@ namespace WpfInvaders
         internal bool AlienExploding;
         internal bool SaucerActive;
         internal bool Invaded;
-        public int RefAlienDeltaX;
-        public int RefAlienDeltaY;
-        public int RefAlienY;
-        public int RefAlienX;
-        public int ShotCount;
-        public int SaucerScoreIndex;
+        internal int RefAlienDeltaX;
+        internal int RefAlienDeltaY;
+        internal int RefAlienY;
+        internal int RefAlienX;
+        internal int ShotCount;
+        internal int SaucerScoreIndex;
 
-        public int AlienCurIndex;
+        internal int AlienCurIndex;
         // Location of the next alien to draw
         internal int AlienCharacterCurX;
         internal int AlienCharacterCurY;
@@ -45,29 +45,29 @@ namespace WpfInvaders
         internal int AlienExplodeXOffset;
         internal int AlienExplodeY;
 
-        public bool RackDirectionRightToLeft;
-        public List<TimerObject> TimerObjects;
+        internal bool RackDirectionRightToLeft;
+        internal List<TimerObject> TimerObjects;
         internal bool AlienShotsEnabled;
         internal int AlienFireDelay;
-        public PlayerBase PlayerBase;
-        public PlayerShot PlayerShot;
-        public AlienShotRolling AlienShotRolling;
-        public AlienShotPlunger AlienShotPlunger;
-        public AlienShotSquigly AlienShotSquigly;
-        public MainWindow MainWindow { get; }
-        public bool SingleAlienIsTypeOne { get; internal set; }
-        public int VblankStatus { get; internal set; }
+        internal PlayerBase PlayerBase;
+        internal PlayerShot PlayerShot;
+        internal AlienShotRolling AlienShotRolling;
+        internal AlienShotPlunger AlienShotPlunger;
+        internal AlienShotSquigly AlienShotSquigly;
+        internal MainWindow MainWindow { get; }
+        internal bool SingleAlienIsTypeOne;
+        internal int VblankStatus;
 
-        public int SaucerDelta;
-        public int SaucerX;
+        internal int SaucerDelta;
+        internal int SaucerX;
 
-        public Aliens Aliens;
+        internal Aliens Aliens;
         internal int ShotSync;
         internal bool SaucerHit;
         internal int AlienExplodeTimer;
         internal bool PlungerShotActive;
 
-        public GameData(MainWindow mainWindow)
+        internal GameData(MainWindow mainWindow)
         {
             MainWindow = mainWindow;
         }
@@ -95,7 +95,7 @@ namespace WpfInvaders
             TimerObjects.Add(PlayerBase);
 
             // Players shot
-            PlayerShot = new PlayerShot(MainWindow, this);
+            PlayerShot = new PlayerShot(this);
             TimerObjects.Add(PlayerShot);
 
             // Alien shots
@@ -107,7 +107,7 @@ namespace WpfInvaders
             TimerObjects.Add(AlienShotSquigly);
         }
 
-        public void IncremeentSaucerScoreAndShotCount()
+        internal void IncremeentSaucerScoreAndShotCount()
         {
             ShotCount++;
             SaucerScoreIndex++;

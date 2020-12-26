@@ -4,21 +4,21 @@ using System.Text;
 
 namespace WpfInvaders
 {
-    public class PlayerData
+    internal class PlayerData
     {
-        public short Score;
-        public int ShipsRem;
+        internal short Score;
+        internal int ShipsRem;
 
-        public byte[] Sheild1 = new byte[6 * 8];
-        public byte[] Sheild2 = new byte[8 * 8];
-        public byte[] Sheild3 = new byte[6 * 8];
-        public byte[] Sheild4 = new byte[8 * 8];
-        public byte[] Aliens = new byte[55];
-        public int RefAlienDeltaX;
-        public int RefAlienY;
-        public int RefAlienX;
-        public int RackCount;
-        public int NumAliens;
+        internal byte[] Sheild1 = new byte[6 * 8];
+        internal byte[] Sheild2 = new byte[8 * 8];
+        internal byte[] Sheild3 = new byte[6 * 8];
+        internal byte[] Sheild4 = new byte[8 * 8];
+        internal byte[] Aliens = new byte[55];
+        internal int RefAlienDeltaX;
+        internal int RefAlienY;
+        internal int RefAlienX;
+        internal int RackCount;
+        internal int NumAliens;
         internal void ResetShields()
         {
             for (int i = 0; i < 22; i++)

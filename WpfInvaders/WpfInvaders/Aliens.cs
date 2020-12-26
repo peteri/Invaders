@@ -2,12 +2,12 @@
 
 namespace WpfInvaders
 {
-    public class Aliens
+    internal class Aliens
     {
         private readonly GameData gameData;
-        private PlayerData currentPlayer;
+        private readonly PlayerData currentPlayer;
 
-        public Aliens(GameData gameData, PlayerData currentPlayer)
+        internal Aliens(GameData gameData, PlayerData currentPlayer)
         {
             this.gameData = gameData;
             this.currentPlayer = currentPlayer;
@@ -195,7 +195,7 @@ namespace WpfInvaders
             throw new NotImplementedException();
         }
 
-        private bool CheckPlayFieldLineIsBlank(int line)
+        private static bool CheckPlayFieldLineIsBlank(int line)
         {
             var data = LineRender.RenderLine(line);
             for (int i = 4; i < 27; i++)
@@ -227,7 +227,7 @@ namespace WpfInvaders
             }
         }
 
-        public void CursorNextAlien()
+        internal void CursorNextAlien()
         {
             if (!gameData.PlayerOk)
                 return;
@@ -279,7 +279,7 @@ namespace WpfInvaders
             gameData.AlienCharacterStart = 0x80 + ((alienRow >> 1) << 4);
         }
 
-        public void DrawAlien()
+        internal void DrawAlien()
         {
             if (gameData.AlienExploding)
             {
@@ -372,7 +372,7 @@ namespace WpfInvaders
             int invaderType = gameData.SingleAlienIsTypeOne ?
                 gameData.AlienCharacterStart :
                 (gameData.AlienCharacterStart >> 3) + 0xaa;
-            invaderType = invaderType << 3;
+            invaderType <<= 3;
 
             for (int i = 0; i < 24; i++)
             {

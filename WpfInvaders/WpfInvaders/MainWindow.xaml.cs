@@ -21,7 +21,7 @@ namespace WpfInvaders
         private static extern uint TimeEndPeriod(uint uMilliseconds);
 
         [Flags]
-        public enum SwitchState
+        internal enum SwitchState
         {
             None = 0x00,
             Left = 0x01,
@@ -32,7 +32,7 @@ namespace WpfInvaders
             PlayTwoPlayer = 0x20,
         }
 
-        public enum SplashMinorState
+        internal enum SplashMinorState
         {
             Idle,
             Wait,
@@ -44,7 +44,7 @@ namespace WpfInvaders
             PlayDemoWaitEndofExplosion
         }
 
-        public enum SplashMajorState
+        internal enum SplashMajorState
         {
             OneSecondDelay,
             PrintPlay,
@@ -72,7 +72,7 @@ namespace WpfInvaders
         private readonly PlayerData playerTwo;
         internal PlayerData CurrentPlayer;
         private readonly GameData gameData;
-        public SwitchState switchState;
+        internal SwitchState switchState;
         private readonly Stopwatch frameStopwatch;
         private readonly Stopwatch timeInIsrStopwatch;
         private int timerCount = 0;
@@ -398,7 +398,7 @@ namespace WpfInvaders
             WriteText(0x13, 0x0c, "PRESS");
         }
 
-        private void ClearPlayField()
+        private static void ClearPlayField()
         {
             int i = 2;
             while (i < (LineRender.ScreenHeight * LineRender.ScreenWidth))
@@ -515,7 +515,7 @@ namespace WpfInvaders
             }
         }
 
-        private void DrawBottomLine()
+        private static void DrawBottomLine()
         {
             int i = 2;
             for (int j = 0; j < LineRender.ScreenHeight; j++)
@@ -525,7 +525,7 @@ namespace WpfInvaders
             }
         }
 
-        private void ShieldsToScreen()
+        private static void ShieldsToScreen()
         {
             WriteUnmappedText(0x7, 4, "\x00\x01\x02##\x06\x07\x08\x09##\x0e\x0f\x10##\x14\x15\x16\x17");
             WriteUnmappedText(0x6, 4, "\x03\x04\x05##\x0a\x0b\x0c\x0d##\x11\x12\x13##\x18\x19\x1a\x1b");
@@ -598,7 +598,7 @@ namespace WpfInvaders
             gameData.CoinSwitch = (switchState & SwitchState.Coin) != 0;
         }
 
-        private byte BcdAdd(byte a, byte b)
+        private static byte BcdAdd(byte a, byte b)
         {
             int halfCarry = 0;
             int lowNybble = (a & 0x0f) + (b & 0x0f);
@@ -626,13 +626,13 @@ namespace WpfInvaders
             DrawNumCredits();
         }
 
-        internal void WriteUnmappedText(int y, int x, string text)
+        internal static void WriteUnmappedText(int y, int x, string text)
         {
             foreach (char c in text)
                 LineRender.Screen[y + (x++) * LineRender.ScreenWidth] = (byte)c;
         }
 
-        internal void WriteText(int y, int x, string text)
+        internal static void WriteText(int y, int x, string text)
         {
             foreach (char c in text)
                 LineRender.Screen[y + (x++) * LineRender.ScreenWidth] = CharacterRom.Map[c];
@@ -643,7 +643,7 @@ namespace WpfInvaders
             WriteHexByte(0x01, 0x18, gameData.Credits);
         }
 
-        private void CreditLabel()
+        private static void CreditLabel()
         {
             WriteText(0x01, 0x11, "CREDIT ");
         }
@@ -663,28 +663,28 @@ namespace WpfInvaders
             WriteHexWord(0x1c, 0x03, playerOne.Score);
         }
 
-        private void DrawScreenHead()
+        private static void DrawScreenHead()
         {
             WriteText(0x1e, 0x00, " SCORE<1> HI-SCORE SCORE<2> ");
         }
 
-        private void WriteHexWord(int y, int x, short w)
+        private static void WriteHexWord(int y, int x, short w)
         {
             WriteText(y, x, w.ToString("X4"));
         }
 
-        private void WriteHexByte(int y, int x, byte b)
+        private static void WriteHexByte(int y, int x, byte b)
         {
             WriteText(y, x, b.ToString("X2"));
         }
 
-        internal void ClearScreen()
+        internal static void ClearScreen()
         {
             for (int i = 0; i < (LineRender.ScreenHeight * LineRender.ScreenWidth); i++)
                 LineRender.Screen[i] = 0x23;
         }
 
-        public void StopIsr()
+        internal void StopIsr()
         {
             invokeTick = false;
             Pause.Content = "Run";

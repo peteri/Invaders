@@ -2,17 +2,17 @@
 
 namespace WpfInvaders
 {
-    public class Sprite
+    internal class Sprite
     {
-        public bool Visible;
+        internal bool Visible;
         byte[,,,] data;
-        public int X;
-        public int Y;
-        public int Image;
+        internal int X;
+        internal int Y;
+        internal int Image;
         int width;
         byte collided;
 
-        public Sprite(byte[] spriteImages, int images)
+        internal Sprite(byte[] spriteImages, int images)
         {
             Visible = false;
             Image = 0;
@@ -32,7 +32,7 @@ namespace WpfInvaders
             }
         }
 
-        public void Draw(int line, byte[] lineData)
+        internal void Draw(int line, byte[] lineData)
         {
             if ((line >= X) && (line < X + width))
             {
@@ -47,14 +47,14 @@ namespace WpfInvaders
             }
         }
 
-        public bool Collided()
+        internal bool Collided()
         {
             if (!Visible)
                 return false;
             return collided != 0;
         }
 
-        public void ClearCollided()
+        internal void ClearCollided()
         {
             collided = 0;
         }
