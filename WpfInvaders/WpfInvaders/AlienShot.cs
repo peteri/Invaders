@@ -116,6 +116,8 @@ namespace WpfInvaders
                 }
                 if (ShotBlowCount == 0)
                 {
+#warning Need to do some battle damage from eraseing the aliens shot as well.
+                    Shot.BattleDamage();
                     ShotExplosion.BattleDamage();
                     ShotExplosion.Visible = false;
                 }

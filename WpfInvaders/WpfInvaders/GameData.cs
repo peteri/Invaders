@@ -26,6 +26,7 @@ namespace WpfInvaders
         internal bool FireBounce;
         internal bool AlienExploding;
         internal bool SaucerActive;
+        internal bool Invaded;
         public int RefAlienDeltaX;
         public int RefAlienDeltaY;
         public int RefAlienY;

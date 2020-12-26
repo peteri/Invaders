@@ -30,6 +30,8 @@ namespace WpfInvaders
         private readonly MainWindow mainWindow;
         private readonly GameData gameData;
         private static int demoCommand = 0;
+        private int blowUpCounter;
+        private int blowUpChanges;
         public int PlayerX;
         public int PlayerY;
         public PlayerAlive Alive { get; set; }
@@ -41,14 +43,56 @@ namespace WpfInvaders
             Alive = PlayerAlive.Alive;
             PlayerX = 0x10;
             PlayerY = 0x20;
+            blowUpCounter = 5;
+            blowUpChanges = 0x0c;
+        }
+
+        private void ResetState()
+        {
+            Alive = PlayerAlive.Alive;
+            PlayerX = 0x10;
+            PlayerY = 0x20;
+            blowUpCounter = 5;
+            blowUpChanges = 0x0c;
         }
 
         public override void Action()
         {
             if (Alive != PlayerAlive.Alive)
             {
-                // Make the player die...
-                throw new NotImplementedException();
+                blowUpCounter--;
+                if (blowUpCounter != 0)
+                    return;
+                gameData.PlayerOk = false;
+                gameData.AlienShotsEnabled = false;
+                gameData.AlienFireDelay = 0x30;
+                blowUpCounter = 5;
+                blowUpChanges--;
+                if (blowUpChanges == 0)
+                {
+                    ResetState();
+                    if (gameData.Invaded)
+                        return;
+                    if (gameData.GameMode == false)
+                        return;
+                    throw new NotImplementedException("Player died need to copy code from 02d0 to swap to other player or decrement ship counter.");
+                }
+                else
+                {
+                    int explodingSprite = PlayerBaseCharacters[PlayerX & 0x07];
+                    int playerSize = (PlayerX & 0x07) == 0 ? 2 : 3;
+                    if (Alive == PlayerAlive.BlowUpOne)
+                    {
+                        explodingSprite += playerSize;
+                        Alive = PlayerAlive.BlowUpTwo;
+                    }
+                    else
+                    {
+                        explodingSprite += playerSize*2;
+                        Alive = PlayerAlive.BlowUpOne;
+                    }
+                    DrawPlayerSprite(explodingSprite);
+                }
             }
             else
             {
@@ -82,11 +126,15 @@ namespace WpfInvaders
                     case Command.Left: if (PlayerX > 0x10) PlayerX--; break;
                     case Command.Right: if (PlayerX < 0xb9) PlayerX++; break;
                 }
+                DrawPlayerSprite(PlayerBaseCharacters[PlayerX & 0x07]);
             }
+        }
+
+        private void DrawPlayerSprite(int playerSprite)
+        {
             int screenX = PlayerX >> 3;
             int screenY = PlayerY >> 3; // Constant really
             int screenOffset = screenX * LineRender.ScreenWidth + screenY;
-            int playerSprite = PlayerBaseCharacters[PlayerX & 0x07];
             int count = (PlayerX & 0x07) == 0 ? 2 : 3;
             for (int i = 0; i < count; i++)
             {

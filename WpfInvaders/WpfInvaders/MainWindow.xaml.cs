@@ -40,7 +40,8 @@ namespace WpfInvaders
             PrintMessageDelay,
             AnimateYAlien,
             AnimateCoinAlien,
-            PlayDemoWaitDeath
+            PlayDemoWaitDeath,
+            PlayDemoWaitEndofExplosion
         }
 
         public enum SplashMajorState
@@ -226,8 +227,12 @@ namespace WpfInvaders
 
         private void GameLoopStep()
         {
-            PlayerFireOrDemo();
-            PlayerShotHit();
+            if (gameData.DemoMode)
+            {
+                PlayerFireOrDemo();
+                PlayerShotHit();
+                IsrTasksSplashScreen();
+            }
         }
 
         internal void RenderScreen()
@@ -283,7 +288,18 @@ namespace WpfInvaders
                     if (gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive)
                     {
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
+                        gameData.SplashMinorState = SplashMinorState.PlayDemoWaitEndofExplosion;
+                    }
+                    break;
+                case SplashMinorState.PlayDemoWaitEndofExplosion:
+                    if (gameData.PlayerBase.Alive == PlayerBase.PlayerAlive.Alive)
+                    {
+                        gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
+                        gameData.DemoMode = false;
                         gameData.SplashMinorState = SplashMinorState.Idle;
+                        // Hide all the sprites.
+                        foreach (var sprite in LineRender.Sprites)
+                            sprite.Visible = false;
                     }
                     break;
             }
