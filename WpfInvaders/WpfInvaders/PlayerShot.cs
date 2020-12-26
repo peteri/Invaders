@@ -20,9 +20,9 @@ namespace WpfInvaders
         {
             this.gameData = gameData;
             ShotSprite = new Sprite(shotSprite, 1);
-            LineRender.AddSprite(ShotSprite);
+            LineRender.Sprites.Add(ShotSprite);
             ShotExplodeSprite = new Sprite(shotExplodeSprite, 1);
-            LineRender.AddSprite(ShotExplodeSprite);
+            LineRender.Sprites.Add(ShotExplodeSprite);
         }
 
         internal override void Action()
