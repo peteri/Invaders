@@ -39,7 +39,15 @@ namespace WpfInvaders
             this.mainWindow = mainWindow;
             this.gameData = gameData;
             DeltaY = -4;
-            ShotBlowCount = 3;
+            ShotBlowCount = 4;
+        }
+
+        protected virtual void ResetShotData()
+        {
+            ShotBlowCount = 4;
+            ShotActive = false;
+            ShotBlowingUp = false;
+            ShotStepCount = 0;
         }
 
         protected bool HandleAlienShot(AlienShot otherShot1, AlienShot otherShot2)
@@ -93,7 +101,25 @@ namespace WpfInvaders
                     Shot.Image = 0;
                 Shot.Y += DeltaY;
                 Shot.Visible = true;
-            };
+                if (Shot.Y < 0x15)
+                    ShotBlowingUp = true;
+            }
+            else
+            {
+                ShotBlowCount--;
+                if (ShotBlowCount == 3)
+                {
+                    Shot.Visible = false;
+                    ShotExplosion.X = Shot.X - 2;
+                    ShotExplosion.Y = Shot.Y - 2;
+                    ShotExplosion.Visible = true;
+                }
+                if (ShotBlowCount == 0)
+                {
+                    ShotExplosion.BattleDamage();
+                    ShotExplosion.Visible = false;
+                }
+            }
         }
 
         private void ActivateShot()
@@ -103,5 +129,12 @@ namespace WpfInvaders
         }
 
         protected abstract int ShotColumn();
+
+        internal void Collided()
+        {
+            if ((Shot.Y >= 0x1e) && (Shot.Y <= 0x27))
+                gameData.PlayerBase.Alive = PlayerBase.PlayerAlive.BlowUpOne;
+            ShotBlowingUp = true;
+        }
     }
 }

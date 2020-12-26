@@ -32,10 +32,10 @@ namespace WpfInvaders
             return shotColumn;
         }
 
-        private void ResetShotData()
+        protected override void ResetShotData()
         {
+            base.ResetShotData();
             currentShotColumn = 0;
-            ShotStepCount = 0;
         }
     }
 }

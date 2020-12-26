@@ -152,9 +152,13 @@ namespace WpfInvaders
         private void HandleSpriteCollisions()
         {
             if (gameData?.PlayerShot?.ShotSprite.Collided() ?? false)
-            {
                 gameData.AlienExploding = true;
-            }
+            if (gameData?.AlienShotRolling.Shot.Collided() ?? false)
+                gameData.AlienShotRolling.Collided();
+            if (gameData?.AlienShotPlunger.Shot.Collided() ?? false)
+                gameData.AlienShotPlunger.Collided();
+            if (gameData?.AlienShotSquigly.Shot.Collided() ?? false)
+                gameData.AlienShotSquigly.Collided();
         }
 
         private void GameTick()
@@ -408,7 +412,7 @@ namespace WpfInvaders
 
             }
             bool playerHitAlien = false;
-            if (gameData.PlayerShot.ShotSprite.Y >= gameData.RefAlienY)
+            if (gameData.PlayerShot.ShotSprite.Y >= gameData.RefAlienY) 
             {
                 int rowY = gameData.RefAlienY;
                 int alienIndex = 0;
@@ -417,23 +421,25 @@ namespace WpfInvaders
                     rowY += 0x10;
                     alienIndex += 11;
                 }
-                int colX = gameData.RefAlienX;
-                while (colX < (gameData.PlayerShot.ShotSprite.X-0x10))
+
+                int col = FindColumn(gameData.PlayerShot.ShotSprite.X);
+
+                if ((col >= 0) && (col <= 10))
                 {
-                    colX += 0x10;
-                    alienIndex++;
-                }
-                if (CurrentPlayer.Aliens[alienIndex] != 0)
-                {
-                    CurrentPlayer.Aliens[alienIndex] = 0;
-                    gameData.AlienExplodeTimer = 0x10;
-                    gameData.AlienExplodeX = colX >> 3;
-                    gameData.AlienExplodeXOffset = colX & 0x07;
-                    gameData.AlienExplodeY = rowY >> 3;
-                    gameData.Aliens.ExplodeAlien();
-                    gameData.PlayerShot.ShotSprite.Visible = false;
-                    gameData.PlayerShot.Status = PlayerShot.ShotStatus.AlienExploding;
-                    playerHitAlien = true;
+                    alienIndex += col;
+                    int colX = gameData.RefAlienX + col * 0x10;
+                    if (CurrentPlayer.Aliens[alienIndex] != 0)
+                    {
+                        CurrentPlayer.Aliens[alienIndex] = 0;
+                        gameData.AlienExplodeTimer = 0x10;
+                        gameData.AlienExplodeX = colX >> 3;
+                        gameData.AlienExplodeXOffset = colX & 0x07;
+                        gameData.AlienExplodeY = rowY >> 3;
+                        gameData.Aliens.ExplodeAlien();
+                        gameData.PlayerShot.ShotSprite.Visible = false;
+                        gameData.PlayerShot.Status = PlayerShot.ShotStatus.AlienExploding;
+                        playerHitAlien = true;
+                    }
                 }
             }
 
@@ -444,7 +450,20 @@ namespace WpfInvaders
                 gameData.AlienExploding = false;
                 return;
             }
+        }
 
+        internal int FindColumn(int X)
+        {
+            if (X < gameData.RefAlienX)
+                return -1;
+            int colX = gameData.RefAlienX + 0x10;
+            int column = 0;
+            while (colX <= X)
+            {
+                colX += 0x10;
+                column++;
+            }
+            return column;
         }
 
         private void PlayerFireOrDemo()

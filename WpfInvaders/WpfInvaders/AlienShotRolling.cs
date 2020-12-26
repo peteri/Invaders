@@ -33,13 +33,16 @@ namespace WpfInvaders
         // Fire a shot at the player.
         protected override int ShotColumn()
         {
-            return 3;
+            int col = mainWindow.FindColumn(gameData.PlayerBase.PlayerX + 8);
+            if (col == -1) return 1;
+            if (col == 11) return 11;
+            return col + 1;
         }
 
-        private void ResetShotData()
+        protected override void ResetShotData()
         {
+            base.ResetShotData();
             ExtraCount = 2;
-            ShotStepCount = 0;
             fireShot = false;
         }
     }

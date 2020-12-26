@@ -36,10 +36,10 @@ namespace WpfInvaders
             return shotColumn;
         }
 
-        private void ResetShotData()
+        protected override void ResetShotData()
         {
-            ShotStepCount = 0;
-            currentShotColumn = 0;
+            base.ResetShotData();
+            currentShotColumn = 0; 
             mainWindow.CurrentPlayer.CountAliens();
             if (mainWindow.CurrentPlayer.NumAliens == 1)
             {
