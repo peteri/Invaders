@@ -54,6 +54,7 @@ namespace WpfInvaders
         internal AlienShotRolling AlienShotRolling;
         internal AlienShotPlunger AlienShotPlunger;
         internal AlienShotSquigly AlienShotSquigly;
+        internal SplashAlienAnimation SplashAlienAnimation;
         internal MainWindow MainWindow { get; }
         internal bool SingleAlienIsTypeOne;
         internal int VblankStatus;
@@ -74,6 +75,7 @@ namespace WpfInvaders
 
         internal void ResetVariables(PlayerData currentPlayer)
         {
+            LineRender.Sprites.Clear();
             RefAlienX = 0x18;
             RefAlienY = 0x78;
             RefAlienDeltaY = 0x00;

@@ -6,7 +6,7 @@ namespace WpfInvaders
 {
     internal class AlienShotRolling : AlienShot
     {
-        private static byte[] RollingShotSprite = { 0x00, 0xfe, 0x00, 0x24, 0xfe, 0x12, 0x00, 0xfe, 0x00, 0x48, 0xfe, 0x90 };
+        private static readonly byte[] RollingShotSprite = { 0x00, 0xfe, 0x00, 0x24, 0xfe, 0x12, 0x00, 0xfe, 0x00, 0x48, 0xfe, 0x90 };
         private bool fireShot;
         internal AlienShotRolling(MainWindow mainWindow, GameData gameData) : base(mainWindow, gameData, RollingShotSprite)
         {

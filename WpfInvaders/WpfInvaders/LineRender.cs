@@ -32,10 +32,5 @@ namespace WpfInvaders
                     sprite.Draw(line, returnData);
             return returnData;
         }
-
-        internal static void AddSprite(Sprite sprite)
-        {
-            Sprites.Add(sprite);
-        }
     }
 }

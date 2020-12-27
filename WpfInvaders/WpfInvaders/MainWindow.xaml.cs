@@ -55,7 +55,12 @@ namespace WpfInvaders
             Print20Points,
             Print10Points,
             ScoreTableTwoSecondDelay,
-            AnimateY,
+            AnimateY1,
+            AnimateY2,
+            AnimateY3,
+            AnimateY4,
+            AnimateY5,
+            AnimateY6,
             PlayDemo,
             AfterPlayDelay,
             InsertCoin,
@@ -302,6 +307,9 @@ namespace WpfInvaders
                             sprite.Visible = false;
                     }
                     break;
+                case SplashMinorState.AnimateYAlien:
+                    gameData.SplashMinorState = gameData.SplashAlienAnimation.Animate();
+                    break;
             }
         }
 
@@ -338,8 +346,29 @@ namespace WpfInvaders
                     return PrintDelayedMessage(0x0a08, "=10 POINTS");
                 case SplashMajorState.ScoreTableTwoSecondDelay:
                     return SplashDelay(0x80);
-                case SplashMajorState.AnimateY:
-                    return SplashMinorState.Idle;
+                case SplashMajorState.AnimateY1:
+                    if (gameData.AnimateSplash == false)
+                    {
+                        gameData.SplashMajorState = SplashMajorState.PlayDemo - 1;
+                        return SplashMinorState.Idle;
+                    }
+                    gameData.SplashAlienAnimation = new SplashAlienAnimation();
+                    LineRender.Sprites.Add(gameData.SplashAlienAnimation.AlienMovingY);
+                    StopIsr();
+                    return AnimateY(223, 123, 0);
+                case SplashMajorState.AnimateY2:
+                    WriteText(0x17, 0x0c, "PLA ");
+                    return AnimateY(120, 221, 2);
+                case SplashMajorState.AnimateY3:
+                    return SplashDelay(0x40);
+                case SplashMajorState.AnimateY4:
+                    return AnimateY(221, 120, 4);
+                case SplashMajorState.AnimateY5:
+                    return SplashDelay(0x40);
+                case SplashMajorState.AnimateY6:
+                    gameData.SplashAlienAnimation.AlienMovingY.Visible = false;
+                    WriteText(0x17, 0x0c, "PLAY");
+                    return SplashDelay(0x80);
                 case SplashMajorState.PlayDemo:
                     ClearPlayField();
                     playerOne.ShipsRem = 3;
@@ -380,6 +409,12 @@ namespace WpfInvaders
         {
             gameData.IsrDelay = delay;
             return SplashMinorState.Wait;
+        }
+
+        private SplashMinorState AnimateY(int startX, int targetX, int image)
+        {
+            gameData.SplashAlienAnimation.Init(0x17 * 8, startX, targetX, image);
+            return SplashMinorState.AnimateYAlien;
         }
 
         private SplashMinorState PrintDelayedMessage(int screenPosition, string message)
@@ -428,7 +463,7 @@ namespace WpfInvaders
 
             }
             bool playerHitAlien = false;
-            if (gameData.PlayerShot.ShotSprite.Y >= gameData.RefAlienY) 
+            if (gameData.PlayerShot.ShotSprite.Y >= gameData.RefAlienY)
             {
                 int rowY = gameData.RefAlienY;
                 int alienIndex = 0;

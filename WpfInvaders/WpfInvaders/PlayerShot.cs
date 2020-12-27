@@ -20,14 +20,14 @@ namespace WpfInvaders
         {
             this.gameData = gameData;
             ShotSprite = new Sprite(shotSprite, 1);
-            LineRender.AddSprite(ShotSprite);
+            LineRender.Sprites.Add(ShotSprite);
             ShotExplodeSprite = new Sprite(shotExplodeSprite, 1);
-            LineRender.AddSprite(ShotExplodeSprite);
+            LineRender.Sprites.Add(ShotExplodeSprite);
         }
 
         internal override void Action()
         {
-            if ((ShotSprite.X & 0x80) != gameData.VblankStatus)
+            if (((ShotSprite.X+0x20) & 0x80) != gameData.VblankStatus)
                 return;
             switch (Status)
             {
@@ -39,7 +39,6 @@ namespace WpfInvaders
                     ShotSprite.Y = 0x28;
                     ShotSprite.X = gameData.PlayerBase.PlayerX + 8;
                     Status = ShotStatus.NormalMove;
-//                    mainWindow.StopIsr();
                     break;
                 case ShotStatus.NormalMove:
                     ShotSprite.Y += 4;
