@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WpfInvaders
+﻿namespace WpfInvaders
 {
     internal class Sprite
     {

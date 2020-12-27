@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WpfInvaders
+﻿namespace WpfInvaders
 {
     internal abstract class TimerObject
     {

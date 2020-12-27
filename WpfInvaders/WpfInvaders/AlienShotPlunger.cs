@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WpfInvaders
+﻿namespace WpfInvaders
 {
     internal class AlienShotPlunger : AlienShot
     {
@@ -39,7 +35,6 @@ namespace WpfInvaders
         internal override void ResetShotData()
         {
             base.ResetShotData();
-            currentShotColumn = 0; 
             mainWindow.CurrentPlayer.CountAliens();
             if (mainWindow.CurrentPlayer.NumAliens == 1)
             {

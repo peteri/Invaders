@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WpfInvaders
+﻿namespace WpfInvaders
 {
     internal class AlienShotSquigly : AlienShot
     {
@@ -35,7 +31,6 @@ namespace WpfInvaders
         internal override void ResetShotData()
         {
             base.ResetShotData();
-            currentShotColumn = 0;
         }
     }
 }
