@@ -10,6 +10,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -22,15 +23,22 @@
                 <Label Margin="5,0,5,5">Space - Fire</Label>
             </StackPanel>
         </GroupBox>
-        
-        <GroupBox Margin="3" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Header="Emulator">
+        <GroupBox Margin="3" Grid.Row="0" Grid.Column="1" Header="Players">
+            <StackPanel>
+                <Label Margin="5">1 - One player</Label>
+                <Label Margin="5,0,5,5">2 - Two players</Label>
+                <Label Margin="5,0,5,5">3 - Add Coin</Label>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Margin="3" Grid.Row="0" Grid.Column="2" Header="Simulator">
             <StackPanel>
                 <Label Margin="5">P - Pause</Label>
                 <Label Margin="5,0,5,5">Shift-P - Step Frame</Label>
                 <Label Margin="5,0,5,5">F12 - Screen shot</Label>
             </StackPanel>
         </GroupBox>
-        <GroupBox Margin="3" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Header="Diagnostics">
+        <GroupBox Margin="3" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Header="Diagnostics">
             <StackPanel>
                 <Label Margin="5">F4 - Display character map</Label>
                 <Label Margin="5,0,5,5">F5 - Display shifted aliens</Label>
