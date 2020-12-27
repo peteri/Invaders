@@ -36,7 +36,7 @@ namespace WpfInvaders
             return shotColumn;
         }
 
-        protected override void ResetShotData()
+        internal override void ResetShotData()
         {
             base.ResetShotData();
             currentShotColumn = 0; 

@@ -39,7 +39,7 @@ namespace WpfInvaders
             return col + 1;
         }
 
-        protected override void ResetShotData()
+        internal override void ResetShotData()
         {
             base.ResetShotData();
             ExtraCount = 2;

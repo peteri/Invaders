@@ -29,7 +29,7 @@ namespace WpfInvaders
         {
             AlienMovingY.X = startX;
             AlienMovingY.Y = y;
-            AlienMovingY.Image = image;
+            AlienMovingY.Image = image + ((startX == 0) ? 1 : 0);
             this.image = image;
             this.targetX = targetX;
             deltaX = (targetX < startX) ? -1 : 1;
@@ -46,7 +46,7 @@ namespace WpfInvaders
         internal MainWindow.SplashMinorState Animate()
         {
             animateCount--;
-            if (animateCount==0)
+            if (animateCount == 0)
             {
                 animateCount = 4;
                 if (AlienMovingY.Image == image)
@@ -54,10 +54,10 @@ namespace WpfInvaders
                 else
                     AlienMovingY.Image = image;
             }
-            AlienMovingY.X+=deltaX;
-            return (AlienMovingY.X == targetX) ? 
-                MainWindow.SplashMinorState.Idle : 
-                MainWindow.SplashMinorState.AnimateYAlien;
+            AlienMovingY.X += deltaX;
+            return (AlienMovingY.X == targetX) ?
+                MainWindow.SplashMinorState.Idle :
+                MainWindow.SplashMinorState.AnimateSplashAlien;
         }
     }
 }

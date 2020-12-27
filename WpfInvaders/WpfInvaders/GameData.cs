@@ -76,6 +76,7 @@ namespace WpfInvaders
         internal void ResetVariables(PlayerData currentPlayer)
         {
             LineRender.Sprites.Clear();
+            
             RefAlienX = 0x18;
             RefAlienY = 0x78;
             RefAlienDeltaY = 0x00;

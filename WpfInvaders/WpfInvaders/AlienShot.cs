@@ -42,7 +42,7 @@ namespace WpfInvaders
             ShotBlowCount = 4;
         }
 
-        protected virtual void ResetShotData()
+        internal virtual void ResetShotData()
         {
             ShotBlowCount = 4;
             ShotActive = false;
@@ -58,7 +58,7 @@ namespace WpfInvaders
             }
             else
             {
-                if (gameData.SplashMajorState == MainWindow.SplashMajorState.AnimateCoinExplode)
+                if (gameData.SplashMajorState == MainWindow.SplashMajorState.AnimateCoinExplodeFireBullet)
                 {
                     ActivateShot();
                 }
