@@ -354,7 +354,6 @@ namespace WpfInvaders
                     }
                     gameData.SplashAlienAnimation = new SplashAlienAnimation();
                     LineRender.Sprites.Add(gameData.SplashAlienAnimation.AlienMovingY);
-                    StopIsr();
                     return AnimateY(223, 123, 0);
                 case SplashMajorState.AnimateY2:
                     WriteText(0x17, 0x0c, "PLA ");
