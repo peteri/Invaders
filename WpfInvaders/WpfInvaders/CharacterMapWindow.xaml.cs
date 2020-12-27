@@ -24,6 +24,7 @@ namespace WpfInvaders
             InitializeComponent();
             frame = new WriteableBitmap(TotalSize, TotalSize, 96, 96, PixelFormats.Bgr24, null);
             imgCharMapRotated.Source = frame;
+            FillGrid();
         }
 
         private void FillGrid()
@@ -117,11 +118,6 @@ namespace WpfInvaders
             }
             Int32Rect rect = new Int32Rect(0, 0, PixelSize * 8, PixelSize * 8);
             frame.WritePixels(rect, buffer, stride, x, y);
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            FillGrid();
         }
     }
 }
