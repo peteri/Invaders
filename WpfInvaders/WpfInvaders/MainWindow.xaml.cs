@@ -60,6 +60,7 @@ namespace WpfInvaders
             AnimateY3,
             AnimateY4,
             AnimateY5,
+            AnimateY6,
             PlayDemo,
             AfterPlayDelay,
             InsertCoin,
@@ -357,12 +358,14 @@ namespace WpfInvaders
                     return AnimateY(223, 123, 0);
                 case SplashMajorState.AnimateY2:
                     WriteText(0x17, 0x0c, "PLA ");
-                    return AnimateY(120, 224, 2);
+                    return AnimateY(120, 221, 2);
                 case SplashMajorState.AnimateY3:
                     return SplashDelay(0x40);
                 case SplashMajorState.AnimateY4:
-                    return AnimateY(224, 120, 4);
+                    return AnimateY(221, 120, 4);
                 case SplashMajorState.AnimateY5:
+                    return SplashDelay(0x40);
+                case SplashMajorState.AnimateY6:
                     gameData.SplashAlienAnimation.AlienMovingY.Visible = false;
                     WriteText(0x17, 0x0c, "PLAY");
                     return SplashDelay(0x80);
