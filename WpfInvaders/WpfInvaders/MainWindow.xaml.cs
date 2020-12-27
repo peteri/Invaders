@@ -88,7 +88,8 @@ namespace WpfInvaders
         private volatile bool invokeTick;
         // Holding down Right Ctrl gives type B aliens
         // Holding down Left  Ctrl gives type C aliens
-        private int DiagnosticsAlientType = 0x80;
+        private int DiagnosticsAlienType = 0x80;
+        private bool shiftKeyDown;
 
         public MainWindow()
         {
@@ -409,7 +410,7 @@ namespace WpfInvaders
                     }
                     gameData.SplashAlienAnimation = new SplashAlienAnimation();
                     LineRender.Sprites.Add(gameData.SplashAlienAnimation.AlienMovingY);
-                    return AnimateSplashAlien(0, 115, 0, 0x1a*8);
+                    return AnimateSplashAlien(0, 115, 0, 0x1a * 8);
                 case SplashMajorState.AnimateCoinExplodeFireBullet:
                     gameData.AlienShotSquigly.Shot.X = 115 + 8;
                     gameData.AlienShotSquigly.Shot.Y = 0x1a * 8 - 0x0b;
@@ -437,7 +438,7 @@ namespace WpfInvaders
             return SplashMinorState.Wait;
         }
 
-        private SplashMinorState AnimateSplashAlien(int startX, int targetX, int image, int y=0x17*8)
+        private SplashMinorState AnimateSplashAlien(int startX, int targetX, int image, int y = 0x17 * 8)
         {
             gameData.SplashAlienAnimation.Init(y, startX, targetX, image);
             return SplashMinorState.AnimateSplashAlien;
@@ -789,20 +790,25 @@ namespace WpfInvaders
             {
                 case Key.A: clearMask = SwitchState.Left; break;
                 case Key.D: clearMask = SwitchState.Right; break;
-                case Key.LeftShift: clearMask = SwitchState.Fire; break;
+                case Key.Space: clearMask = SwitchState.Fire; break;
                 case Key.D1: clearMask = SwitchState.PlayOnePlayer; break;
                 case Key.D2: clearMask = SwitchState.PlayTwoPlayer; break;
                 case Key.D3: clearMask = SwitchState.Coin; break;
-                case Key.F4:
-                    StopIsr();
-                    new CharacterMapWindow().Show();
+                case Key.RightCtrl:
+                case Key.LeftCtrl: DiagnosticsAlienType = 0x80; break;
+                case Key.LeftShift:
+                case Key.RightShift: shiftKeyDown = false; break;
+                case Key.P:
+                    if (shiftKeyDown)
+                        FrameAdvance_Click(null, null);
+                    else
+                        Pause_Click(null, null);
                     break;
-                case Key.RightCtrl: DiagnosticsAlientType = 0x80; break;
-                case Key.LeftCtrl: DiagnosticsAlientType = 0x80; break;
-                case Key.F5: DiagnosticPages.ShowShiftedInvaders(this, DiagnosticsAlientType); break;
-                case Key.F6: DiagnosticPages.ShowExplodedInvaders(this, gameData, 0, DiagnosticsAlientType); break;
-                case Key.F7: DiagnosticPages.ShowExplodedInvaders(this, gameData, 1, DiagnosticsAlientType); break;
-                case Key.F8: DiagnosticPages.ShowExplodedInvaders(this, gameData, 2, DiagnosticsAlientType); break;
+                case Key.F4: StopIsr(); new CharacterMapWindow().ShowDialog(); break;
+                case Key.F5: StopIsr(); DiagnosticPages.ShowShiftedInvaders(this, DiagnosticsAlienType); break;
+                case Key.F6: StopIsr(); DiagnosticPages.ShowExplodedInvaders(this, gameData, 0, DiagnosticsAlienType, shiftKeyDown); break;
+                case Key.F7: StopIsr(); DiagnosticPages.ShowExplodedInvaders(this, gameData, 1, DiagnosticsAlienType, shiftKeyDown); break;
+                case Key.F8: StopIsr(); DiagnosticPages.ShowExplodedInvaders(this, gameData, 2, DiagnosticsAlienType, shiftKeyDown); break;
                 case Key.F12: SaveScreenShot("c:\\temp\\invader.png"); break;
             }
             switchState &= ~clearMask;
@@ -815,13 +821,15 @@ namespace WpfInvaders
             {
                 case Key.A: setMask = SwitchState.Left; break;
                 case Key.D: setMask = SwitchState.Right; break;
-                case Key.LeftShift: setMask = SwitchState.Fire; break;
+                case Key.Space: setMask = SwitchState.Fire; break;
                 case Key.D1: setMask = SwitchState.PlayOnePlayer; break;
                 case Key.D2: setMask = SwitchState.PlayTwoPlayer; break;
                 case Key.D3: setMask = SwitchState.Coin; break;
                 // Used by diagnostics
-                case Key.RightCtrl: DiagnosticsAlientType = 0x90; break;
-                case Key.LeftCtrl: DiagnosticsAlientType = 0xa0; break;
+                case Key.RightCtrl: DiagnosticsAlienType = 0x90; break;
+                case Key.LeftCtrl: DiagnosticsAlienType = 0xa0; break;
+                case Key.LeftShift:
+                case Key.RightShift: shiftKeyDown = true; break;
             }
             switchState |= setMask;
         }

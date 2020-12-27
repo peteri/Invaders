@@ -87,7 +87,7 @@ namespace WpfInvaders
             }
         }
 
-        internal static void ShowExplodedInvaders(MainWindow mainWindow, GameData gameData, int explode, int alienTypeStart)
+        internal static void ShowExplodedInvaders(MainWindow mainWindow, GameData gameData, int explode, int alienTypeStart,bool eraseExplosions)
         {
             mainWindow.StopIsr();
             MainWindow.ClearScreen();
@@ -120,17 +120,20 @@ namespace WpfInvaders
             DisplayNybbleInfo();
             mainWindow.RenderScreen();
             mainWindow.SaveScreenShot($"c:\\temp\\before-erase-{explode}-{alienTypeStart}.png");
-            for (int i = 0; i < 12; i++)
+            if (eraseExplosions)
             {
-                int y = 29 - i * 2;
-                int xOffs = (i / 3) + 1;
-                EraseExplosion(gameData, aliens, 0x10, y, xOffs, explode, true);
-                EraseExplosion(gameData, aliens, 0x70, y, xOffs, explode, false);
-                EraseExplosion(gameData, aliens, 0x58, y, xOffs, 0, true);
-                EraseExplosion(gameData, aliens, 0xb8, y, xOffs, 0, false);
+                for (int i = 0; i < 12; i++)
+                {
+                    int y = 29 - i * 2;
+                    int xOffs = (i / 3) + 1;
+                    EraseExplosion(gameData, aliens, 0x10, y, xOffs, explode, true);
+                    EraseExplosion(gameData, aliens, 0x70, y, xOffs, explode, false);
+                    EraseExplosion(gameData, aliens, 0x58, y, xOffs, 0, true);
+                    EraseExplosion(gameData, aliens, 0xb8, y, xOffs, 0, false);
+                }
+                mainWindow.RenderScreen();
+                mainWindow.SaveScreenShot($"c:\\temp\\after-erase-{explode}-{alienTypeStart}.png");
             }
-            mainWindow.RenderScreen();
-            mainWindow.SaveScreenShot($"c:\\temp\\after-erase-{explode}-{alienTypeStart}.png");
         }
 
         private static void DisplayNybbleInfo()
