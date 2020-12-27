@@ -54,6 +54,7 @@ namespace WpfInvaders
         internal AlienShotRolling AlienShotRolling;
         internal AlienShotPlunger AlienShotPlunger;
         internal AlienShotSquigly AlienShotSquigly;
+        internal SplashAlienAnimation SplashAlienAnimation;
         internal MainWindow MainWindow { get; }
         internal bool SingleAlienIsTypeOne;
         internal int VblankStatus;
