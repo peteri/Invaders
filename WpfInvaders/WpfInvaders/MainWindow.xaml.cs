@@ -55,24 +55,21 @@ namespace WpfInvaders
             Print20Points,
             Print10Points,
             ScoreTableTwoSecondDelay,
-            AnimateY1,
-            AnimateY2,
-            AnimateY3,
-            AnimateY4,
-            AnimateY5,
-            AnimateY6,
+            AnimateAlienInToGetY,
+            AnimateAlienPullingYOff,
+            AnimateAlienHidingOffStageDelay,
+            AnimateAlienPushingYBackOn,
+            AnimateAlienJobDoneDelay,
+            AnimateAlienRemoval,
             PlayDemo,
             AfterPlayDelay,
             InsertCoin,
             OneOrTwoPlayers,
             OnePlayOneCoin,
             TwoPlayerTwoCoins,
-            AnimateCoinExplode1,
-            AnimateCoinExplode2,
-            AnimateCoinExplode3,
-            AnimateCoinExplode4,
-            AnimateCoinExplode5,
-            AnimateCoinExplode6,
+            AnimateCoinExplodeAlienIn,
+            AnimateCoinExplodeFireBullet,
+            AnimateCoinExplodeRemoveExtraC,
             AfterCoinDelay,
             ToggleAnimateState
         }
@@ -164,11 +161,11 @@ namespace WpfInvaders
         {
             if (gameData?.PlayerShot?.ShotSprite.Collided() ?? false)
                 gameData.AlienExploding = true;
-            if (gameData?.AlienShotRolling.Shot.Collided() ?? false)
+            if (gameData?.AlienShotRolling?.Shot.Collided() ?? false)
                 gameData.AlienShotRolling.Collided();
-            if (gameData?.AlienShotPlunger.Shot.Collided() ?? false)
+            if (gameData?.AlienShotPlunger?.Shot.Collided() ?? false)
                 gameData.AlienShotPlunger.Collided();
-            if (gameData?.AlienShotSquigly.Shot.Collided() ?? false)
+            if (gameData?.AlienShotSquigly?.Shot.Collided() ?? false)
                 gameData.AlienShotSquigly.Collided();
         }
 
@@ -225,6 +222,7 @@ namespace WpfInvaders
                     }
                     else
                     {
+                        HandleSpriteCollisions();
                         IsrTasksSplashScreen();
                     }
                 }
@@ -316,6 +314,10 @@ namespace WpfInvaders
                     gameData.SplashMinorState = gameData.SplashAlienAnimation.Animate();
                     break;
                 case SplashMinorState.AwaitCoinShotEndOfExplosion:
+                    gameData.VblankStatus = 0x80;
+                    gameData.AlienShotSquigly.Action();
+                    if (gameData.AlienShotSquigly.ShotActive == false)
+                        gameData.SplashMinorState = SplashMinorState.Idle;
                     break;
             }
         }
@@ -353,7 +355,7 @@ namespace WpfInvaders
                     return PrintDelayedMessage(0x0a08, "=10 POINTS");
                 case SplashMajorState.ScoreTableTwoSecondDelay:
                     return SplashDelay(0x80);
-                case SplashMajorState.AnimateY1:
+                case SplashMajorState.AnimateAlienInToGetY:
                     if (gameData.AnimateSplash == false)
                     {
                         gameData.SplashMajorState = SplashMajorState.PlayDemo - 1;
@@ -362,16 +364,16 @@ namespace WpfInvaders
                     gameData.SplashAlienAnimation = new SplashAlienAnimation();
                     LineRender.Sprites.Add(gameData.SplashAlienAnimation.AlienMovingY);
                     return AnimateSplashAlien(223, 123, 0);
-                case SplashMajorState.AnimateY2:
+                case SplashMajorState.AnimateAlienPullingYOff:
                     WriteText(0x17, 0x0c, "PLA ");
                     return AnimateSplashAlien(120, 221, 2);
-                case SplashMajorState.AnimateY3:
+                case SplashMajorState.AnimateAlienHidingOffStageDelay:
                     return SplashDelay(0x40);
-                case SplashMajorState.AnimateY4:
+                case SplashMajorState.AnimateAlienPushingYBackOn:
                     return AnimateSplashAlien(221, 120, 4);
-                case SplashMajorState.AnimateY5:
+                case SplashMajorState.AnimateAlienJobDoneDelay:
                     return SplashDelay(0x40);
-                case SplashMajorState.AnimateY6:
+                case SplashMajorState.AnimateAlienRemoval:
                     gameData.SplashAlienAnimation.AlienMovingY.Visible = false;
                     WriteText(0x17, 0x0c, "PLAY");
                     return SplashDelay(0x80);
@@ -399,7 +401,7 @@ namespace WpfInvaders
                     return PrintDelayedMessage(0x060a, "*1 PLAYER  1 COIN");
                 case SplashMajorState.TwoPlayerTwoCoins:
                     return PrintDelayedMessage(0x0607, "*2 PLAYERS 2 COINS");
-                case SplashMajorState.AnimateCoinExplode1:
+                case SplashMajorState.AnimateCoinExplodeAlienIn:
                     if (gameData.AnimateSplash == false)
                     {
                         gameData.SplashMajorState = SplashMajorState.AfterCoinDelay - 1;
@@ -407,12 +409,21 @@ namespace WpfInvaders
                     }
                     gameData.SplashAlienAnimation = new SplashAlienAnimation();
                     LineRender.Sprites.Add(gameData.SplashAlienAnimation.AlienMovingY);
-                    return AnimateSplashAlien(0, 116, 0);
-                case SplashMajorState.AnimateCoinExplode2:
+                    return AnimateSplashAlien(0, 115, 0, 0x1a*8);
+                case SplashMajorState.AnimateCoinExplodeFireBullet:
+                    gameData.AlienShotSquigly.Shot.X = 115 + 8;
+                    gameData.AlienShotSquigly.Shot.Y = 0x1a * 8 - 0x0b;
+                    gameData.AlienShotSquigly.DeltaY = -1;
+                    gameData.ShotSync = 2;
                     return SplashMinorState.AwaitCoinShotEndOfExplosion;
+                case SplashMajorState.AnimateCoinExplodeRemoveExtraC:
+                    WriteText(0x11, 0x08, "INSERT  COIN");
+                    return SplashMinorState.Idle;
                 case SplashMajorState.AfterCoinDelay:
                     return SplashDelay(0x80);
                 case SplashMajorState.ToggleAnimateState:
+                    if (gameData.SplashAlienAnimation != null)
+                        gameData.SplashAlienAnimation.AlienMovingY.Visible = false;
                     gameData.AnimateSplash = !gameData.AnimateSplash;
                     return SplashMinorState.Idle;
                 default:
@@ -426,9 +437,9 @@ namespace WpfInvaders
             return SplashMinorState.Wait;
         }
 
-        private SplashMinorState AnimateSplashAlien(int startX, int targetX, int image)
+        private SplashMinorState AnimateSplashAlien(int startX, int targetX, int image, int y=0x17*8)
         {
-            gameData.SplashAlienAnimation.Init(0x17 * 8, startX, targetX, image);
+            gameData.SplashAlienAnimation.Init(y, startX, targetX, image);
             return SplashMinorState.AnimateSplashAlien;
         }
 
