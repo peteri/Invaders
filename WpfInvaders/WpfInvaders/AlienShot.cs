@@ -58,7 +58,7 @@ namespace WpfInvaders
             }
             else
             {
-                if (gameData.SplashMajorState == MainWindow.SplashMajorState.AnimateCoinExplode)
+                if (gameData.SplashMajorState == MainWindow.SplashMajorState.AnimateCoinExplode2)
                 {
                     ActivateShot();
                 }

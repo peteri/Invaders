@@ -57,7 +57,7 @@ namespace WpfInvaders
             AlienMovingY.X+=deltaX;
             return (AlienMovingY.X == targetX) ? 
                 MainWindow.SplashMinorState.Idle : 
-                MainWindow.SplashMinorState.AnimateYAlien;
+                MainWindow.SplashMinorState.AnimateSplashAlien;
         }
     }
 }

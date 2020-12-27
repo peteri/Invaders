@@ -38,8 +38,8 @@ namespace WpfInvaders
             Wait,
             PrintMessageCharacter,
             PrintMessageDelay,
-            AnimateYAlien,
-            AnimateCoinAlien,
+            AnimateSplashAlien,
+            AwaitCoinShotEndOfExplosion,
             PlayDemoWaitDeath,
             PlayDemoWaitEndofExplosion
         }
@@ -67,8 +67,13 @@ namespace WpfInvaders
             OneOrTwoPlayers,
             OnePlayOneCoin,
             TwoPlayerTwoCoins,
+            AnimateCoinExplode1,
+            AnimateCoinExplode2,
+            AnimateCoinExplode3,
+            AnimateCoinExplode4,
+            AnimateCoinExplode5,
+            AnimateCoinExplode6,
             AfterCoinDelay,
-            AnimateCoinExplode,
             ToggleAnimateState
         }
 
@@ -307,8 +312,10 @@ namespace WpfInvaders
                             sprite.Visible = false;
                     }
                     break;
-                case SplashMinorState.AnimateYAlien:
+                case SplashMinorState.AnimateSplashAlien:
                     gameData.SplashMinorState = gameData.SplashAlienAnimation.Animate();
+                    break;
+                case SplashMinorState.AwaitCoinShotEndOfExplosion:
                     break;
             }
         }
@@ -354,14 +361,14 @@ namespace WpfInvaders
                     }
                     gameData.SplashAlienAnimation = new SplashAlienAnimation();
                     LineRender.Sprites.Add(gameData.SplashAlienAnimation.AlienMovingY);
-                    return AnimateY(223, 123, 0);
+                    return AnimateSplashAlien(223, 123, 0);
                 case SplashMajorState.AnimateY2:
                     WriteText(0x17, 0x0c, "PLA ");
-                    return AnimateY(120, 221, 2);
+                    return AnimateSplashAlien(120, 221, 2);
                 case SplashMajorState.AnimateY3:
                     return SplashDelay(0x40);
                 case SplashMajorState.AnimateY4:
-                    return AnimateY(221, 120, 4);
+                    return AnimateSplashAlien(221, 120, 4);
                 case SplashMajorState.AnimateY5:
                     return SplashDelay(0x40);
                 case SplashMajorState.AnimateY6:
@@ -392,8 +399,17 @@ namespace WpfInvaders
                     return PrintDelayedMessage(0x060a, "*1 PLAYER  1 COIN");
                 case SplashMajorState.TwoPlayerTwoCoins:
                     return PrintDelayedMessage(0x0607, "*2 PLAYERS 2 COINS");
-                case SplashMajorState.AnimateCoinExplode:
-                    return SplashMinorState.Idle;
+                case SplashMajorState.AnimateCoinExplode1:
+                    if (gameData.AnimateSplash == false)
+                    {
+                        gameData.SplashMajorState = SplashMajorState.AfterCoinDelay - 1;
+                        return SplashMinorState.Idle;
+                    }
+                    gameData.SplashAlienAnimation = new SplashAlienAnimation();
+                    LineRender.Sprites.Add(gameData.SplashAlienAnimation.AlienMovingY);
+                    return AnimateSplashAlien(0, 116, 0);
+                case SplashMajorState.AnimateCoinExplode2:
+                    return SplashMinorState.AwaitCoinShotEndOfExplosion;
                 case SplashMajorState.AfterCoinDelay:
                     return SplashDelay(0x80);
                 case SplashMajorState.ToggleAnimateState:
@@ -410,10 +426,10 @@ namespace WpfInvaders
             return SplashMinorState.Wait;
         }
 
-        private SplashMinorState AnimateY(int startX, int targetX, int image)
+        private SplashMinorState AnimateSplashAlien(int startX, int targetX, int image)
         {
             gameData.SplashAlienAnimation.Init(0x17 * 8, startX, targetX, image);
-            return SplashMinorState.AnimateYAlien;
+            return SplashMinorState.AnimateSplashAlien;
         }
 
         private SplashMinorState PrintDelayedMessage(int screenPosition, string message)
