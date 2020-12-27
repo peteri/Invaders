@@ -4,13 +4,13 @@ namespace WpfInvaders
 {
     internal class Sprite
     {
+        private readonly byte[,,,] data;
+        private readonly int width;
         internal bool Visible;
-        byte[,,,] data;
         internal int X;
         internal int Y;
         internal int Image;
-        int width;
-        byte collided;
+        internal byte collided;
 
         internal Sprite(byte[] spriteImages, int images)
         {

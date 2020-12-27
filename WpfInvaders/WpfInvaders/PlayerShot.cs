@@ -27,7 +27,7 @@ namespace WpfInvaders
 
         internal override void Action()
         {
-            if ((ShotSprite.X & 0x80) != gameData.VblankStatus)
+            if (((ShotSprite.X+0x20) & 0x80) != gameData.VblankStatus)
                 return;
             switch (Status)
             {
@@ -39,7 +39,6 @@ namespace WpfInvaders
                     ShotSprite.Y = 0x28;
                     ShotSprite.X = gameData.PlayerBase.PlayerX + 8;
                     Status = ShotStatus.NormalMove;
-//                    mainWindow.StopIsr();
                     break;
                 case ShotStatus.NormalMove:
                     ShotSprite.Y += 4;

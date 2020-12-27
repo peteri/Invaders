@@ -91,7 +91,7 @@ namespace WpfInvaders
 
         private void MoveShot()
         {
-            if ((Shot.X & 0x80) != gameData.VblankStatus)
+            if (((Shot.X+0x20) & 0x80) != gameData.VblankStatus)
                 return;
             if (ShotBlowingUp == false)
             {
@@ -110,13 +110,13 @@ namespace WpfInvaders
                 if (ShotBlowCount == 3)
                 {
                     Shot.Visible = false;
+                    Shot.BattleDamage();
                     ShotExplosion.X = Shot.X - 2;
                     ShotExplosion.Y = Shot.Y - 2;
                     ShotExplosion.Visible = true;
                 }
                 if (ShotBlowCount == 0)
                 {
-                    Shot.BattleDamage();
                     ShotExplosion.BattleDamage();
                     ShotExplosion.Visible = false;
                 }
