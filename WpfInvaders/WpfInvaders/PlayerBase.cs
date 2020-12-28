@@ -19,7 +19,6 @@ namespace WpfInvaders
             Command.None,
             Command.Left,
             Command.Right,
-            Command.None
         };
 
         private static readonly int[] PlayerBaseCharacters = { 0x56, 0x5c, 0x65, 0x6e, 0x77, 0xc0, 0xd0, 0xe0 };
@@ -68,7 +67,10 @@ namespace WpfInvaders
                 blowUpChanges--;
                 if (blowUpChanges == 0)
                 {
+                    int playerSize = (PlayerX & 0x07) == 0 ? 2 : 3;
+                    DrawPlayerSprite(0, true);
                     ResetState();
+
                     if (gameData.Invaded)
                         return;
                     if (gameData.GameMode == false)
@@ -81,15 +83,15 @@ namespace WpfInvaders
                     int playerSize = (PlayerX & 0x07) == 0 ? 2 : 3;
                     if (Alive == PlayerAlive.BlowUpOne)
                     {
-                        explodingSprite += playerSize;
+                        explodingSprite += playerSize * 2;
                         Alive = PlayerAlive.BlowUpTwo;
                     }
                     else
                     {
-                        explodingSprite += playerSize*2;
+                        explodingSprite += playerSize;
                         Alive = PlayerAlive.BlowUpOne;
                     }
-                    DrawPlayerSprite(explodingSprite);
+                    DrawPlayerSprite(explodingSprite,false);
                 }
             }
             else
@@ -124,11 +126,11 @@ namespace WpfInvaders
                     case Command.Left: if (PlayerX > 0x10) PlayerX--; break;
                     case Command.Right: if (PlayerX < 0xb9) PlayerX++; break;
                 }
-                DrawPlayerSprite(PlayerBaseCharacters[PlayerX & 0x07]);
+                DrawPlayerSprite(PlayerBaseCharacters[PlayerX & 0x07], false);
             }
         }
 
-        private void DrawPlayerSprite(int playerSprite)
+        private void DrawPlayerSprite(int playerSprite, bool erase)
         {
             int screenX = PlayerX >> 3;
             int screenY = PlayerY >> 3; // Constant really
@@ -136,7 +138,7 @@ namespace WpfInvaders
             int count = (PlayerX & 0x07) == 0 ? 2 : 3;
             for (int i = 0; i < count; i++)
             {
-                LineRender.Screen[screenOffset] = (byte)(playerSprite + i);
+                LineRender.Screen[screenOffset] = erase ? (byte)0x23 : (byte)(playerSprite + i);
                 screenOffset += LineRender.ScreenWidth;
             }
         }
@@ -146,6 +148,7 @@ namespace WpfInvaders
             demoCommand++;
             if (demoCommand >= demoCmds.Length)
                 demoCommand = 0;
+            System.Diagnostics.Debug.Print("DemoCommand is {0} DemoCommandIndex is {1}", demoCmds[demoCommand], demoCommand);
         }
     }
 }

@@ -44,6 +44,7 @@
             ShotActive = false;
             ShotBlowingUp = false;
             ShotStepCount = 0;
+            Shot.Image = 0;
         }
 
         protected bool HandleAlienShot(AlienShot otherShot1, AlienShot otherShot2)
@@ -99,6 +100,12 @@
                 Shot.Visible = true;
                 if (Shot.Y < 0x15)
                     ShotBlowingUp = true;
+                if (Shot.Collided())
+                {
+                    if ((Shot.Y >= 0x1e) && (Shot.Y <= 0x27))
+                        gameData.PlayerBase.Alive = PlayerBase.PlayerAlive.BlowUpOne;
+                    ShotBlowingUp = true;
+                }
             }
             else
             {
@@ -126,12 +133,5 @@
         }
 
         protected abstract int ShotColumn();
-
-        internal void Collided()
-        {
-            if ((Shot.Y >= 0x1e) && (Shot.Y <= 0x27))
-                gameData.PlayerBase.Alive = PlayerBase.PlayerAlive.BlowUpOne;
-            ShotBlowingUp = true;
-        }
     }
 }

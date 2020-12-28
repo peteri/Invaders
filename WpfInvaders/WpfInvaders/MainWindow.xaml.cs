@@ -164,18 +164,6 @@ namespace WpfInvaders
             InIsr = false;
         }
 
-        private void HandleSpriteCollisions()
-        {
-            if (gameData?.PlayerShot?.ShotSprite.Collided() ?? false)
-                gameData.AlienExploding = true;
-            if (gameData?.AlienShotRolling?.Shot.Collided() ?? false)
-                gameData.AlienShotRolling.Collided();
-            if (gameData?.AlienShotPlunger?.Shot.Collided() ?? false)
-                gameData.AlienShotPlunger.Collided();
-            if (gameData?.AlienShotSquigly?.Shot.Collided() ?? false)
-                gameData.AlienShotSquigly.Collided();
-        }
-
         private void GameTick()
         {
             gameData.IsrDelay--;
@@ -184,7 +172,6 @@ namespace WpfInvaders
             {
                 if (gameData.GameMode || gameData.DemoMode)
                 {
-                    HandleSpriteCollisions();
                     GameLoopStep();
                     // Pretend we're on the first half of the screen
                     gameData.VblankStatus = 0;
@@ -200,10 +187,6 @@ namespace WpfInvaders
                     // Mame draws the screen at this point
                     // when single stepping...
                     RenderScreen();
-                    // Clear the collision flags as in our real world
-                    // application we won't bother doing this.
-                    foreach (var sprite in LineRender.Sprites)
-                        sprite.ClearCollided();
 
                     // Now we do the bottom half of screen isr case
                     gameData.VblankStatus = 0x80;
@@ -229,7 +212,6 @@ namespace WpfInvaders
                     }
                     else
                     {
-                        HandleSpriteCollisions();
                         IsrTasksSplashScreen();
                     }
                 }
