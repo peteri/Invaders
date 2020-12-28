@@ -86,6 +86,8 @@ namespace WpfInvaders
         private Thread timerThread;
         private readonly ManualResetEvent dieEvent = new ManualResetEvent(false);
         private volatile bool invokeTick;
+        private volatile bool InIsr;
+        private int frameCounter = 0;
         // Holding down Right Ctrl gives type B aliens
         // Holding down Left  Ctrl gives type C aliens
         private int DiagnosticsAlienType = 0x80;
@@ -142,6 +144,8 @@ namespace WpfInvaders
 
         private void IsrRoutine()
         {
+            InIsr = true;
+            frameCounter++;
             timerCount++;
             if (timerCount > 59)
             {
@@ -150,12 +154,14 @@ namespace WpfInvaders
                 var timeInIsr = timeInIsrStopwatch.ElapsedMilliseconds;
                 frameStopwatch.Restart();
                 timeInIsrStopwatch.Restart();
-                FrameCounter.Content = string.Format("60 frames took {0}ms timeInIsr is {1}ms", timeTaken, timeInIsr);
+                FrameStats.Content = string.Format("60 frames took {0}ms timeInIsr is {1}ms", timeTaken, timeInIsr);
             }
+            FrameCounter.Content = string.Format("Framcount {0}", frameCounter);
             timeInIsrStopwatch.Start();
             RenderScreen();
             GameTick();
             timeInIsrStopwatch.Stop();
+            InIsr = false;
         }
 
         private void HandleSpriteCollisions()
@@ -838,6 +844,18 @@ namespace WpfInvaders
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             dieEvent.Set();
+        }
+
+        private void AdvanceToFrame_Click(object sender, RoutedEventArgs e)
+        {
+            StopIsr();
+            if (InIsr == true)
+                return;
+            int targetFrame = int.Parse(targetCounter.Text);
+            while (frameCounter < targetFrame)
+            {
+                IsrRoutine();
+            }
         }
     }
 }
