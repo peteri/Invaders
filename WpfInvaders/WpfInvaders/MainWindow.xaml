@@ -33,7 +33,7 @@
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="0"  Orientation="Horizontal">
             <Label Name="FrameCounter" Margin="5">Frame count 0</Label>
-            <TextBox Name="targetCounter" Width="100" Margin="0,5,5,5" TextAlignment="Right" VerticalAlignment="Center">4360</TextBox>
+            <TextBox Name="targetCounter" Width="100" Margin="0,5,5,5" TextAlignment="Right" VerticalAlignment="Center">4320</TextBox>
             <Button Name="AdvanceToFrame" Click="AdvanceToFrame_Click"  Margin="5">Jump to Frame</Button>
         </StackPanel>
     </Grid>
