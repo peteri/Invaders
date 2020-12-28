@@ -44,6 +44,7 @@
             ShotActive = false;
             ShotBlowingUp = false;
             ShotStepCount = 0;
+            Shot.Image = 0;
         }
 
         protected bool HandleAlienShot(AlienShot otherShot1, AlienShot otherShot2)
