@@ -86,6 +86,8 @@ namespace WpfInvaders
         private Thread timerThread;
         private readonly ManualResetEvent dieEvent = new ManualResetEvent(false);
         private volatile bool invokeTick;
+        private volatile bool InIsr;
+        private int frameCounter = 0;
         // Holding down Right Ctrl gives type B aliens
         // Holding down Left  Ctrl gives type C aliens
         private int DiagnosticsAlienType = 0x80;
@@ -142,6 +144,8 @@ namespace WpfInvaders
 
         private void IsrRoutine()
         {
+            InIsr = true;
+            frameCounter++;
             timerCount++;
             if (timerCount > 59)
             {
@@ -150,12 +154,14 @@ namespace WpfInvaders
                 var timeInIsr = timeInIsrStopwatch.ElapsedMilliseconds;
                 frameStopwatch.Restart();
                 timeInIsrStopwatch.Restart();
-                FrameCounter.Content = string.Format("60 frames took {0}ms timeInIsr is {1}ms", timeTaken, timeInIsr);
+                FrameStats.Content = string.Format("60 frames took {0}ms timeInIsr is {1}ms", timeTaken, timeInIsr);
             }
+            FrameCounter.Content = string.Format("Framcount {0}", frameCounter);
             timeInIsrStopwatch.Start();
             RenderScreen();
             GameTick();
             timeInIsrStopwatch.Stop();
+            InIsr = false;
         }
 
         private void HandleSpriteCollisions()
@@ -379,6 +385,7 @@ namespace WpfInvaders
                     WriteText(0x17, 0x0c, "PLAY");
                     return SplashDelay(0x80);
                 case SplashMajorState.PlayDemo:
+                    Debug.Print("Starting demo game");
                     ClearPlayField();
                     playerOne.ShipsRem = 3;
                     CurrentPlayer = playerOne;
@@ -492,7 +499,9 @@ namespace WpfInvaders
             bool playerHitAlien = false;
             if (gameData.PlayerShot.ShotSprite.Y >= gameData.RefAlienY)
             {
-                int rowY = gameData.RefAlienY;
+                // Adjust so hitting alien as the rack bumps gives us the correct row
+                // Aliens are either on gameData.RefAlienY or gameData.RefAlienY+8
+                int rowY = gameData.RefAlienY+8;
                 int alienIndex = 0;
                 while (rowY < gameData.PlayerShot.ShotSprite.Y)
                 {
@@ -505,14 +514,19 @@ namespace WpfInvaders
                 if ((col >= 0) && (col <= 10))
                 {
                     alienIndex += col;
-                    int colX = gameData.RefAlienX + col * 0x10;
                     if (CurrentPlayer.Aliens[alienIndex] != 0)
                     {
+                        Debug.Print("frameCount {0} deleting alien index={1} row={2} col={3} ShotX={4} ShotY={5} RefAlienX={6} RefAlienY={7}",
+                            frameCounter,
+                            alienIndex, alienIndex / 11, alienIndex % 11,
+                            gameData.PlayerShot.ShotSprite.X, gameData.PlayerShot.ShotSprite.Y,
+                            gameData.RefAlienX, gameData.RefAlienY);
+                        int colX = gameData.RefAlienX + col * 0x10;
                         CurrentPlayer.Aliens[alienIndex] = 0;
                         gameData.AlienExplodeTimer = 0x10;
                         gameData.AlienExplodeX = colX >> 3;
                         gameData.AlienExplodeXOffset = colX & 0x07;
-                        gameData.AlienExplodeY = rowY >> 3;
+                        gameData.AlienExplodeY = gameData.PlayerShot.ShotSprite.Y >> 3;
                         gameData.Aliens.ExplodeAlien();
                         gameData.PlayerShot.ShotSprite.Visible = false;
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.AlienExploding;
@@ -838,6 +852,18 @@ namespace WpfInvaders
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             dieEvent.Set();
+        }
+
+        private void AdvanceToFrame_Click(object sender, RoutedEventArgs e)
+        {
+            StopIsr();
+            if (InIsr == true)
+                return;
+            int targetFrame = int.Parse(targetCounter.Text);
+            while (frameCounter < targetFrame)
+            {
+                IsrRoutine();
+            }
         }
     }
 }

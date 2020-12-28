@@ -10,6 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -28,7 +29,12 @@
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
             <Button Name="Pause" Margin="5" Padding="3" Click="Pause_Click">Pause</Button>
             <Button Name="FrameAdvance" Margin="0,5,5,5" Padding="3" Click="FrameAdvance_Click">Advance Frame</Button>
-            <Label Name="FrameCounter" Margin="0,5,5,5">50 frames took 0000ms</Label>
+            <Label Name="FrameStats" Margin="0,5,5,5">50 frames took 0000ms</Label>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Grid.Column="0"  Orientation="Horizontal">
+            <Label Name="FrameCounter" Margin="5">Frame count 0</Label>
+            <TextBox Name="targetCounter" Width="100" Margin="0,5,5,5" TextAlignment="Right" VerticalAlignment="Center">4320</TextBox>
+            <Button Name="AdvanceToFrame" Click="AdvanceToFrame_Click"  Margin="5">Jump to Frame</Button>
         </StackPanel>
     </Grid>
 </Window>
