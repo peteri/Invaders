@@ -15,11 +15,7 @@ namespace WpfInvaders
             var returnData = new byte[ScreenWidth];
             int startOfLine = (line / 8) * ScreenWidth;
             int cellLine = line & 0x07;
-            if (line == 0)
-            {
-                foreach (var sprite in Sprites)
-                    sprite.ClearCollided();
-            }
+
             for (int i = 0; i < ScreenWidth; i++)
             {
                 byte c = Screen[startOfLine++];

@@ -5,6 +5,7 @@
         private static readonly byte[] shotSprite = { 0x0f };
         private static readonly byte[] shotExplodeSprite = { 0x99, 0x3C, 0x7E, 0x3D, 0xBC, 0x3E, 0x7C, 0x99 };
         private readonly GameData gameData;
+        private readonly MainWindow mainWindow;
         internal readonly Sprite ShotSprite;
         internal readonly Sprite ShotExplodeSprite;
         private int explosionTimer=0x10;
@@ -12,9 +13,10 @@
         internal enum ShotStatus { Available, Initiated, NormalMove, HitSomething, AlienExploded, AlienExploding };
 
         internal ShotStatus Status;
-        internal PlayerShot(GameData gameData) : base(true, 0)
+        internal PlayerShot(MainWindow mainWindow, GameData gameData) : base(true, 0)
         {
             this.gameData = gameData;
+            this.mainWindow = mainWindow;
             ShotSprite = new Sprite(shotSprite, 1);
             LineRender.Sprites.Add(ShotSprite);
             ShotExplodeSprite = new Sprite(shotExplodeSprite, 1);
@@ -35,9 +37,12 @@
                     ShotSprite.Y = 0x28;
                     ShotSprite.X = gameData.PlayerBase.PlayerX + 8;
                     Status = ShotStatus.NormalMove;
+//                    mainWindow.StopIsr();
                     break;
                 case ShotStatus.NormalMove:
                     ShotSprite.Y += 4;
+                    if (ShotSprite.Collided())
+                        gameData.AlienExploding = true;
                     break;
                 case ShotStatus.HitSomething:
                     explosionTimer--;
@@ -49,6 +54,7 @@
                     if (explosionTimer == 0x0f)
                     {
                         ShotSprite.Visible = false;
+                        ShotSprite.BattleDamage();
                         ShotExplodeSprite.X = ShotSprite.X-3;
                         ShotExplodeSprite.Y = ShotSprite.Y-2;
                         ShotExplodeSprite.Visible = true;

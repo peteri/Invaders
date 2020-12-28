@@ -98,7 +98,7 @@ namespace WpfInvaders
             TimerObjects.Add(PlayerBase);
 
             // Players shot
-            PlayerShot = new PlayerShot(this);
+            PlayerShot = new PlayerShot(MainWindow,this);
             TimerObjects.Add(PlayerShot);
 
             // Alien shots
