@@ -37,7 +37,6 @@
                     ShotSprite.Y = 0x28;
                     ShotSprite.X = gameData.PlayerBase.PlayerX + 8;
                     Status = ShotStatus.NormalMove;
-//                    mainWindow.StopIsr();
                     break;
                 case ShotStatus.NormalMove:
                     ShotSprite.Y += 4;
@@ -80,6 +79,7 @@
             }
             Status = ShotStatus.Available;
             ShotSprite.Y = 0x28;
+            ShotSprite.X = 0x00;
             explosionTimer = 0x10;
             gameData.IncremeentSaucerScoreAndShotCount();
         }
