@@ -2,7 +2,7 @@
 {
     internal class PlayerData
     {
-        internal short Score;
+        internal ushort Score;
         internal int ShipsRem;
 
         internal byte[] Sheild1 = new byte[6 * 8];

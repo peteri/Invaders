@@ -4,7 +4,7 @@ namespace WpfInvaders
 {
     internal class GameData
     {
-        internal short HiScore;
+        internal ushort HiScore;
         internal byte Credits;
         internal short IsrDelay;
         internal bool CoinSwitch;

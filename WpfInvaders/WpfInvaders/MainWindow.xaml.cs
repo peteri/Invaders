@@ -245,6 +245,21 @@ namespace WpfInvaders
 
         private void RunWaitTask()
         {
+            if (!gameData.GameMode)
+            {
+                CheckStartButtons();
+            }
+            else
+            {
+                if (gameData.IsrDelay == 0)
+                    StartGame();
+                else
+                    PromptPlayer();
+            }
+        }
+
+        private void CheckStartButtons()
+        {
             var message = (gameData.Credits > 1) ? "1 OR 2PLAYERS BUTTON" : "ONLY 1PLAYER  BUTTON";
             WriteText(0x10, 0x04, message);
             // TODO: Poll player one and two buttons....
@@ -272,9 +287,32 @@ namespace WpfInvaders
         {
             CurrentPlayer = player;
             gameData.ResetVariables(CurrentPlayer);
-            //            PromptPlayer();
-            ClearPlayField();
             gameData.GameMode = true;
+            gameData.IsrDelay = 0x80;
+            RemoveShip();
+            ClearPlayField();
+            WriteText(0x11, 0x07, CurrentPlayer == playerOne ? "PLAY PLAYER<1>" : "PLAY PLAYER<2>");
+        }
+
+        private void PromptPlayer()
+        {
+            if ((gameData.IsrDelay & 0x07) == 3)
+            {
+                if (CurrentPlayer == playerOne)
+                    PlayerOneScore();
+                else
+                    PlayerTwoScore();
+            }
+            else if ((gameData.IsrDelay & 0x07) == 7)
+            {
+                int x = (CurrentPlayer == playerOne) ? 0x03 : 0x15;
+                WriteText(0x1c, x, "    ");
+            }
+        }
+
+        private void StartGame()
+        {
+            ClearPlayField();
             CurrentPlayer.CopyShieldToBitmapChar();
             ShieldsToScreen();
             DrawBottomLine();
@@ -640,7 +678,6 @@ namespace WpfInvaders
             }
         }
 
-
         private void TimeToSaucer()
         {
         }
@@ -700,6 +737,38 @@ namespace WpfInvaders
                 highNybble = (highNybble + 6) & 0xf0;
             }
             return (byte)((highNybble & 0xf0) + (lowNybble & 0x0f));
+        }
+
+        private static ushort BcdAdd(ushort a, ushort b)
+        {
+            int halfCarry = 0;
+            int nybble000f = (a & 0x000f) + (b & 0x000f);
+            if (nybble000f > 9)
+            {
+                nybble000f = (nybble000f + 0x0006) & 0x000f;
+                halfCarry = 0x10;
+            }
+
+            int nybllle00f0 = (a & 0x00f0) + (b & 0x00f0) + halfCarry;
+            if (nybllle00f0 > 99)
+            {
+                nybllle00f0 = (nybllle00f0 + 0x0060) & 0x00f0;
+                halfCarry = 0x100;
+            }
+
+            int nybble0f00 = (a & 0x0f00) + (b & 0x0f00) + halfCarry;
+            if (nybble0f00 > 999)
+            {
+                nybble0f00 = (nybble0f00 + 0x0600) & 0x0f00;
+                halfCarry = 0x10;
+            }
+
+            int nyblllef000 = (a & 0xf000) + (b & 0xf000) + halfCarry;
+            if (nyblllef000 > 9999)
+            {
+                nyblllef000 = (nyblllef000 + 0x6000) & 0xf000;
+            }
+            return (ushort)((nyblllef000 & 0xf000) + (nybble0f00 & 0x0f00)+(nybllle00f0 & 0x00f0) + (nybble000f & 0x000f));
         }
 
         private static byte BcdSub(byte a, byte b)
@@ -773,7 +842,7 @@ namespace WpfInvaders
             WriteText(0x1e, 0x00, " SCORE<1> HI-SCORE SCORE<2> ");
         }
 
-        private static void WriteHexWord(int y, int x, short w)
+        private static void WriteHexWord(int y, int x, ushort w)
         {
             WriteText(y, x, w.ToString("X4"));
         }
