@@ -74,12 +74,15 @@ namespace WpfInvaders
             ToggleAnimateState
         }
 
-        private readonly WriteableBitmap frame;
+        // Game related stuff
         private readonly PlayerData playerOne;
         private readonly PlayerData playerTwo;
         internal PlayerData CurrentPlayer;
         private readonly GameData gameData;
         internal SwitchState switchState;
+
+        // Stuff related to WPF and diagnostics
+        private readonly WriteableBitmap frame;
         private readonly Stopwatch frameStopwatch;
         private readonly Stopwatch timeInIsrStopwatch;
         private int timerCount = 0;
