@@ -67,6 +67,9 @@ namespace WpfInvaders
         internal bool SaucerHit;
         internal int AlienExplodeTimer;
         internal bool PlungerShotActive;
+        internal bool AdjustScore;
+        internal ushort ScoreDelta;
+        internal int AlienShotDeltaY;
 
         internal GameData(MainWindow mainWindow)
         {
@@ -88,7 +91,10 @@ namespace WpfInvaders
             SaucerScoreIndex = 0;
             PlayerOk = true;
             AlienShotsEnabled = false;
+            AdjustScore = false;
+            ScoreDelta = 0;
             AlienFireDelay = 0x30;
+            AlienShotDeltaY = -4;
             Aliens = new Aliens(this, currentPlayer);
             // Create timer task objects
             TimerObjects = new List<TimerObject>();

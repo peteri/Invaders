@@ -34,7 +34,6 @@
             LineRender.Sprites.Add(ShotExplosion);
             this.mainWindow = mainWindow;
             this.gameData = gameData;
-            DeltaY = -4;
             ShotBlowCount = 4;
         }
 
@@ -96,7 +95,7 @@
                 Shot.Image++;
                 if (Shot.Image >= 4)
                     Shot.Image = 0;
-                Shot.Y += DeltaY;
+                Shot.Y += gameData.AlienShotDeltaY;
                 Shot.Visible = true;
                 if (Shot.Y < 0x15)
                     ShotBlowingUp = true;

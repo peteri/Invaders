@@ -226,9 +226,60 @@ namespace WpfInvaders
         {
             PlayerFireOrDemo();
             PlayerShotHit();
+            CurrentPlayer.CountAliens();
             if (gameData.DemoMode)
             {
                 IsrTasksSplashScreen();
+            }
+            else
+            {
+                AdjustScore();
+                if (CurrentPlayer.NumAliens == 0)
+                {
+                    throw new NotImplementedException("Out of aliens...");
+                }
+                SetShotReloadRate();
+                CheckExtraShip();
+                if (CurrentPlayer.NumAliens<9)
+                    gameData.AlienShotDeltaY=-5;
+            }
+        }
+
+        private void SetShotReloadRate()
+        {
+            if (CurrentPlayer.Score < 0x0299)
+                gameData.AlienShotReloadRate = 0x30;
+            else if (CurrentPlayer.Score < 0x1999)
+                gameData.AlienShotReloadRate = 0x10;
+            else if (CurrentPlayer.Score < 0x2999)
+                gameData.AlienShotReloadRate = 0x0b;
+            else if (CurrentPlayer.Score < 0x3999)
+                gameData.AlienShotReloadRate = 0x08;
+            else
+                gameData.AlienShotReloadRate = 0x07;
+        }
+
+        private void CheckExtraShip()
+        {
+            if (!CurrentPlayer.ExtraShipAvailable)
+                return;
+            if (CurrentPlayer.Score < 0x1500) 
+                return;
+            CurrentPlayer.ShipsRem++;
+            WriteText(0x01, 0x01, (CurrentPlayer.ShipsRem & 0x0f).ToString());
+            DrawShips();
+        }
+
+        private void AdjustScore()
+        {
+            if (gameData.AdjustScore)
+            {
+                gameData.AdjustScore = false;
+                CurrentPlayer.Score = BcdAdd(CurrentPlayer.Score, gameData.ScoreDelta);
+                if (CurrentPlayer == playerOne)
+                    PlayerOneScore();
+                else
+                    PlayerTwoScore();
             }
         }
 
@@ -351,7 +402,7 @@ namespace WpfInvaders
                         gameData.SplashMinorState = SplashMinorState.PrintMessageCharacter;
                     break;
                 case SplashMinorState.PlayDemoWaitDeath:
-                    if ((gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive) || (gameData.Credits!=0))
+                    if ((gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive) || (gameData.Credits != 0))
                     {
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
                         gameData.SplashMinorState = SplashMinorState.PlayDemoWaitEndofExplosion;
@@ -580,6 +631,15 @@ namespace WpfInvaders
                         gameData.PlayerShot.ShotSprite.Visible = false;
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.AlienExploding;
                         playerHitAlien = true;
+                        switch (alienIndex / 11)
+                        {
+                            case 0:
+                            case 1: gameData.ScoreDelta = 0x10; break;
+                            case 2:
+                            case 3: gameData.ScoreDelta = 0x20; break;
+                            case 4: gameData.ScoreDelta = 0x30; break;
+                        }
+                        gameData.AdjustScore = true;
                     }
                 }
             }
@@ -662,6 +722,11 @@ namespace WpfInvaders
                 return;
             WriteText(0x01, 0x01, (CurrentPlayer.ShipsRem & 0x0f).ToString());
             CurrentPlayer.ShipsRem--;
+            DrawShips();
+        }
+
+        private void DrawShips()
+        {
             int x = 0x03;
             int y = 0x01;
             int numShips = CurrentPlayer.ShipsRem;
@@ -750,25 +815,25 @@ namespace WpfInvaders
             }
 
             int nybllle00f0 = (a & 0x00f0) + (b & 0x00f0) + halfCarry;
-            if (nybllle00f0 > 99)
+            if (nybllle00f0 > 0x90)
             {
                 nybllle00f0 = (nybllle00f0 + 0x0060) & 0x00f0;
                 halfCarry = 0x100;
             }
 
             int nybble0f00 = (a & 0x0f00) + (b & 0x0f00) + halfCarry;
-            if (nybble0f00 > 999)
+            if (nybble0f00 > 0x900)
             {
                 nybble0f00 = (nybble0f00 + 0x0600) & 0x0f00;
-                halfCarry = 0x10;
+                halfCarry = 0x1000;
             }
 
             int nyblllef000 = (a & 0xf000) + (b & 0xf000) + halfCarry;
-            if (nyblllef000 > 9999)
+            if (nyblllef000 > 0x9000)
             {
                 nyblllef000 = (nyblllef000 + 0x6000) & 0xf000;
             }
-            return (ushort)((nyblllef000 & 0xf000) + (nybble0f00 & 0x0f00)+(nybllle00f0 & 0x00f0) + (nybble000f & 0x000f));
+            return (ushort)((nyblllef000 & 0xf000) + (nybble0f00 & 0x0f00) + (nybllle00f0 & 0x00f0) + (nybble000f & 0x000f));
         }
 
         private static byte BcdSub(byte a, byte b)

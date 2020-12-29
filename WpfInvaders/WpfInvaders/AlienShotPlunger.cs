@@ -35,7 +35,6 @@
         internal override void ResetShotData()
         {
             base.ResetShotData();
-            mainWindow.CurrentPlayer.CountAliens();
             if (mainWindow.CurrentPlayer.NumAliens == 1)
             {
                 gameData.PlungerShotActive = false;
