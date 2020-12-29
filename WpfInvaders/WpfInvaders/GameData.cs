@@ -14,7 +14,7 @@ namespace WpfInvaders
         internal bool DemoMode;
         internal bool WaitStartLoop;
         internal bool AnimateSplash;
-        internal byte alienShotReloadRate;
+        internal byte AlienShotReloadRate;
 
         internal MainWindow.SplashMajorState SplashMajorState;
         internal MainWindow.SplashMinorState SplashMinorState;
@@ -76,12 +76,12 @@ namespace WpfInvaders
         internal void ResetVariables(PlayerData currentPlayer)
         {
             LineRender.Sprites.Clear();
-            
-            RefAlienX = 0x18;
-            RefAlienY = 0x78;
+
+            RefAlienX = currentPlayer.RefAlienX;
+            RefAlienY = currentPlayer.RefAlienY;
+            RefAlienDeltaX = currentPlayer.RefAlienDeltaX;
             RefAlienDeltaY = 0x00;
-            RackDirectionRightToLeft = false;
-            RefAlienDeltaX = 2;
+            RackDirectionRightToLeft = RefAlienDeltaX < 0;
             AlienCurIndex = -1;
             PlungerShotActive = true;
             ShotCount = 0;
@@ -116,7 +116,7 @@ namespace WpfInvaders
             SaucerScoreIndex++;
             if (!SaucerActive)
             {
-                if ((ShotCount & 0x01)==0)
+                if ((ShotCount & 0x01) == 0)
                 {
                     SaucerDelta = 2;
                     SaucerX = 29;

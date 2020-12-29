@@ -111,7 +111,7 @@ namespace WpfInvaders
         private void PowerOnReset()
         {
             DrawStatus();
-            gameData.alienShotReloadRate = 8;
+            gameData.AlienShotReloadRate = 8;
             Pause.Content = "Pause";
             gameData.SplashMajorState = SplashMajorState.ToggleAnimateState;
             gameData.SplashMinorState = SplashMinorState.Idle;
@@ -224,10 +224,10 @@ namespace WpfInvaders
 
         private void GameLoopStep()
         {
+            PlayerFireOrDemo();
+            PlayerShotHit();
             if (gameData.DemoMode)
             {
-                PlayerFireOrDemo();
-                PlayerShotHit();
                 IsrTasksSplashScreen();
             }
         }
@@ -248,6 +248,37 @@ namespace WpfInvaders
             var message = (gameData.Credits > 1) ? "1 OR 2PLAYERS BUTTON" : "ONLY 1PLAYER  BUTTON";
             WriteText(0x10, 0x04, message);
             // TODO: Poll player one and two buttons....
+            if ((switchState & SwitchState.PlayOnePlayer) != 0)
+                StartGame(1);
+            if ((switchState & SwitchState.PlayTwoPlayer) != 0)
+                StartGame(2);
+        }
+
+        private void StartGame(int numberOfPlayers)
+        {
+            // Reset back the splash screen stuff
+            gameData.SplashMajorState = SplashMajorState.ToggleAnimateState;
+            gameData.SplashMinorState = SplashMinorState.Idle;
+            gameData.Credits = BcdSub(gameData.Credits, (byte)numberOfPlayers);
+            playerOne.Reset();
+            playerTwo.Reset();
+            PlayerOneScore();
+            PlayerTwoScore();
+            DrawNumCredits();
+            PlayPlayer(playerOne);
+        }
+
+        private void PlayPlayer(PlayerData player)
+        {
+            CurrentPlayer = player;
+            gameData.ResetVariables(CurrentPlayer);
+            //            PromptPlayer();
+            ClearPlayField();
+            gameData.GameMode = true;
+            CurrentPlayer.CopyShieldToBitmapChar();
+            ShieldsToScreen();
+            DrawBottomLine();
+            gameData.SuspendPlay = false;
         }
 
         private void IsrTasksSplashScreen()
@@ -282,14 +313,14 @@ namespace WpfInvaders
                         gameData.SplashMinorState = SplashMinorState.PrintMessageCharacter;
                     break;
                 case SplashMinorState.PlayDemoWaitDeath:
-                    if (gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive)
+                    if ((gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive) || (gameData.Credits!=0))
                     {
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
                         gameData.SplashMinorState = SplashMinorState.PlayDemoWaitEndofExplosion;
                     }
                     break;
                 case SplashMinorState.PlayDemoWaitEndofExplosion:
-                    if (gameData.PlayerBase.Alive == PlayerBase.PlayerAlive.Alive)
+                    if ((gameData.PlayerBase.Alive == PlayerBase.PlayerAlive.Alive) || (gameData.Credits != 0))
                     {
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
                         gameData.DemoMode = false;
@@ -369,12 +400,10 @@ namespace WpfInvaders
                 case SplashMajorState.PlayDemo:
                     Debug.Print("Starting demo game");
                     ClearPlayField();
-                    playerOne.ShipsRem = 3;
                     CurrentPlayer = playerOne;
+                    playerOne.Reset();
                     RemoveShip();
                     gameData.ResetVariables(CurrentPlayer);
-                    CurrentPlayer.InitAliens();
-                    playerOne.ResetShields();
                     ShieldsToScreen();
                     DrawBottomLine();
                     gameData.DemoMode = true;
@@ -483,7 +512,7 @@ namespace WpfInvaders
             {
                 // Adjust so hitting alien as the rack bumps gives us the correct row
                 // Aliens are either on gameData.RefAlienY or gameData.RefAlienY+8
-                int rowY = gameData.RefAlienY+8;
+                int rowY = gameData.RefAlienY + 8;
                 int alienIndex = 0;
                 while (rowY < gameData.PlayerShot.ShotSprite.Y)
                 {
@@ -672,6 +701,24 @@ namespace WpfInvaders
             }
             return (byte)((highNybble & 0xf0) + (lowNybble & 0x0f));
         }
+
+        private static byte BcdSub(byte a, byte b)
+        {
+            int halfCarry = 0;
+            int lowNybble = (a & 0x0f) - (b & 0x0f);
+            if (lowNybble < 0)
+            {
+                lowNybble = (lowNybble + 0xa) & 0x0f;
+                halfCarry = 0x10;
+            }
+            int highNybble = (a & 0xf0) - ((b & 0xf0) + halfCarry);
+            if (highNybble > 99)
+            {
+                highNybble = (highNybble + 0xa) & 0xf0;
+            }
+            return (byte)((highNybble & 0xf0) + (lowNybble & 0x0f));
+        }
+
 
         private void DrawStatus()
         {

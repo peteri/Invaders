@@ -15,6 +15,21 @@
         internal int RefAlienX;
         internal int RackCount;
         internal int NumAliens;
+        internal bool ExtraShipAvailable;
+
+        internal void Reset()
+        {
+            Score = 0;
+            ShipsRem = 3;
+            InitAliens();
+            RefAlienDeltaX = 2;
+            RackCount = 0;
+            RefAlienX = 0x18;
+            RefAlienY = 0x78;
+            ExtraShipAvailable = true;
+            ResetShields();
+        }
+
         internal void ResetShields()
         {
             for (int i = 0; i < 22; i++)

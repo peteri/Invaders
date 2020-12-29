@@ -27,7 +27,7 @@
         {
             int shotColumn = shotColumns[currentShotColumn];
             currentShotColumn++;
-            if (currentShotColumn > shotColumns.Length)
+            if (currentShotColumn >= shotColumns.Length)
                 currentShotColumn = 0;
             return shotColumn;
         }
