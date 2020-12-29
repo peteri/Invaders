@@ -65,9 +65,9 @@
                     {
                         
                         ShotStepCount = 0;
-                        if ((otherShot1.ShotStepCount != 0) && (otherShot1.ShotStepCount <= gameData.alienShotReloadRate))
+                        if ((otherShot1.ShotStepCount != 0) && (otherShot1.ShotStepCount <= gameData.AlienShotReloadRate))
                             return (ShotBlowCount == 0);
-                        if ((otherShot2.ShotStepCount != 0) && (otherShot2.ShotStepCount <= gameData.alienShotReloadRate))
+                        if ((otherShot2.ShotStepCount != 0) && (otherShot2.ShotStepCount <= gameData.AlienShotReloadRate))
                             return (ShotBlowCount == 0);
                         int alienIndex = ShotColumn() - 1;
                         Shot.X = gameData.RefAlienX + alienIndex * 0x10 + 7;
@@ -76,7 +76,7 @@
                         {
                             alienIndex += 11;
                             Shot.Y += 0x10;
-                            if (alienIndex > 55)
+                            if (alienIndex >= 55)
                                 return (ShotBlowCount == 0);
                         }
                         ActivateShot();

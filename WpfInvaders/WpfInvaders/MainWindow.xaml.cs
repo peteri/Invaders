@@ -111,7 +111,7 @@ namespace WpfInvaders
         private void PowerOnReset()
         {
             DrawStatus();
-            gameData.alienShotReloadRate = 8;
+            gameData.AlienShotReloadRate = 8;
             Pause.Content = "Pause";
             gameData.SplashMajorState = SplashMajorState.ToggleAnimateState;
             gameData.SplashMinorState = SplashMinorState.Idle;
@@ -224,10 +224,10 @@ namespace WpfInvaders
 
         private void GameLoopStep()
         {
+            PlayerFireOrDemo();
+            PlayerShotHit();
             if (gameData.DemoMode)
             {
-                PlayerFireOrDemo();
-                PlayerShotHit();
                 IsrTasksSplashScreen();
             }
         }
@@ -245,9 +245,78 @@ namespace WpfInvaders
 
         private void RunWaitTask()
         {
+            if (!gameData.GameMode)
+            {
+                CheckStartButtons();
+            }
+            else
+            {
+                if (gameData.IsrDelay == 0)
+                    StartGame();
+                else
+                    PromptPlayer();
+            }
+        }
+
+        private void CheckStartButtons()
+        {
             var message = (gameData.Credits > 1) ? "1 OR 2PLAYERS BUTTON" : "ONLY 1PLAYER  BUTTON";
             WriteText(0x10, 0x04, message);
             // TODO: Poll player one and two buttons....
+            if ((switchState & SwitchState.PlayOnePlayer) != 0)
+                StartGame(1);
+            if ((switchState & SwitchState.PlayTwoPlayer) != 0)
+                StartGame(2);
+        }
+
+        private void StartGame(int numberOfPlayers)
+        {
+            // Reset back the splash screen stuff
+            gameData.SplashMajorState = SplashMajorState.ToggleAnimateState;
+            gameData.SplashMinorState = SplashMinorState.Idle;
+            gameData.Credits = BcdSub(gameData.Credits, (byte)numberOfPlayers);
+            playerOne.Reset();
+            playerTwo.Reset();
+            PlayerOneScore();
+            PlayerTwoScore();
+            DrawNumCredits();
+            PlayPlayer(playerOne);
+        }
+
+        private void PlayPlayer(PlayerData player)
+        {
+            CurrentPlayer = player;
+            gameData.ResetVariables(CurrentPlayer);
+            gameData.GameMode = true;
+            gameData.IsrDelay = 0x80;
+            RemoveShip();
+            ClearPlayField();
+            WriteText(0x11, 0x07, CurrentPlayer == playerOne ? "PLAY PLAYER<1>" : "PLAY PLAYER<2>");
+        }
+
+        private void PromptPlayer()
+        {
+            if ((gameData.IsrDelay & 0x07) == 3)
+            {
+                if (CurrentPlayer == playerOne)
+                    PlayerOneScore();
+                else
+                    PlayerTwoScore();
+            }
+            else if ((gameData.IsrDelay & 0x07) == 7)
+            {
+                int x = (CurrentPlayer == playerOne) ? 0x03 : 0x15;
+                WriteText(0x1c, x, "    ");
+            }
+        }
+
+        private void StartGame()
+        {
+            ClearPlayField();
+            CurrentPlayer.CopyShieldToBitmapChar();
+            ShieldsToScreen();
+            DrawBottomLine();
+            gameData.SuspendPlay = false;
         }
 
         private void IsrTasksSplashScreen()
@@ -282,14 +351,14 @@ namespace WpfInvaders
                         gameData.SplashMinorState = SplashMinorState.PrintMessageCharacter;
                     break;
                 case SplashMinorState.PlayDemoWaitDeath:
-                    if (gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive)
+                    if ((gameData.PlayerBase.Alive != PlayerBase.PlayerAlive.Alive) || (gameData.Credits!=0))
                     {
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
                         gameData.SplashMinorState = SplashMinorState.PlayDemoWaitEndofExplosion;
                     }
                     break;
                 case SplashMinorState.PlayDemoWaitEndofExplosion:
-                    if (gameData.PlayerBase.Alive == PlayerBase.PlayerAlive.Alive)
+                    if ((gameData.PlayerBase.Alive == PlayerBase.PlayerAlive.Alive) || (gameData.Credits != 0))
                     {
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
                         gameData.DemoMode = false;
@@ -369,12 +438,10 @@ namespace WpfInvaders
                 case SplashMajorState.PlayDemo:
                     Debug.Print("Starting demo game");
                     ClearPlayField();
-                    playerOne.ShipsRem = 3;
                     CurrentPlayer = playerOne;
+                    playerOne.Reset();
                     RemoveShip();
                     gameData.ResetVariables(CurrentPlayer);
-                    CurrentPlayer.InitAliens();
-                    playerOne.ResetShields();
                     ShieldsToScreen();
                     DrawBottomLine();
                     gameData.DemoMode = true;
@@ -483,7 +550,7 @@ namespace WpfInvaders
             {
                 // Adjust so hitting alien as the rack bumps gives us the correct row
                 // Aliens are either on gameData.RefAlienY or gameData.RefAlienY+8
-                int rowY = gameData.RefAlienY+8;
+                int rowY = gameData.RefAlienY + 8;
                 int alienIndex = 0;
                 while (rowY < gameData.PlayerShot.ShotSprite.Y)
                 {
@@ -611,7 +678,6 @@ namespace WpfInvaders
             }
         }
 
-
         private void TimeToSaucer()
         {
         }
@@ -673,6 +739,56 @@ namespace WpfInvaders
             return (byte)((highNybble & 0xf0) + (lowNybble & 0x0f));
         }
 
+        private static ushort BcdAdd(ushort a, ushort b)
+        {
+            int halfCarry = 0;
+            int nybble000f = (a & 0x000f) + (b & 0x000f);
+            if (nybble000f > 9)
+            {
+                nybble000f = (nybble000f + 0x0006) & 0x000f;
+                halfCarry = 0x10;
+            }
+
+            int nybllle00f0 = (a & 0x00f0) + (b & 0x00f0) + halfCarry;
+            if (nybllle00f0 > 99)
+            {
+                nybllle00f0 = (nybllle00f0 + 0x0060) & 0x00f0;
+                halfCarry = 0x100;
+            }
+
+            int nybble0f00 = (a & 0x0f00) + (b & 0x0f00) + halfCarry;
+            if (nybble0f00 > 999)
+            {
+                nybble0f00 = (nybble0f00 + 0x0600) & 0x0f00;
+                halfCarry = 0x10;
+            }
+
+            int nyblllef000 = (a & 0xf000) + (b & 0xf000) + halfCarry;
+            if (nyblllef000 > 9999)
+            {
+                nyblllef000 = (nyblllef000 + 0x6000) & 0xf000;
+            }
+            return (ushort)((nyblllef000 & 0xf000) + (nybble0f00 & 0x0f00)+(nybllle00f0 & 0x00f0) + (nybble000f & 0x000f));
+        }
+
+        private static byte BcdSub(byte a, byte b)
+        {
+            int halfCarry = 0;
+            int lowNybble = (a & 0x0f) - (b & 0x0f);
+            if (lowNybble < 0)
+            {
+                lowNybble = (lowNybble + 0xa) & 0x0f;
+                halfCarry = 0x10;
+            }
+            int highNybble = (a & 0xf0) - ((b & 0xf0) + halfCarry);
+            if (highNybble > 99)
+            {
+                highNybble = (highNybble + 0xa) & 0xf0;
+            }
+            return (byte)((highNybble & 0xf0) + (lowNybble & 0x0f));
+        }
+
+
         private void DrawStatus()
         {
             ClearScreen();
@@ -726,7 +842,7 @@ namespace WpfInvaders
             WriteText(0x1e, 0x00, " SCORE<1> HI-SCORE SCORE<2> ");
         }
 
-        private static void WriteHexWord(int y, int x, short w)
+        private static void WriteHexWord(int y, int x, ushort w)
         {
             WriteText(y, x, w.ToString("X4"));
         }
