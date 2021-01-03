@@ -257,6 +257,7 @@ namespace WpfInvaders
                     CurrentPlayer.RefAlienX = 0x18;
                     CurrentPlayer.RackCount = (CurrentPlayer.RackCount & 0x07) + 1;
                     CurrentPlayer.RefAlienY = Aliens.AlienStartRow[CurrentPlayer.RackCount];
+                    CurrentPlayer.RefAlienDeltaX = 2;
                     gameData.ResetVariables(CurrentPlayer, false);
                     ClearPlayField();
                     DrawBottomLine();
