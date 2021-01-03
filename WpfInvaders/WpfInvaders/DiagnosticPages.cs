@@ -1,4 +1,6 @@
-﻿namespace WpfInvaders
+﻿using System;
+
+namespace WpfInvaders
 {
     internal static class DiagnosticPages
     {
@@ -205,5 +207,41 @@
             }
         }
 
+        internal static void ShowInitialInvaders(MainWindow mainWindow, GameData gameData, int diagnosticsAlienType)
+        {
+            MainWindow.ClearScreen();
+            var player = new PlayerData();
+            var aliens = new Aliens(mainWindow, gameData, player);
+            for (int i = 0; i < 55; i++)
+                player.Aliens[i] = (byte)((i < 3) ? 1 : 0);
+
+            gameData.AlienCharacterStart = diagnosticsAlienType;
+            gameData.AlienCurIndex = 1;
+
+            for (int i = 0; i <8; i+=2)
+            {
+                int y = 29 - i;
+                DrawInitialAlienRow(gameData, aliens, 0x10+i, y, true);
+                DrawInitialAlienRow(gameData, aliens, 0x70+i, y, false);
+            }
+            mainWindow.RenderScreen();
+        }
+        private static void DrawInitialAlienRow(GameData gameData, Aliens aliens, int x, int y, bool rightToLeft)
+        {
+            gameData.AlienCharacterCurY = y;
+            gameData.RackDirectionRightToLeft = rightToLeft;
+            int deltaX = rightToLeft ? -2 : 2;
+
+            for (int i = 0; i < 3; i++)
+            {
+                gameData.AlienCharacterCurX = (x + i * 0x10) >> 3;
+                gameData.AlienCharacterCurXOffset = (x + i * 0x10) & 0x07;
+                aliens.DrawAlien();
+            }
+
+            gameData.AlienCharacterCurX = (x + 0x48) >> 3;
+            gameData.AlienCharacterCurXOffset = (x + 0x48) & 0x07;
+            aliens.DrawAlien();
+        }
     }
 }

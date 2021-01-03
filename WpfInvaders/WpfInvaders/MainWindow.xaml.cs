@@ -1117,6 +1117,7 @@ namespace WpfInvaders
                         Pause_Click(null, null);
                     break;
                 case Key.F1: StopIsr(); new HelpWindow().ShowDialog(); break;
+                case Key.F3: StopIsr(); DiagnosticPages.ShowInitialInvaders(this, gameData, DiagnosticsAlienType); break;
                 case Key.F4: StopIsr(); new CharacterMapWindow().ShowDialog(); break;
                 case Key.F5: StopIsr(); DiagnosticPages.ShowShiftedInvaders(this, DiagnosticsAlienType); break;
                 case Key.F6: StopIsr(); DiagnosticPages.ShowExplodedInvaders(this, gameData, 0, DiagnosticsAlienType, shiftKeyDown); break;
