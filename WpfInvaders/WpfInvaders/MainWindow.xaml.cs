@@ -180,6 +180,14 @@ namespace WpfInvaders
             InIsr = false;
         }
 
+        private void DumpScreen(string tag)
+        {
+            if (frameCounter < 1285)
+                return;
+            RenderScreen();
+            SaveScreenShot($"c:\\temp\\Snap{frameCounter}-{tag}.png");
+        }
+
         private void GameTick()
         {
             gameData.IsrDelay--;
@@ -188,17 +196,20 @@ namespace WpfInvaders
             {
                 if (gameData.GameMode || gameData.DemoMode)
                 {
+                    DumpScreen("A");
                     GameLoopStep();
                     // Pretend we're on the first half of the screen
                     gameData.VblankStatus = 0;
                     // Move every except the player
                     RunGameObjects(true);
+                    DumpScreen("B");
                     // Normally the game loop runs for ever
                     // But do it here instead as we only have one isr
                     // required to get the players first shot off
                     // correctly in demo mode.
                     GameLoopStep();
                     gameData.Aliens.CursorNextAlien();
+                    DumpScreen("C");
 
                     // Mame draws the screen at this point
                     // when single stepping...
@@ -208,14 +219,17 @@ namespace WpfInvaders
                     gameData.VblankStatus = 0x80;
                     // Copy the shot sync like the normal routines do
                     gameData.ShotSync = gameData.AlienShotRolling.ExtraCount;
+                    DumpScreen("D");
                     // Draw the alien
                     gameData.Aliens.DrawAlien();
+                    DumpScreen("E");
                     // Move everyone including the player
                     RunGameObjects(false);
                     // Adjust time to saucer
                     TimeToSaucer();
                     // Rerun the code that normally would run in a tight loop
                     GameLoopStep();
+                    DumpScreen("F");
                 }
                 else
                 {
