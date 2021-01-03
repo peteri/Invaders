@@ -291,6 +291,7 @@ namespace WpfInvaders
             if (CurrentPlayer.Score < 0x1500)
                 return;
             CurrentPlayer.ShipsRem++;
+            CurrentPlayer.ExtraShipAvailable = false;
             WriteText(0x01, 0x01, (CurrentPlayer.ShipsRem & 0x0f).ToString());
             DrawShips();
         }

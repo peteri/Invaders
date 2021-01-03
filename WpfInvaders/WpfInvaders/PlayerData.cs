@@ -33,6 +33,7 @@ namespace WpfInvaders
             ExtraShipAvailable = true;
             ResetShields();
         }
+
         internal void ResetShields()
         {
             for (int i = 0; i < 22; i++)
@@ -110,12 +111,12 @@ namespace WpfInvaders
                 }
             }
         }
+
         internal static void DrawShields()
         {
             MainWindow.WriteUnmappedText(0x7, 4, ShieldsLineOne);
             MainWindow.WriteUnmappedText(0x6, 4, ShieldsLineTwo);
         }
-
 
         internal void CountAliens()
         {
