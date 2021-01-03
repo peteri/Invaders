@@ -7,6 +7,7 @@ namespace WpfInvaders
         private readonly MainWindow mainWindow;
         private readonly GameData gameData;
         private readonly PlayerData currentPlayer;
+        internal static byte[] AlienStartRow = { 0x78, 0x60, 0x50, 0x48, 0x48, 0x48, 0x40, 0x40, 0x40 };
 
         internal Aliens(MainWindow mainWindow,GameData gameData, PlayerData currentPlayer)
         {

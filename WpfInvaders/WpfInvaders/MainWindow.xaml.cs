@@ -252,7 +252,15 @@ namespace WpfInvaders
                 AdjustScore();
                 if (CurrentPlayer.NumAliens == 0)
                 {
-                    throw new NotImplementedException("Out of aliens...");
+                    CurrentPlayer.InitAliens();
+                    CurrentPlayer.ResetShields();
+                    CurrentPlayer.RefAlienX = 0x18;
+                    CurrentPlayer.RackCount = (CurrentPlayer.RackCount & 0x07) + 1;
+                    CurrentPlayer.RefAlienY = Aliens.AlienStartRow[CurrentPlayer.RackCount];
+                    gameData.ResetVariables(CurrentPlayer, false);
+                    ClearPlayField();
+                    DrawBottomLine();
+                    PlayerData.DrawShields();
                 }
                 SetShotReloadRate();
                 CheckExtraShip();
@@ -490,7 +498,7 @@ namespace WpfInvaders
         {
             ClearPlayField();
             CurrentPlayer.CopyShieldToBitmapChar();
-            ShieldsToScreen();
+            PlayerData.DrawShields();
             DrawBottomLine();
             gameData.SuspendPlay = false;
             gameData.WaitState = WaitState.Idle;
@@ -619,7 +627,7 @@ namespace WpfInvaders
                     playerOne.Reset();
                     RemoveShip();
                     gameData.ResetVariables(CurrentPlayer, false);
-                    ShieldsToScreen();
+                    PlayerData.DrawShields();
                     DrawBottomLine();
                     gameData.DemoMode = true;
                     return SplashMinorState.PlayDemoWaitDeath;
@@ -834,12 +842,6 @@ namespace WpfInvaders
                 LineRender.Screen[i] = 0xf3;
                 i += LineRender.ScreenWidth;
             }
-        }
-
-        private static void ShieldsToScreen()
-        {
-            WriteUnmappedText(0x7, 4, "\x00\x01\x02##\x06\x07\x08\x09##\x0e\x0f\x10##\x14\x15\x16\x17");
-            WriteUnmappedText(0x6, 4, "\x03\x04\x05##\x0a\x0b\x0c\x0d##\x11\x12\x13##\x18\x19\x1a\x1b");
         }
 
         internal void RemoveShip()
