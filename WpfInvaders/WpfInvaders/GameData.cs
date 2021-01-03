@@ -104,6 +104,8 @@ namespace WpfInvaders
             ScoreDelta = 0;
             AlienFireDelay = 0x30;
             AlienShotDeltaY = -4;
+            AlienExplodeTimer = 0;
+            AlienExploding = false;
             Invaded = false;
             Aliens = new Aliens(MainWindow,this, currentPlayer);
             // Create timer task objects

@@ -18,6 +18,8 @@ namespace WpfInvaders
         internal int RackCount;
         internal int NumAliens;
         internal bool ExtraShipAvailable;
+        private const string ShieldsLineOne = "\x00\x01\x02##\x06\x07\x08\x09##\x0e\x0f\x10##\x14\x15\x16\x17";
+        private const string ShieldsLineTwo = "\x03\x04\x05##\x0a\x0b\x0c\x0d##\x11\x12\x13##\x18\x19\x1a\x1b";
 
         internal void Reset()
         {
@@ -31,7 +33,6 @@ namespace WpfInvaders
             ExtraShipAvailable = true;
             ResetShields();
         }
-
         internal void ResetShields()
         {
             for (int i = 0; i < 22; i++)
@@ -70,6 +71,29 @@ namespace WpfInvaders
 
         internal void CopyBitmapCharToShield()
         {
+            for (int i = 0; i < ShieldsLineOne.Length; i++)
+            {
+                if (LineRender.Screen[(i + 4) * LineRender.ScreenWidth + 0x07] >= 0x20)
+                {
+                    // Shield isn't on screen any more.... So nobble the bitmap
+                    int c = ShieldsLineOne[i];
+                    if (c < 0x20)
+                    {
+                        for (int j = 0; j < 7; j++)
+                            LineRender.BitmapChar[c * 8 + j] = 0;
+                    }
+                }
+                if (LineRender.Screen[(i + 4) * LineRender.ScreenWidth + 0x06] >= 0x20)
+                {
+                    // Shield isn't on screen any more.... So nobble the bitmap
+                    int c = ShieldsLineTwo[i];
+                    if (c < 0x20)
+                    {
+                        for (int j = 0; j < 7; j++)
+                            LineRender.BitmapChar[c * 8 + j] = 0;
+                    }
+                }
+            }
             for (int j = 0; j < 8; j++)
             {
                 for (int i = 0; i < 6; i++)
@@ -84,6 +108,12 @@ namespace WpfInvaders
                 }
             }
         }
+        internal static void DrawShields()
+        {
+            MainWindow.WriteUnmappedText(0x7, 4, ShieldsLineOne);
+            MainWindow.WriteUnmappedText(0x6, 4, ShieldsLineTwo);
+        }
+
 
         internal void CountAliens()
         {
