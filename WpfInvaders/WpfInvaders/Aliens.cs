@@ -4,11 +4,13 @@ namespace WpfInvaders
 {
     internal class Aliens
     {
+        private readonly MainWindow mainWindow;
         private readonly GameData gameData;
         private readonly PlayerData currentPlayer;
 
-        internal Aliens(GameData gameData, PlayerData currentPlayer)
+        internal Aliens(MainWindow mainWindow,GameData gameData, PlayerData currentPlayer)
         {
+            this.mainWindow = mainWindow;
             this.gameData = gameData;
             this.currentPlayer = currentPlayer;
         }
@@ -190,11 +192,6 @@ namespace WpfInvaders
             }
         }
 
-        private void KillPlayer()
-        {
-            throw new NotImplementedException();
-        }
-
         private static bool CheckPlayFieldLineIsBlank(int line)
         {
             var data = LineRender.RenderLine(line);
@@ -256,7 +253,11 @@ namespace WpfInvaders
             CalculateAlienPosition();
             if (gameData.AlienCharacterCurY == 4)
             {
-                KillPlayer();
+                gameData.Invaded = true;
+                gameData.PlayerBase.Alive = PlayerBase.PlayerAlive.BlowUpOne;
+                mainWindow.CurrentPlayer.ShipsRem=1;
+                mainWindow.RemoveShip();
+                mainWindow.DisplayShipCount();
                 return;
             }
             gameData.WaitOnDraw = true;

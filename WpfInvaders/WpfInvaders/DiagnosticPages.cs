@@ -88,7 +88,7 @@
             mainWindow.StopIsr();
             MainWindow.ClearScreen();
             var player = new PlayerData();
-            var aliens = new Aliens(gameData, player);
+            var aliens = new Aliens(mainWindow,gameData, player);
             for (int i = 0; i < 55; i++)
                 player.Aliens[i] = (byte)((i < 3) ? 1 : 0);
 

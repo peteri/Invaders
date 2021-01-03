@@ -32,6 +32,19 @@ namespace WpfInvaders
             PlayTwoPlayer = 0x20,
         }
 
+        internal enum WaitState
+        {
+            Idle,
+            WaitForPlayerButton,
+            PlayerDeathPause,
+            WaitForPlayMessage,
+            GameOverPlayerX,
+            GameOver,
+            GameOverPlayerXMsg,
+            GameOverMsg,
+            GameOverDelay
+        }
+
         internal enum SplashMinorState
         {
             Idle,
@@ -74,12 +87,15 @@ namespace WpfInvaders
             ToggleAnimateState
         }
 
-        private readonly WriteableBitmap frame;
+        // Game related stuff
         private readonly PlayerData playerOne;
         private readonly PlayerData playerTwo;
         internal PlayerData CurrentPlayer;
         private readonly GameData gameData;
         internal SwitchState switchState;
+
+        // Stuff related to WPF and diagnostics
+        private readonly WriteableBitmap frame;
         private readonly Stopwatch frameStopwatch;
         private readonly Stopwatch timeInIsrStopwatch;
         private int timerCount = 0;
@@ -205,7 +221,7 @@ namespace WpfInvaders
                 {
                     if (gameData.Credits != 0)
                     {
-                        if (!gameData.WaitStartLoop)
+                        if (gameData.WaitState == WaitState.Idle)
                         {
                             EnterWaitStartLoop();
                         }
@@ -240,8 +256,8 @@ namespace WpfInvaders
                 }
                 SetShotReloadRate();
                 CheckExtraShip();
-                if (CurrentPlayer.NumAliens<9)
-                    gameData.AlienShotDeltaY=-5;
+                if (CurrentPlayer.NumAliens < 9)
+                    gameData.AlienShotDeltaY = -5;
             }
         }
 
@@ -263,7 +279,7 @@ namespace WpfInvaders
         {
             if (!CurrentPlayer.ExtraShipAvailable)
                 return;
-            if (CurrentPlayer.Score < 0x1500) 
+            if (CurrentPlayer.Score < 0x1500)
                 return;
             CurrentPlayer.ShipsRem++;
             WriteText(0x01, 0x01, (CurrentPlayer.ShipsRem & 0x0f).ToString());
@@ -296,16 +312,85 @@ namespace WpfInvaders
 
         private void RunWaitTask()
         {
-            if (!gameData.GameMode)
+            switch (gameData.WaitState)
             {
-                CheckStartButtons();
-            }
-            else
-            {
-                if (gameData.IsrDelay == 0)
-                    StartGame();
-                else
-                    PromptPlayer();
+                case WaitState.WaitForPlayerButton:
+                    CheckStartButtons();
+                    break;
+                case WaitState.PlayerDeathPause:
+                    if (gameData.IsrDelay == 0)
+                        PlayPlayer(CurrentPlayer == playerOne ? playerTwo : playerOne, true);
+                    break;
+                case WaitState.WaitForPlayMessage:
+                    if (gameData.IsrDelay == 0)
+                        StartGame();
+                    else
+                        PromptPlayer();
+                    break;
+                case WaitState.GameOverPlayerX:
+                    gameData.DelayMessage = (CurrentPlayer == playerOne) ? "GAME OVER PLAYER <1>" : "GAME OVER PLAYER <2>";
+                    gameData.DelayMessageIndex = 0;
+                    gameData.IsrDelay = 1;
+                    gameData.WaitState = WaitState.GameOverPlayerXMsg;
+                    gameData.DelayMessagePosition = 0x0403;
+                    break;
+                case WaitState.GameOverPlayerXMsg:
+                    if (gameData.IsrDelay == 0)
+                    {
+                        if (gameData.DelayMessageIndex >= gameData.DelayMessage.Length)
+                        {
+                            var otherPlayer = (CurrentPlayer == playerOne) ? playerTwo : playerOne;
+                            gameData.WaitState = (otherPlayer.ShipsRem != 0) ? WaitState.PlayerDeathPause : WaitState.GameOver;
+                            gameData.IsrDelay = 0x80;
+                        }
+                        else
+                        {
+                            byte c = CharacterRom.Map[gameData.DelayMessage[gameData.DelayMessageIndex++]];
+                            int y = gameData.DelayMessagePosition & 0xff;
+                            int x = gameData.DelayMessagePosition >> 8;
+                            gameData.DelayMessagePosition += 0x100;
+                            LineRender.Screen[y + x * LineRender.ScreenWidth] = c;
+                            gameData.IsrDelay = 6;
+                        }
+                    }
+                    break;
+                case WaitState.GameOver:
+                    gameData.DelayMessage = "GAME OVER";
+                    gameData.DelayMessageIndex = 0;
+                    gameData.IsrDelay = 1;
+                    gameData.WaitState = WaitState.GameOverMsg;
+                    gameData.DelayMessagePosition = 0x0918;
+                    gameData.GameMode = false;
+                    gameData.DemoMode = false;
+                    break;
+                case WaitState.GameOverMsg:
+                    if (gameData.IsrDelay == 0)
+                    {
+                        if (gameData.DelayMessageIndex >= gameData.DelayMessage.Length)
+                        {
+                            gameData.WaitState = WaitState.GameOverDelay;
+                            gameData.IsrDelay = 0x80;
+                        }
+                        else
+                        {
+                            byte c = CharacterRom.Map[gameData.DelayMessage[gameData.DelayMessageIndex++]];
+                            int y = gameData.DelayMessagePosition & 0xff;
+                            int x = gameData.DelayMessagePosition >> 8;
+                            gameData.DelayMessagePosition += 0x100;
+                            LineRender.Screen[y + x * LineRender.ScreenWidth] = c;
+                            gameData.IsrDelay = 6;
+                        }
+                    }
+                    break;
+                case WaitState.GameOverDelay:
+                    if (gameData.IsrDelay == 0)
+                    {
+                        // Time to reset the world!
+                        gameData.WaitState = WaitState.Idle;
+                        gameData.SuspendPlay = false;
+                        ClearPlayField();
+                    }
+                    break;
             }
         }
 
@@ -320,30 +405,70 @@ namespace WpfInvaders
                 StartGame(2);
         }
 
+        internal void KillPlayer()
+        {
+            if (CurrentPlayer.Score > gameData.HiScore)
+            {
+                gameData.HiScore = CurrentPlayer.Score;
+                HighScore();
+            }
+            DisplayShipCount();
+        }
+
         private void StartGame(int numberOfPlayers)
         {
             // Reset back the splash screen stuff
             gameData.SplashMajorState = SplashMajorState.ToggleAnimateState;
             gameData.SplashMinorState = SplashMinorState.Idle;
+            gameData.NumberOfPlayers = numberOfPlayers;
             gameData.Credits = BcdSub(gameData.Credits, (byte)numberOfPlayers);
             playerOne.Reset();
             playerTwo.Reset();
             PlayerOneScore();
             PlayerTwoScore();
             DrawNumCredits();
-            PlayPlayer(playerOne);
+            PlayPlayer(playerOne, false);
         }
 
-        private void PlayPlayer(PlayerData player)
+        private void PlayPlayer(PlayerData player, bool allowQuickMove)
         {
             CurrentPlayer = player;
-            gameData.ResetVariables(CurrentPlayer);
+            gameData.ResetVariables(CurrentPlayer, allowQuickMove);
             gameData.GameMode = true;
             gameData.IsrDelay = 0x80;
+            gameData.WaitState = WaitState.WaitForPlayMessage;
             RemoveShip();
             ClearPlayField();
             WriteText(0x11, 0x07, CurrentPlayer == playerOne ? "PLAY PLAYER<1>" : "PLAY PLAYER<2>");
         }
+
+        internal void PlayerShipBlownUp()
+        {
+            gameData.SuspendPlay = true;
+            CurrentPlayer.CopyBitmapCharToShield();
+            gameData.SaveReferenceAlienInfo(CurrentPlayer);
+
+            if (CurrentPlayer.ShipsRem == 0)
+            {
+                KillPlayer();
+                gameData.WaitState = (gameData.NumberOfPlayers == 2) ? WaitState.GameOverPlayerX : WaitState.GameOver;
+                return;
+            }
+            var otherPlayer = (CurrentPlayer == playerOne) ? playerTwo : playerOne;
+            bool onePlayerLeft = (gameData.NumberOfPlayers == 1) || (otherPlayer.ShipsRem == 0);
+            if (onePlayerLeft)
+            {
+                RemoveShip();
+                gameData.SuspendPlay = false;
+                gameData.WaitState = WaitState.Idle;
+            }
+            else
+            {
+                gameData.IsrDelay = 0x80;
+                gameData.WaitState = WaitState.PlayerDeathPause;
+            }
+        }
+
 
         private void PromptPlayer()
         {
@@ -368,6 +493,7 @@ namespace WpfInvaders
             ShieldsToScreen();
             DrawBottomLine();
             gameData.SuspendPlay = false;
+            gameData.WaitState = WaitState.Idle;
         }
 
         private void IsrTasksSplashScreen()
@@ -492,7 +618,7 @@ namespace WpfInvaders
                     CurrentPlayer = playerOne;
                     playerOne.Reset();
                     RemoveShip();
-                    gameData.ResetVariables(CurrentPlayer);
+                    gameData.ResetVariables(CurrentPlayer, false);
                     ShieldsToScreen();
                     DrawBottomLine();
                     gameData.DemoMode = true;
@@ -561,7 +687,7 @@ namespace WpfInvaders
 
         private void EnterWaitStartLoop()
         {
-            gameData.WaitStartLoop = true;
+            gameData.WaitState = WaitState.WaitForPlayerButton;
             gameData.SuspendPlay = true;
             ClearPlayField();
             WriteText(0x13, 0x0c, "PRESS");
@@ -705,7 +831,7 @@ namespace WpfInvaders
             int i = 2;
             for (int j = 0; j < LineRender.ScreenHeight; j++)
             {
-                LineRender.Screen[i] = 0x53;
+                LineRender.Screen[i] = 0xf3;
                 i += LineRender.ScreenWidth;
             }
         }
@@ -716,13 +842,18 @@ namespace WpfInvaders
             WriteUnmappedText(0x6, 4, "\x03\x04\x05##\x0a\x0b\x0c\x0d##\x11\x12\x13##\x18\x19\x1a\x1b");
         }
 
-        private void RemoveShip()
+        internal void RemoveShip()
         {
             if (CurrentPlayer.ShipsRem == 0)
                 return;
-            WriteText(0x01, 0x01, (CurrentPlayer.ShipsRem & 0x0f).ToString());
+            DisplayShipCount();
             CurrentPlayer.ShipsRem--;
             DrawShips();
+        }
+
+        internal void DisplayShipCount()
+        {
+            WriteText(0x01, 0x01, (CurrentPlayer.ShipsRem & 0x0f).ToString());
         }
 
         private void DrawShips()
