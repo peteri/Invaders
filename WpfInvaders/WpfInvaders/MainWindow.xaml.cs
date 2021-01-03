@@ -180,14 +180,6 @@ namespace WpfInvaders
             InIsr = false;
         }
 
-        private void DumpScreen(string tag)
-        {
-            if (frameCounter < 1285)
-                return;
-            RenderScreen();
-            SaveScreenShot($"c:\\temp\\Snap{frameCounter}-{tag}.png");
-        }
-
         private void GameTick()
         {
             gameData.IsrDelay--;
@@ -196,20 +188,17 @@ namespace WpfInvaders
             {
                 if (gameData.GameMode || gameData.DemoMode)
                 {
-                    DumpScreen("A");
                     GameLoopStep();
                     // Pretend we're on the first half of the screen
                     gameData.VblankStatus = 0;
                     // Move every except the player
                     RunGameObjects(true);
-                    DumpScreen("B");
                     // Normally the game loop runs for ever
                     // But do it here instead as we only have one isr
                     // required to get the players first shot off
                     // correctly in demo mode.
                     GameLoopStep();
                     gameData.Aliens.CursorNextAlien();
-                    DumpScreen("C");
 
                     // Mame draws the screen at this point
                     // when single stepping...
@@ -219,17 +208,14 @@ namespace WpfInvaders
                     gameData.VblankStatus = 0x80;
                     // Copy the shot sync like the normal routines do
                     gameData.ShotSync = gameData.AlienShotRolling.ExtraCount;
-                    DumpScreen("D");
                     // Draw the alien
                     gameData.Aliens.DrawAlien();
-                    DumpScreen("E");
                     // Move everyone including the player
                     RunGameObjects(false);
                     // Adjust time to saucer
                     TimeToSaucer();
                     // Rerun the code that normally would run in a tight loop
                     GameLoopStep();
-                    DumpScreen("F");
                 }
                 else
                 {
@@ -597,7 +583,7 @@ namespace WpfInvaders
                     return PrintDelayedMessage(0x0714, "SPACE  INVADERS");
                 case SplashMajorState.PrintAdvanceTable:
                     WriteText(0x10, 4, "*SCORE ADVANCE TABLE*");
-                    WriteUnmappedText(0x0e, 7, "\x20\x21\x22"); // Saucer 
+                    WriteUnmappedText(0x0e, 7, "\x24\x25\x26"); // Saucer 
                     WriteUnmappedText(0x0c, 8, "\xa0\xa1"); // Invader type C - sprite 0
                     WriteUnmappedText(0x0a, 8, "\xbc\xbd"); // Invader type B - sprite 1
                     WriteUnmappedText(0x08, 8, "\x80\x81"); // Invader type A - sprite 0

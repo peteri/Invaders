@@ -2,19 +2,6 @@
 {
     internal abstract class AlienShot : TimerObject
     {
-
-        //        ShotReloadRate:
-        // The tables at 1CB8 and 1AA1 control how fast shots are created.The speed is based
-        // on the upper byte of the player's score. For a score of less than or equal 0200 then 
-        //; the fire speed is 30. For a score less than or equal 1000 the shot speed is 10. Less 
-        //; than or equal 2000 the speed is 0B. Less than or equal 3000 is 08. And anything
-        //; above 3000 is 07.
-        //;
-        //; 1CB8: 02 10 20 30
-        //;
-        //1AA1: 30 10 0B 08                           
-        //1AA5: 07           ; Fastest shot firing speed
-
         protected readonly MainWindow mainWindow;
         protected readonly GameData gameData;
         private static readonly byte[] alienShotExplosion = { 0x4A, 0x15, 0xBE, 0x3F, 0x5E, 0x25 };

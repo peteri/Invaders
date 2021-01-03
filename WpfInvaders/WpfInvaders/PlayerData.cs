@@ -71,9 +71,10 @@ namespace WpfInvaders
 
         internal void CopyBitmapCharToShield()
         {
+            // Deal with shields that the aliens have wiped.
             for (int i = 0; i < ShieldsLineOne.Length; i++)
             {
-                if (LineRender.Screen[(i + 4) * LineRender.ScreenWidth + 0x07] >= 0x20)
+                if (LineRender.Screen[(i + 4) * LineRender.ScreenWidth + 0x07] >= 0x1c)
                 {
                     // Shield isn't on screen any more.... So nobble the bitmap
                     int c = ShieldsLineOne[i];
@@ -83,7 +84,7 @@ namespace WpfInvaders
                             LineRender.BitmapChar[c * 8 + j] = 0;
                     }
                 }
-                if (LineRender.Screen[(i + 4) * LineRender.ScreenWidth + 0x06] >= 0x20)
+                if (LineRender.Screen[(i + 4) * LineRender.ScreenWidth + 0x06] >= 0x1c)
                 {
                     // Shield isn't on screen any more.... So nobble the bitmap
                     int c = ShieldsLineTwo[i];
@@ -94,6 +95,7 @@ namespace WpfInvaders
                     }
                 }
             }
+            // Copy the bitmaps back.
             for (int j = 0; j < 8; j++)
             {
                 for (int i = 0; i < 6; i++)

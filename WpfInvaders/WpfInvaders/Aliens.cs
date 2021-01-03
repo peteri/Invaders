@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WpfInvaders
+﻿namespace WpfInvaders
 {
     internal class Aliens
     {
@@ -435,7 +433,7 @@ namespace WpfInvaders
             if (gameData.RackDirectionRightToLeft)
             {
                 // Going Right to left
-                if (LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 0xd)
+                if (LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 0xd) 
                     LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0xa);
                 else
                     LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 4);
@@ -469,7 +467,8 @@ namespace WpfInvaders
         {
             if (gameData.RackDirectionRightToLeft)
             {
-                if (LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 9)
+                if ((LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 9) ||
+                    (LineRender.Screen[currOffset] == gameData.AlienCharacterStart + 0x0e))
                     LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 0x0e);
                 else
                     LineRender.Screen[currOffset] = (byte)(gameData.AlienCharacterStart + 7);
