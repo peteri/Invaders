@@ -68,7 +68,6 @@ namespace WpfInvaders
                 blowUpChanges--;
                 if (blowUpChanges == 0)
                 {
-                    int playerSize = (PlayerX & 0x07) == 0 ? 2 : 3;
                     DrawPlayerSprite(0, true);
                     ResetState();
 
