@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace WpfInvaders
 {
@@ -12,7 +13,7 @@ namespace WpfInvaders
         internal bool SuspendPlay;
         internal bool GameMode;
         internal bool DemoMode;
-        internal bool WaitStartLoop;
+        internal MainWindow.WaitState WaitState;
         internal bool AnimateSplash;
         internal byte AlienShotReloadRate;
 
@@ -70,13 +71,21 @@ namespace WpfInvaders
         internal bool AdjustScore;
         internal ushort ScoreDelta;
         internal int AlienShotDeltaY;
+        internal int NumberOfPlayers;
+
+        internal void SaveReferenceAlienInfo(PlayerData currentPlayer)
+        {
+            currentPlayer.RefAlienX=RefAlienX;
+            currentPlayer.RefAlienY=RefAlienY;
+            currentPlayer.RefAlienDeltaX=RefAlienDeltaX;
+        }
 
         internal GameData(MainWindow mainWindow)
         {
             MainWindow = mainWindow;
         }
 
-        internal void ResetVariables(PlayerData currentPlayer)
+        internal void ResetVariables(PlayerData currentPlayer,bool allowQuickMove)
         {
             LineRender.Sprites.Clear();
 
@@ -95,14 +104,16 @@ namespace WpfInvaders
             ScoreDelta = 0;
             AlienFireDelay = 0x30;
             AlienShotDeltaY = -4;
-            Aliens = new Aliens(this, currentPlayer);
+            Invaded = false;
+            Aliens = new Aliens(MainWindow,this, currentPlayer);
             // Create timer task objects
             TimerObjects = new List<TimerObject>();
 
             // Players base
             PlayerBase = new PlayerBase(MainWindow, this);
             TimerObjects.Add(PlayerBase);
-
+            if (allowQuickMove)
+                PlayerBase.Ticks = 0;
             // Players shot
             PlayerShot = new PlayerShot(MainWindow,this);
             TimerObjects.Add(PlayerShot);

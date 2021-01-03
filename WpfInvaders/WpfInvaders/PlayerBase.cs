@@ -51,6 +51,7 @@ namespace WpfInvaders
             PlayerY = 0x20;
             blowUpCounter = 5;
             blowUpChanges = 0x0c;
+            Ticks = 128;
         }
 
         internal override void Action()
@@ -71,11 +72,11 @@ namespace WpfInvaders
                     DrawPlayerSprite(0, true);
                     ResetState();
 
-                    if (gameData.Invaded)
-                        return;
+                    //if (gameData.Invaded)
+                    //    return;
                     if (gameData.GameMode == false)
                         return;
-                    throw new NotImplementedException("Player died need to copy code from 02d0 to swap to other player or decrement ship counter.");
+                    mainWindow.PlayerShipBlownUp();
                 }
                 else
                 {
