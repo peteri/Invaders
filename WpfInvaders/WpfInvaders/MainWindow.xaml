@@ -11,6 +11,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -35,6 +36,11 @@
             <Label Name="FrameCounter" Margin="5">Frame count 0</Label>
             <TextBox Name="targetCounter" Width="100" Margin="0,5,5,5" TextAlignment="Right" VerticalAlignment="Center">1285</TextBox>
             <Button Name="AdvanceToFrame" Click="AdvanceToFrame_Click"  Margin="5">Jump to Frame</Button>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Grid.Column="0"  Orientation="Horizontal">
+            <TextBox Name="saveFilename" Width="100" Margin="0,5,5,5" VerticalAlignment="Center">switches.bin</TextBox>
+            <Button Name="Save" Click="Save_Click"  Margin="5">Save switches</Button>
+            <Button Name="Replay" Click="Replay_Click"  Margin="5">Replay</Button>
         </StackPanel>
     </Grid>
 </Window>
