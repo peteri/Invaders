@@ -11,7 +11,6 @@
         private int ShotBlowCount;
         internal Sprite Shot;
         internal Sprite ShotExplosion;
-        internal int DeltaY;
 
         internal AlienShot(MainWindow mainWindow, GameData gameData, byte[] sprite) : base(true, 0)
         {
@@ -49,7 +48,7 @@
                 {
                     if (gameData.AlienShotsEnabled == true)
                     {
-                        
+
                         ShotStepCount = 0;
                         if ((otherShot1.ShotStepCount != 0) && (otherShot1.ShotStepCount <= gameData.AlienShotReloadRate))
                             return (ShotBlowCount == 0);
@@ -74,7 +73,7 @@
 
         private void MoveShot()
         {
-            if (((Shot.X+0x20) & 0x80) != gameData.VblankStatus)
+            if (((Shot.X + 0x20) & 0x80) != gameData.VblankStatus)
                 return;
             if (ShotBlowingUp == false)
             {

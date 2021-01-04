@@ -104,6 +104,7 @@ namespace WpfInvaders
             AlienFireDelay = 0x30;
             AlienShotDeltaY = -4;
             AlienExplodeTimer = 0;
+            ShotSync = 1;
             AlienExploding = false;
             Invaded = false;
             Aliens = new Aliens(MainWindow,this, currentPlayer);

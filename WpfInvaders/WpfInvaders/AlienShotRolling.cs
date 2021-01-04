@@ -9,7 +9,7 @@
             ResetShotData();
         }
 
-        internal override void Action()
+        internal override void Action() 
         {
             ExtraCount = 2;
 

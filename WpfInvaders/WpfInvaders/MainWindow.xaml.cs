@@ -690,7 +690,7 @@ namespace WpfInvaders
                 case SplashMajorState.AnimateCoinExplodeFireBullet:
                     gameData.AlienShotSquigly.Shot.X = 115 + 8;
                     gameData.AlienShotSquigly.Shot.Y = 0x1a * 8 - 0x0b;
-                    gameData.AlienShotSquigly.DeltaY = -1;
+                    gameData.AlienShotDeltaY = -1;
                     gameData.ShotSync = 2;
                     return SplashMinorState.AwaitCoinShotEndOfExplosion;
                 case SplashMajorState.AnimateCoinExplodeRemoveExtraC:
