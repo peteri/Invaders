@@ -138,6 +138,9 @@ namespace WpfInvaders
             Pause.Content = "Pause";
             gameData.SplashMajorState = SplashMajorState.ToggleAnimateState;
             gameData.SplashMinorState = SplashMinorState.Idle;
+            gameData.WaitState = WaitState.Idle;
+            gameData.GameMode = false;
+            gameData.DemoMode = false;
             timerThread = new Thread(WaitingTimer);
             StartIsr();
             timerThread.Start();
@@ -787,6 +790,13 @@ namespace WpfInvaders
                             gameData.PlayerShot.ShotSprite.X, gameData.PlayerShot.ShotSprite.Y,
                             gameData.RefAlienX, gameData.RefAlienY);
                         int colX = gameData.RefAlienX + col * 0x10;
+                        // If we haven't draw this alien yet then the adjust the ColX back
+                        // to the correct position. Y is correct as we use the sprite
+                        // position rounded.
+                        if (alienIndex > gameData.AlienCurIndex && CurrentPlayer.NumAliens != 1)
+                        {
+                            colX -= gameData.RefAlienDeltaX;
+                        }
                         CurrentPlayer.Aliens[alienIndex] = 0;
                         gameData.AlienExplodeTimer = 0x10;
                         gameData.AlienExplodeX = colX >> 3;
