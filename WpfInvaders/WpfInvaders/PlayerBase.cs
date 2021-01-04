@@ -18,7 +18,7 @@ namespace WpfInvaders
             Command.Right,
             Command.None,
             Command.Left,
-            Command.Right,
+            Command.Right
         };
 
         private static readonly int[] PlayerBaseCharacters = { 0x56, 0x5c, 0x65, 0x6e, 0x77, 0xc0, 0xd0, 0xe0 };

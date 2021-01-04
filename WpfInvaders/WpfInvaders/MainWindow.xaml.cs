@@ -585,6 +585,7 @@ namespace WpfInvaders
                         // Hide all the sprites.
                         foreach (var sprite in LineRender.Sprites)
                             sprite.Visible = false;
+                        PlayerBase.IncrementDemoCommand();
                     }
                     break;
                 case SplashMinorState.AnimateSplashAlien:
