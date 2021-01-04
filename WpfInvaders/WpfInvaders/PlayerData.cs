@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WpfInvaders
+﻿namespace WpfInvaders
 {
     internal class PlayerData
     {
@@ -33,6 +31,7 @@ namespace WpfInvaders
             ExtraShipAvailable = true;
             ResetShields();
         }
+
         internal void ResetShields()
         {
             for (int i = 0; i < 22; i++)
@@ -71,9 +70,10 @@ namespace WpfInvaders
 
         internal void CopyBitmapCharToShield()
         {
+            // Deal with shields that the aliens have wiped.
             for (int i = 0; i < ShieldsLineOne.Length; i++)
             {
-                if (LineRender.Screen[(i + 4) * LineRender.ScreenWidth + 0x07] >= 0x20)
+                if (LineRender.Screen[(i + 4) * LineRender.ScreenWidth + 0x07] >= 0x1c)
                 {
                     // Shield isn't on screen any more.... So nobble the bitmap
                     int c = ShieldsLineOne[i];
@@ -83,7 +83,7 @@ namespace WpfInvaders
                             LineRender.BitmapChar[c * 8 + j] = 0;
                     }
                 }
-                if (LineRender.Screen[(i + 4) * LineRender.ScreenWidth + 0x06] >= 0x20)
+                if (LineRender.Screen[(i + 4) * LineRender.ScreenWidth + 0x06] >= 0x1c)
                 {
                     // Shield isn't on screen any more.... So nobble the bitmap
                     int c = ShieldsLineTwo[i];
@@ -94,6 +94,7 @@ namespace WpfInvaders
                     }
                 }
             }
+            // Copy the bitmaps back.
             for (int j = 0; j < 8; j++)
             {
                 for (int i = 0; i < 6; i++)
@@ -108,12 +109,12 @@ namespace WpfInvaders
                 }
             }
         }
+
         internal static void DrawShields()
         {
             MainWindow.WriteUnmappedText(0x7, 4, ShieldsLineOne);
             MainWindow.WriteUnmappedText(0x6, 4, ShieldsLineTwo);
         }
-
 
         internal void CountAliens()
         {

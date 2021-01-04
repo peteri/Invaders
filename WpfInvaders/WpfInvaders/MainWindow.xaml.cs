@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -103,11 +105,15 @@ namespace WpfInvaders
         private readonly ManualResetEvent dieEvent = new ManualResetEvent(false);
         private volatile bool invokeTick;
         private volatile bool InIsr;
+        private bool replayMode;
         private int frameCounter = 0;
+        private int replayIndex = 0;
         // Holding down Right Ctrl gives type B aliens
         // Holding down Left  Ctrl gives type C aliens
         private int DiagnosticsAlienType = 0x80;
         private bool shiftKeyDown;
+        private SwitchState lastSwitchState;
+        private List<(int framecount, SwitchState switchState)> switches;
 
         public MainWindow()
         {
@@ -122,6 +128,7 @@ namespace WpfInvaders
             timeInIsrStopwatch = Stopwatch.StartNew();
             PowerOnReset();
             frameStopwatch.Start();
+            switches = new List<(int framecount, SwitchState switchState)>();
         }
 
         private void PowerOnReset()
@@ -131,6 +138,9 @@ namespace WpfInvaders
             Pause.Content = "Pause";
             gameData.SplashMajorState = SplashMajorState.ToggleAnimateState;
             gameData.SplashMinorState = SplashMinorState.Idle;
+            gameData.WaitState = WaitState.Idle;
+            gameData.GameMode = false;
+            gameData.DemoMode = false;
             timerThread = new Thread(WaitingTimer);
             StartIsr();
             timerThread.Start();
@@ -163,6 +173,28 @@ namespace WpfInvaders
             InIsr = true;
             frameCounter++;
             timerCount++;
+            if (replayMode)
+            {
+                var curSwitch = switches[replayIndex];
+                if (frameCounter == curSwitch.framecount)
+                {
+                    switchState = curSwitch.switchState;
+                    replayIndex++;
+                    if (replayIndex >= switches.Count)
+                    {
+                        replayMode = false;
+                        StopIsr();
+                    }
+                }
+            }
+            else
+            {
+                if (switchState != lastSwitchState)
+                {
+                    switches.Add((frameCounter, switchState));
+                    lastSwitchState = switchState;
+                }
+            }
             if (timerCount > 59)
             {
                 timerCount = 0;
@@ -291,6 +323,7 @@ namespace WpfInvaders
             if (CurrentPlayer.Score < 0x1500)
                 return;
             CurrentPlayer.ShipsRem++;
+            CurrentPlayer.ExtraShipAvailable = false;
             WriteText(0x01, 0x01, (CurrentPlayer.ShipsRem & 0x0f).ToString());
             DrawShips();
         }
@@ -583,7 +616,7 @@ namespace WpfInvaders
                     return PrintDelayedMessage(0x0714, "SPACE  INVADERS");
                 case SplashMajorState.PrintAdvanceTable:
                     WriteText(0x10, 4, "*SCORE ADVANCE TABLE*");
-                    WriteUnmappedText(0x0e, 7, "\x20\x21\x22"); // Saucer 
+                    WriteUnmappedText(0x0e, 7, "\x24\x25\x26"); // Saucer 
                     WriteUnmappedText(0x0c, 8, "\xa0\xa1"); // Invader type C - sprite 0
                     WriteUnmappedText(0x0a, 8, "\xbc\xbd"); // Invader type B - sprite 1
                     WriteUnmappedText(0x08, 8, "\x80\x81"); // Invader type A - sprite 0
@@ -757,6 +790,13 @@ namespace WpfInvaders
                             gameData.PlayerShot.ShotSprite.X, gameData.PlayerShot.ShotSprite.Y,
                             gameData.RefAlienX, gameData.RefAlienY);
                         int colX = gameData.RefAlienX + col * 0x10;
+                        // If we haven't draw this alien yet then the adjust the ColX back
+                        // to the correct position. Y is correct as we use the sprite
+                        // position rounded.
+                        if (alienIndex > gameData.AlienCurIndex && CurrentPlayer.NumAliens != 1)
+                        {
+                            colX -= gameData.RefAlienDeltaX;
+                        }
                         CurrentPlayer.Aliens[alienIndex] = 0;
                         gameData.AlienExplodeTimer = 0x10;
                         gameData.AlienExplodeX = colX >> 3;
@@ -1116,6 +1156,7 @@ namespace WpfInvaders
                         Pause_Click(null, null);
                     break;
                 case Key.F1: StopIsr(); new HelpWindow().ShowDialog(); break;
+                case Key.F3: StopIsr(); DiagnosticPages.ShowInitialInvaders(this, gameData, DiagnosticsAlienType); break;
                 case Key.F4: StopIsr(); new CharacterMapWindow().ShowDialog(); break;
                 case Key.F5: StopIsr(); DiagnosticPages.ShowShiftedInvaders(this, DiagnosticsAlienType); break;
                 case Key.F6: StopIsr(); DiagnosticPages.ShowExplodedInvaders(this, gameData, 0, DiagnosticsAlienType, shiftKeyDown); break;
@@ -1160,6 +1201,44 @@ namespace WpfInvaders
             while (frameCounter < targetFrame)
             {
                 IsrRoutine();
+            }
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            StopIsr();
+            using (BinaryWriter writer = new BinaryWriter(File.Open(saveFilename.Text, FileMode.Create)))
+            {
+                writer.Write(switches.Count);
+                foreach (var state in switches)
+                {
+                    writer.Write(state.framecount);
+                    writer.Write((int)state.switchState);
+                }
+            }
+        }
+
+        private async void Replay_Click(object sender, RoutedEventArgs e)
+        {
+            StopIsr();
+            dieEvent.Set();
+            await Task.Delay(500);
+            dieEvent.Reset();
+            using (BinaryReader reader = new BinaryReader(File.Open(saveFilename.Text, FileMode.Open)))
+            {
+                int count = reader.ReadInt32();
+                switches = new List<(int framecount, SwitchState switchState)>();
+                while (count > 0)
+                {
+                    int frameCount = reader.ReadInt32();
+                    SwitchState switchState = (SwitchState)reader.ReadInt32();
+                    switches.Add((frameCount, switchState));
+                    count--;
+                }
+                replayMode = true;
+                frameCounter = 0;
+                replayIndex = 0;
+                PowerOnReset();
             }
         }
     }
