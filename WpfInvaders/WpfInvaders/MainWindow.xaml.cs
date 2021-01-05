@@ -106,6 +106,7 @@ namespace WpfInvaders
         private volatile bool invokeTick;
         private volatile bool InIsr;
         private bool replayMode;
+        private bool powerOnResetFlag;
         private int frameCounter = 0;
         private int replayIndex = 0;
         // Holding down Right Ctrl gives type B aliens
@@ -114,6 +115,7 @@ namespace WpfInvaders
         private bool shiftKeyDown;
         private SwitchState lastSwitchState;
         private List<(int framecount, SwitchState switchState)> switches;
+        bool tweakFlag;
 
         public MainWindow()
         {
@@ -141,6 +143,7 @@ namespace WpfInvaders
             gameData.WaitState = WaitState.Idle;
             gameData.GameMode = false;
             gameData.DemoMode = false;
+            powerOnResetFlag = true;
             timerThread = new Thread(WaitingTimer);
             StartIsr();
             timerThread.Start();
@@ -224,7 +227,9 @@ namespace WpfInvaders
                     // Pretend we're on the first half of the screen
                     gameData.VblankStatus = 0;
                     // Move every except the player
-                    RunGameObjects(true);
+                    if (!tweakFlag)
+                        RunGameObjects(true);
+                    tweakFlag = false;
                     // Normally the game loop runs for ever
                     // But do it here instead as we only have one isr
                     // required to get the players first shot off
@@ -585,7 +590,12 @@ namespace WpfInvaders
                         // Hide all the sprites.
                         foreach (var sprite in LineRender.Sprites)
                             sprite.Visible = false;
-                        PlayerBase.IncrementDemoCommand();
+                        if (powerOnResetFlag)
+                        {
+                            PlayerBase.IncrementDemoCommand();
+                            powerOnResetFlag = false;
+                        }
+                        tweakFlag = true;
                     }
                     break;
                 case SplashMinorState.AnimateSplashAlien:
