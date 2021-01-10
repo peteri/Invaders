@@ -82,6 +82,7 @@ namespace WpfInvaders
             OneOrTwoPlayers,
             OnePlayOneCoin,
             TwoPlayerTwoCoins,
+            AnimateCoinExplodeAlienInDelay,
             AnimateCoinExplodeAlienIn,
             AnimateCoinExplodeFireBullet,
             AnimateCoinExplodeRemoveExtraC,
@@ -106,7 +107,7 @@ namespace WpfInvaders
         private volatile bool invokeTick;
         private volatile bool InIsr;
         private bool replayMode;
-        private int frameCounter = 0;
+        private int frameCounter = -6;
         private int replayIndex = 0;
         // Holding down Right Ctrl gives type B aliens
         // Holding down Left  Ctrl gives type C aliens
@@ -115,7 +116,8 @@ namespace WpfInvaders
         private SwitchState lastSwitchState;
         private List<(int framecount, SwitchState switchState)> switches;
         bool tweakFlag;
-
+        private const int SplashDelayOneSecond= 0x40;
+        private const int SplashDelayTwoSecond = 0x80;
         public MainWindow()
         {
             InitializeComponent();
@@ -395,7 +397,7 @@ namespace WpfInvaders
                             int x = gameData.DelayMessagePosition >> 8;
                             gameData.DelayMessagePosition += 0x100;
                             LineRender.Screen[y + x * LineRender.ScreenWidth] = c;
-                            gameData.IsrDelay = 6;
+                            gameData.IsrDelay = 5;
                         }
                     }
                     break;
@@ -564,7 +566,7 @@ namespace WpfInvaders
                         int x = gameData.DelayMessagePosition >> 8;
                         gameData.DelayMessagePosition += 0x100;
                         LineRender.Screen[y + x * LineRender.ScreenWidth] = c;
-                        gameData.IsrDelay = 6;
+                        gameData.IsrDelay = 5;
                         gameData.SplashMinorState = SplashMinorState.PrintMessageDelay;
                     }
                     break;
@@ -582,7 +584,6 @@ namespace WpfInvaders
                 case SplashMinorState.PlayDemoWaitEndofExplosion:
                     if ((gameData.PlayerBase.Alive == PlayerBase.PlayerAlive.Alive) || (gameData.Credits != 0))
                     {
-//                        PlayerBase.IncrementDemoCommand();
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
                         gameData.DemoMode = false;
                         gameData.SplashMinorState = SplashMinorState.Idle;
@@ -614,7 +615,7 @@ namespace WpfInvaders
             {
                 case SplashMajorState.OneSecondDelay:
                     ClearPlayField();
-                    return SplashDelay(0x40);
+                    return SplashDelay(SplashDelayOneSecond);
                 case SplashMajorState.PrintPlay:
                     return PrintDelayedMessage(0x0c17, gameData.AnimateSplash ? "PLA@" : "PLAY");
                 case SplashMajorState.PrintSpaceInvaders:
@@ -625,8 +626,7 @@ namespace WpfInvaders
                     WriteUnmappedText(0x0c, 8, "\xa0\xa1"); // Invader type C - sprite 0
                     WriteUnmappedText(0x0a, 8, "\xbc\xbd"); // Invader type B - sprite 1
                     WriteUnmappedText(0x08, 8, "\x80\x81"); // Invader type A - sprite 0
-                    gameData.IsrDelay = 0x40;
-                    return SplashMinorState.Wait;
+                    return SplashDelay(SplashDelayOneSecond);
                 case SplashMajorState.PrintMystery:
                     return PrintDelayedMessage(0x0a0e, "=? MYSTERY");
                 case SplashMajorState.Print30Points:
@@ -636,7 +636,7 @@ namespace WpfInvaders
                 case SplashMajorState.Print10Points:
                     return PrintDelayedMessage(0x0a08, "=10 POINTS");
                 case SplashMajorState.ScoreTableTwoSecondDelay:
-                    return SplashDelay(0x80);
+                    return SplashDelay(SplashDelayTwoSecond);
                 case SplashMajorState.AnimateAlienInToGetY:
                     if (gameData.AnimateSplash == false)
                     {
@@ -650,11 +650,11 @@ namespace WpfInvaders
                     WriteText(0x17, 0x0c, "PLA ");
                     return AnimateSplashAlien(120, 221, 2);
                 case SplashMajorState.AnimateAlienHidingOffStageDelay:
-                    return SplashDelay(0x40);
+                    return SplashDelay(SplashDelayOneSecond);
                 case SplashMajorState.AnimateAlienPushingYBackOn:
                     return AnimateSplashAlien(221, 120, 4);
                 case SplashMajorState.AnimateAlienJobDoneDelay:
-                    return SplashDelay(0x40);
+                    return SplashDelay(SplashDelayOneSecond);
                 case SplashMajorState.AnimateAlienRemoval:
                     gameData.SplashAlienAnimation.AlienMovingY.Visible = false;
                     WriteText(0x17, 0x0c, "PLAY");
@@ -671,7 +671,7 @@ namespace WpfInvaders
                     gameData.DemoMode = true;
                     return SplashMinorState.PlayDemoWaitDeath;
                 case SplashMajorState.AfterPlayDelay:
-                    return SplashDelay(0x40);
+                    return SplashDelay(SplashDelayOneSecond);
                 case SplashMajorState.InsertCoin:
                     ClearPlayField();
                     WriteText(0x11, 0x08, gameData.AnimateSplash ? "INSERT CCOIN" : "INSERT  COIN");
@@ -682,12 +682,14 @@ namespace WpfInvaders
                     return PrintDelayedMessage(0x060a, "*1 PLAYER  1 COIN");
                 case SplashMajorState.TwoPlayerTwoCoins:
                     return PrintDelayedMessage(0x0607, "*2 PLAYERS 2 COINS");
-                case SplashMajorState.AnimateCoinExplodeAlienIn:
+                case SplashMajorState.AnimateCoinExplodeAlienInDelay:
                     if (gameData.AnimateSplash == false)
                     {
                         gameData.SplashMajorState = SplashMajorState.AfterCoinDelay - 1;
                         return SplashMinorState.Idle;
                     }
+                    return SplashDelay(SplashDelayTwoSecond);
+                case SplashMajorState.AnimateCoinExplodeAlienIn:
                     gameData.SplashAlienAnimation = new SplashAlienAnimation();
                     LineRender.Sprites.Add(gameData.SplashAlienAnimation.AlienMovingY);
                     return AnimateSplashAlien(0, 115, 0, 0x1a * 8);
@@ -701,7 +703,7 @@ namespace WpfInvaders
                     WriteText(0x11, 0x08, "INSERT  COIN");
                     return SplashMinorState.Idle;
                 case SplashMajorState.AfterCoinDelay:
-                    return SplashDelay(0x80);
+                    return SplashDelay(SplashDelayTwoSecond);
                 case SplashMajorState.ToggleAnimateState:
                     if (gameData.SplashAlienAnimation != null)
                         gameData.SplashAlienAnimation.AlienMovingY.Visible = false;
@@ -740,8 +742,9 @@ namespace WpfInvaders
             WriteText(0x13, 0x0c, "PRESS");
         }
 
-        private static void ClearPlayField()
+        private void ClearPlayField()
         {
+            StopIsr();
             int i = 2;
             while (i < (LineRender.ScreenHeight * LineRender.ScreenWidth))
             {
