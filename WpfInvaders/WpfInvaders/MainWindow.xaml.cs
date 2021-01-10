@@ -138,7 +138,6 @@ namespace WpfInvaders
         private void PowerOnReset()
         {
             DrawStatus();
-            gameData.AlienShotReloadRate = 8;
             Pause.Content = "Pause";
             gameData.SplashMajorState = SplashMajorState.ToggleAnimateState;
             gameData.SplashMinorState = SplashMinorState.Idle;
@@ -615,6 +614,7 @@ namespace WpfInvaders
             switch (gameData.SplashMajorState)
             {
                 case SplashMajorState.OneSecondDelay:
+                    gameData.AlienShotReloadRate = 8;
                     ClearPlayField();
                     return SplashDelay(SplashDelayOneSecond);
                 case SplashMajorState.PrintPlay:
@@ -743,7 +743,7 @@ namespace WpfInvaders
             WriteText(0x13, 0x0c, "PRESS");
         }
 
-        private void ClearPlayField()
+        private static void ClearPlayField()
         {
             int i = 2;
             while (i < (LineRender.ScreenHeight * LineRender.ScreenWidth))
