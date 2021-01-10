@@ -118,6 +118,7 @@ namespace WpfInvaders
         bool tweakFlag;
         private const int SplashDelayOneSecond= 0x40;
         private const int SplashDelayTwoSecond = 0x80;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -744,7 +745,6 @@ namespace WpfInvaders
 
         private void ClearPlayField()
         {
-            StopIsr();
             int i = 2;
             while (i < (LineRender.ScreenHeight * LineRender.ScreenWidth))
             {

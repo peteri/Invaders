@@ -17,10 +17,10 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Image Grid.Row="0" Grid.Column="0" Height="1024" Width="856" Margin="5" Name="imgScreenRotateMirrored" Stretch="None" RenderTransformOrigin="0.5,0.5">
+        <Image Grid.Row="0" Grid.Column="0" Height="512" Width="448" Margin="5" Name="imgScreenRotateMirrored" Stretch="None" RenderTransformOrigin="0.5,0.5">
             <Image.RenderTransform>
                 <TransformGroup>
-                    <ScaleTransform ScaleX="4" ScaleY="4"/>
+                    <ScaleTransform ScaleX="2" ScaleY="2"/>
                     <RotateTransform Angle="270"/>
                 </TransformGroup>
             </Image.RenderTransform>
