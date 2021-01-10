@@ -17,8 +17,7 @@ namespace WpfInvaders
             Command.Left,
             Command.Right,
             Command.None,
-            Command.Left,
-            Command.Right
+            Command.Left
         };
 
         private static readonly int[] PlayerBaseCharacters = { 0x56, 0x5c, 0x65, 0x6e, 0x77, 0xc0, 0xd0, 0xe0 };
@@ -148,7 +147,7 @@ namespace WpfInvaders
             demoCommand++;
             if (demoCommand >= demoCmds.Length)
                 demoCommand = 0;
-            System.Diagnostics.Debug.Print("DemoCommand is {0} DemoCommandIndex is {1}", demoCmds[demoCommand], demoCommand);
+            System.Diagnostics.Debug.Print("DemoCommand is {0} DemoCommandIndex is {1} {2:x4}", demoCmds[demoCommand], demoCommand,demoCommand+0x1f74);
         }
     }
 }

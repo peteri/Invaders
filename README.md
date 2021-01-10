@@ -16,7 +16,8 @@ Differences from the arcade version
 
 - Shield destruction by the aliens is on an 8x8 character matrix so is sometimes a bit worse than the arcade game. Potentially fixable with a lot of code and hacking not worth it for the few frames the user can see.
 - Explosion graphics when the users base is destroyed are a not a pixel perfect match, where the explosion of the aliens bullet overlaps the player explosion sprite. The two sprites exist together for a bit too long. After the explosions are removed the result is correct.
-- Bug when the bottom row invades where the invaders drawn are wrong type.
+- Bug in the original when the bottom row invades where the invaders drawn are wrong type isn't duplicated.
+- Timings of some of the splash screen stuff might be out by few frames.
 
 ## STM8 invaders
 
