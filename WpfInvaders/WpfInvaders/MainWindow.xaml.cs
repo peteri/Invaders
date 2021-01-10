@@ -106,7 +106,6 @@ namespace WpfInvaders
         private volatile bool invokeTick;
         private volatile bool InIsr;
         private bool replayMode;
-        private bool powerOnResetFlag;
         private int frameCounter = 0;
         private int replayIndex = 0;
         // Holding down Right Ctrl gives type B aliens
@@ -143,7 +142,6 @@ namespace WpfInvaders
             gameData.WaitState = WaitState.Idle;
             gameData.GameMode = false;
             gameData.DemoMode = false;
-            powerOnResetFlag = true;
             timerThread = new Thread(WaitingTimer);
             StartIsr();
             timerThread.Start();
@@ -584,17 +582,13 @@ namespace WpfInvaders
                 case SplashMinorState.PlayDemoWaitEndofExplosion:
                     if ((gameData.PlayerBase.Alive == PlayerBase.PlayerAlive.Alive) || (gameData.Credits != 0))
                     {
+//                        PlayerBase.IncrementDemoCommand();
                         gameData.PlayerShot.Status = PlayerShot.ShotStatus.Available;
                         gameData.DemoMode = false;
                         gameData.SplashMinorState = SplashMinorState.Idle;
                         // Hide all the sprites.
                         foreach (var sprite in LineRender.Sprites)
                             sprite.Visible = false;
-                        if (powerOnResetFlag)
-                        {
-                            PlayerBase.IncrementDemoCommand();
-                            powerOnResetFlag = false;
-                        }
                         tweakFlag = true;
                     }
                     break;
