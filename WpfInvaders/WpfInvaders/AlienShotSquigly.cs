@@ -43,7 +43,7 @@ namespace WpfInvaders
                             DrawSaucer(false, true, 0); 
                             break;
                         case 0x18: 
-                            DrawSaucer(false, true, DoScore()); 
+                            DrawSaucer(false, true, AddSaucerScore()); 
                             break;
                         case 0x00:
                             DrawSaucer(true,false, 0);
@@ -70,7 +70,7 @@ namespace WpfInvaders
                 ResetShotData();
         }
 
-        private int DoScore()
+        private int AddSaucerScore()
         {
             // Todo look up score and add it!
             return 0x150;
