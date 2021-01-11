@@ -39,9 +39,15 @@ namespace WpfInvaders
                     saucerTimer--;
                     switch (saucerTimer)
                     {
-                        case 0x1f: DrawSaucer(false, true, 0); break;
-                        case 0x18: DrawSaucer(false, true, DoScore()); break;
-                        case 0x00: ResetSaucerData(); break;
+                        case 0x1f: 
+                            DrawSaucer(false, true, 0); 
+                            break;
+                        case 0x18: 
+                            DrawSaucer(false, true, DoScore()); 
+                            break;
+                        case 0x00:
+                            DrawSaucer(true,false, 0);
+                            ResetSaucerData(); break;
                     }
                 }
                 else
@@ -83,7 +89,7 @@ namespace WpfInvaders
         private void DrawSaucer(bool blank, bool explode, int score)
         {
             int image = (gameData.SaucerX & 0x07) >> 1;
-            int currPos = 0x1b + ((gameData.SaucerX >> 3) * LineRender.ScreenWidth);
+            int currPos = 0x1a + ((gameData.SaucerX >> 3) * LineRender.ScreenWidth);
             string saucerData = "\x23\x23\x23\x23";
             if (!blank)
                 saucerData = explode ? ExplodedSaucers[image] : Saucers[image];
