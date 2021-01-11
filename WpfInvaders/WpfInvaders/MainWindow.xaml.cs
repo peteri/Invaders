@@ -765,12 +765,12 @@ namespace WpfInvaders
             }
             if (!gameData.AlienExploding)
                 return;
-            if (gameData.PlayerShot.ShotSprite.Y >= 0xce)
+            if (gameData.PlayerShot.ShotSprite.Y >= 0xce)   // Hit saucer
             {
                 gameData.SaucerHit = true;
                 gameData.PlayerShot.Status = PlayerShot.ShotStatus.AlienExploded;
                 gameData.AlienExploding = false;
-
+                return;
             }
             bool playerHitAlien = false;
             if (gameData.PlayerShot.ShotSprite.Y >= gameData.RefAlienY)
@@ -927,6 +927,13 @@ namespace WpfInvaders
 
         private void TimeToSaucer()
         {
+            if (gameData.RefAlienX >= 0x78) return;
+            if (gameData.TimeToSaucer == 0)
+            {
+                gameData.TimeToSaucer = 600;
+                gameData.SaucerStart = true;
+            }
+            gameData.TimeToSaucer--;
         }
 
         private void RunGameObjects(bool SkipPlayer)
@@ -1215,14 +1222,12 @@ namespace WpfInvaders
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             StopIsr();
-            using (BinaryWriter writer = new BinaryWriter(File.Open(saveFilename.Text, FileMode.Create)))
+            using BinaryWriter writer = new BinaryWriter(File.Open(saveFilename.Text, FileMode.Create));
+            writer.Write(switches.Count);
+            foreach (var state in switches)
             {
-                writer.Write(switches.Count);
-                foreach (var state in switches)
-                {
-                    writer.Write(state.framecount);
-                    writer.Write((int)state.switchState);
-                }
+                writer.Write(state.framecount);
+                writer.Write((int)state.switchState);
             }
         }
 
@@ -1232,22 +1237,20 @@ namespace WpfInvaders
             dieEvent.Set();
             await Task.Delay(500);
             dieEvent.Reset();
-            using (BinaryReader reader = new BinaryReader(File.Open(saveFilename.Text, FileMode.Open)))
+            using BinaryReader reader = new BinaryReader(File.Open(saveFilename.Text, FileMode.Open));
+            int count = reader.ReadInt32();
+            switches = new List<(int framecount, SwitchState switchState)>();
+            while (count > 0)
             {
-                int count = reader.ReadInt32();
-                switches = new List<(int framecount, SwitchState switchState)>();
-                while (count > 0)
-                {
-                    int frameCount = reader.ReadInt32();
-                    SwitchState switchState = (SwitchState)reader.ReadInt32();
-                    switches.Add((frameCount, switchState));
-                    count--;
-                }
-                replayMode = true;
-                frameCounter = 0;
-                replayIndex = 0;
-                PowerOnReset();
+                int frameCount = reader.ReadInt32();
+                SwitchState switchState = (SwitchState)reader.ReadInt32();
+                switches.Add((frameCount, switchState));
+                count--;
             }
+            replayMode = true;
+            frameCounter = 0;
+            replayIndex = 0;
+            PowerOnReset();
         }
     }
 }

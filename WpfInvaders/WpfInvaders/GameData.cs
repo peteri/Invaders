@@ -25,7 +25,6 @@ namespace WpfInvaders
         internal bool WaitOnDraw;
         internal bool FireBounce;
         internal bool AlienExploding;
-        internal bool SaucerActive;
         internal bool Invaded;
         internal int RefAlienDeltaX;
         internal int RefAlienDeltaY;
@@ -33,7 +32,8 @@ namespace WpfInvaders
         internal int RefAlienX;
         internal int ShotCount;
         internal int SaucerScoreIndex;
-
+        internal bool SaucerActive;
+        internal bool SaucerStart;
         internal int AlienCurIndex;
         // Location of the next alien to draw
         internal int AlienCharacterCurX;
@@ -71,6 +71,7 @@ namespace WpfInvaders
         internal ushort ScoreDelta;
         internal int AlienShotDeltaY;
         internal int NumberOfPlayers;
+        internal int TimeToSaucer;
 
         internal void SaveReferenceAlienInfo(PlayerData currentPlayer)
         {
@@ -107,6 +108,10 @@ namespace WpfInvaders
             ShotSync = 1;
             AlienExploding = false;
             Invaded = false;
+            TimeToSaucer = 600;
+            SaucerStart = false;
+            SaucerActive = false;
+            SaucerHit = false;
             Aliens = new Aliens(MainWindow,this, currentPlayer);
             // Create timer task objects
             TimerObjects = new List<TimerObject>();
@@ -138,12 +143,12 @@ namespace WpfInvaders
                 if ((ShotCount & 0x01) == 0)
                 {
                     SaucerDelta = 2;
-                    SaucerX = 29;
+                    SaucerX = 0x08;
                 }
                 else
                 {
                     SaucerDelta = -2;
-                    SaucerX = 0xe0;
+                    SaucerX = 0xc0;
                 }
             }
         }
