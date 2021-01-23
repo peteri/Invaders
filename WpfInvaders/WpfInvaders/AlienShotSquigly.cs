@@ -6,7 +6,7 @@ namespace WpfInvaders
     {
         private static readonly byte[] SquiglyShotSprite = { 0x44, 0xaa, 0x10, 0x88, 0x54, 0x22, 0x10, 0xaa, 0x44, 0x22, 0x54, 0x88 };
         private static readonly byte[] shotColumns = { 0x0B, 0x01, 0x06, 0x03, 0x01, 0x01, 0x0B, 0x09, 0x02, 0x08, 0x02, 0x0B, 0x04, 0x07, 0x0A };
-
+        public static readonly byte[] SaucerScores = { 0x10, 0x05, 0x05, 0x10, 0x15, 0x10, 0x10, 0x05, 0x30, 0x10, 0x10, 0x10, 0x05, 0x15, 0x10 };
         private static readonly string[] Saucers =
             { "\x20\x21\x22", "\x24\x25\x26", "\x23\x29\x2a", "\x23\x2d\x2e\x2f" };
         private static readonly string[] ExplodedSaucers =
@@ -39,14 +39,14 @@ namespace WpfInvaders
                     saucerTimer--;
                     switch (saucerTimer)
                     {
-                        case 0x1f: 
-                            DrawSaucer(false, true, 0); 
+                        case 0x1f:
+                            DrawSaucer(false, true, 0);
                             break;
-                        case 0x18: 
-                            DrawSaucer(false, true, AddSaucerScore()); 
+                        case 0x18:
+                            DrawSaucer(false, true, AddSaucerScore());
                             break;
                         case 0x00:
-                            DrawSaucer(true,false, 0);
+                            DrawSaucer(true, false, 0);
                             ResetSaucerData(); break;
                     }
                 }
@@ -70,10 +70,10 @@ namespace WpfInvaders
                 ResetShotData();
         }
 
-        private int AddSaucerScore()
+        private ushort AddSaucerScore()
         {
-            // Todo look up score and add it!
-            return 0x150;
+            gameData.ScoreDelta = (ushort)(SaucerScores[gameData.SaucerScoreIndex] << 4);
+            return gameData.ScoreDelta;
         }
 
         private void ResetSaucerData()
@@ -86,7 +86,7 @@ namespace WpfInvaders
             saucerTimer = 0x20;
         }
 
-        private void DrawSaucer(bool blank, bool explode, int score)
+        private void DrawSaucer(bool blank, bool explode, ushort score)
         {
             int image = (gameData.SaucerX & 0x07) >> 1;
             int currPos = 0x1a + ((gameData.SaucerX >> 3) * LineRender.ScreenWidth);
@@ -94,15 +94,19 @@ namespace WpfInvaders
             if (!blank)
                 saucerData = explode ? ExplodedSaucers[image] : Saucers[image];
             if (score != 0)
-                saucerData = score.ToString("X3") + "\x23";
-            if (currPos>LineRender.ScreenWidth)
-                LineRender.Screen[currPos- LineRender.ScreenWidth] = 0x23;
+            {
+                saucerData = score.ToString("X") + "\x23";
+                if (saucerData.Length == 3)         // Score was 50 put a space in front
+                    saucerData = "\x23" + saucerData;
+            }
+            if (currPos > LineRender.ScreenWidth)
+                LineRender.Screen[currPos - LineRender.ScreenWidth] = 0x23;
             foreach (var c in saucerData)
             {
                 LineRender.Screen[currPos] = (byte)c;
-                currPos+=LineRender.ScreenWidth;
+                currPos += LineRender.ScreenWidth;
             }
-            if (currPos<LineRender.ScreenWidth*LineRender.ScreenHeight)
+            if (currPos < LineRender.ScreenWidth * LineRender.ScreenHeight)
                 LineRender.Screen[currPos] = 0x23;
         }
 

@@ -930,7 +930,7 @@ namespace WpfInvaders
             if (gameData.RefAlienX >= 0x78) return;
             if (gameData.TimeToSaucer == 0)
             {
-                gameData.TimeToSaucer = 600;
+                gameData.TimeToSaucer = 0x600;
                 gameData.SaucerStart = true;
             }
             gameData.TimeToSaucer--;

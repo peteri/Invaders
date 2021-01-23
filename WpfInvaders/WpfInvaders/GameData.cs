@@ -108,7 +108,7 @@ namespace WpfInvaders
             ShotSync = 1;
             AlienExploding = false;
             Invaded = false;
-            TimeToSaucer = 600;
+            TimeToSaucer = 0x600;
             SaucerStart = false;
             SaucerActive = false;
             SaucerHit = false;
@@ -138,6 +138,10 @@ namespace WpfInvaders
         {
             ShotCount++;
             SaucerScoreIndex++;
+            if (SaucerScoreIndex >= AlienShotSquigly.SaucerScores.Length)
+            {
+                SaucerScoreIndex = 0;
+            }
             if (!SaucerActive)
             {
                 if ((ShotCount & 0x01) == 0)
