@@ -1,6 +1,0 @@
-﻿namespace WpfInvaders
-{
-    class AlienSaucer
-    {
-    }
-}

@@ -72,6 +72,7 @@ namespace WpfInvaders
 
         private ushort AddSaucerScore()
         {
+            gameData.AdjustScore = true;
             gameData.ScoreDelta = (ushort)(SaucerScores[gameData.SaucerScoreIndex] << 4);
             return gameData.ScoreDelta;
         }
