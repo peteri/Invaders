@@ -287,7 +287,7 @@
                 return;
             }
 
-            if (currentPlayer.Aliens[gameData.AlienCurIndex] != 0)
+            if ((gameData.AlienCurIndex != -1) && (currentPlayer.Aliens[gameData.AlienCurIndex] != 0))
             {
                 int currOffset = gameData.AlienCharacterCurY + gameData.AlienCharacterCurX * LineRender.ScreenWidth;
                 // Side effect of the original shift logic is that the row above the current invader is cleared

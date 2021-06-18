@@ -25,9 +25,9 @@ namespace WpfInvaders
         {
             if (gameData.ShotSync != 2)
                 return;
-            if (gameData.SaucerStart && (ShotStepCount == 0))
+            if (gameData.SaucerStart && (ShotStepCount == 0) && (mainWindow.CurrentPlayer.NumAliens >= 8))
             {
-                if ((!gameData.SaucerActive) && (mainWindow.CurrentPlayer.NumAliens >= 8))
+                if (!gameData.SaucerActive)
                 {
                     gameData.SaucerActive = true;
                     DrawSaucer(false, false, 0);
