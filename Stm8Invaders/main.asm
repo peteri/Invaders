@@ -1,7 +1,7 @@
 stm8/
 
 	#include "mapping.inc"
-
+	#include "stm8l152c6.inc"
 	segment 'rom'
 main.l
 	; initialize SP
