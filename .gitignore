@@ -348,6 +348,12 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-Stm8Invaders.wed
-Stm8Invaders.stw
-Stm8Invaders/cbe.err
+
+# stm8 visual devlop files
+**/*.stw
+**/*.wed
+**/checkres.spy
+**/cbe.err
+**/*.wdb
+**/TAGS_Filelist.txt
+**/TAGS.txt
