@@ -8,7 +8,6 @@
         internal int X;
         internal int Y;
         internal int Image;
-        internal byte collided;
 
         internal Sprite(byte[] spriteImages, int images)
         {
@@ -38,8 +37,6 @@
                 int y = Y >> 3;
                 byte c1 = data[Image, Y & 0x7, x, 0];
                 byte c2 = data[Image, Y & 0x7, x, 1];
-                collided |= (byte)(lineData[y] & c1);
-                collided |= (byte)(lineData[y + 1] & c2);
                 lineData[y] |= c1;
                 lineData[y + 1] |= c2;
             }

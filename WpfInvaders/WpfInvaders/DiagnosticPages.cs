@@ -230,7 +230,6 @@ namespace WpfInvaders
         {
             gameData.AlienCharacterCurY = y;
             gameData.RackDirectionRightToLeft = rightToLeft;
-            int deltaX = rightToLeft ? -2 : 2;
 
             for (int i = 0; i < 3; i++)
             {

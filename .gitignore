@@ -348,3 +348,12 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# stm8 visual devlop files
+**/*.stw
+**/*.wed
+**/checkres.spy
+**/cbe.err
+**/*.wdb
+**/TAGS_Filelist.txt
+**/TAGS.txt
