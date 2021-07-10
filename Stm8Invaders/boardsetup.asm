@@ -192,7 +192,7 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 	mov TIM4_CR2, #%00000000 ; TIM4 Control Register 2
 	mov TIM4_SMCR,#%10010100 ; TIM4 Slave Mode Control Register
 	mov TIM4_DER, #%00000001 ; TIM4 DMA request Enable Register
-	mov TIM4_IER, #$01	 ; TIM4 Interrupt Enable Register
+	mov TIM4_IER, #$00	 ; TIM4 Interrupt Enable Register
 	mov TIM4_CNTR,#$00	 ; TIM4 Counter
 	mov TIM4_PSCR,#$02	 ; TIM4 Prescaler Register divide by 4
 	mov TIM4_ARR, #TIM4_reload ; TIM4 Auto-Reload Register

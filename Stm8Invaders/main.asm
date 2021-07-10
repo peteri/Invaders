@@ -56,14 +56,6 @@ syncnowrap
 dmachan2
  	bres DMA1_C2SPR,#1	;clear transaction completed
 	iret
-;
-;	 Timer 4
-;
-	interrupt Timer4Int
-Timer4Int.l
-	bres TIM4_SR1,#0
-	bcpl PE_ODR,#7	;toggle led
-	iret
 ;==============================================
 ;	Interrupt handler for timer 3 comparator
 ;	Kicks off rendering the frame and outputting
@@ -106,7 +98,7 @@ NonHandledInterrupt.l
 	dc.l {$82000000+Timer3CompareInt}	; Timer 3 capture/compare
 	dc.l {$82000000+NonHandledInterrupt}	; irq23
 	dc.l {$82000000+NonHandledInterrupt}	; irq24
-	dc.l {$82000000+Timer4Int}	; irq25
+	dc.l {$82000000+NonHandledInterrupt}	; irq25
 	dc.l {$82000000+NonHandledInterrupt}	; irq26
 	dc.l {$82000000+NonHandledInterrupt}	; irq27
 	dc.l {$82000000+NonHandledInterrupt}	; irq28
