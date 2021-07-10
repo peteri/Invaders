@@ -70,7 +70,7 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 	mov TIM1_SMCR,#%00000000  ; TIM1 Slave Mode Control register
 	mov TIM1_ETR,#$00	  ; TIM1 external trigger register
 ; DMA request on capture compare 2 & 3
-	mov TIM1_DER,#%00001100	  ; TIM1 DMA request enable register
+	mov TIM1_DER,#%00000100	  ; TIM1 DMA request enable register
 	mov TIM1_IER,#$00	  ; TIM1 Interrupt enable register
 	mov TIM1_SR1,#$00	  ; TIM1 Status register 1
 	mov TIM1_SR2,#$00	  ; TIM1 Status register 2
@@ -222,6 +222,7 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 	bset CLK_PCKENR1,#$4	; Send the clock to SPI1
 	bset CLK_PCKENR2,#$1	; Send the clock to timer 1
 	bset CLK_PCKENR2,#$4	; Turn on DMA1
+	bres ITC_SPR6,#5	; lower priority of Tim 3 capture
 	ret
 ;=========================================================
 ;	Setup DMA

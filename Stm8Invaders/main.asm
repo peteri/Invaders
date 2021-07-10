@@ -4,9 +4,12 @@ stm8/
 	#include "stm8l152c6.inc"
 	#include "boardsetup.inc"
 	#include "variables.inc"
-	#include "videosync.inc"	
+	#include "videosync.inc"
+	#include "linerender.inc"
 stack_start.w	EQU $stack_segment_start
 stack_end.w	EQU $stack_segment_end
+	segment 'ram1'
+tim3cntr.w ds.w 1
 	segment 'rom'
 main.l
 	; initialize SP
@@ -65,6 +68,28 @@ dmachan2
 Timer3CompareInt.l
 	bres TIM3_SR1,#1
 	bcpl PC_ODR,#7	;toggle led
+	bset TIM1_DER,#3	; Turn on CC3 DMA
+	ldw x,#$0
+	ldw linenumber,x
+waitforline
+	ld a,TIM3_CNTRH
+	ld xh,a
+	ld a,TIM3_CNTRL
+	ld xl,a
+	ldw tim3cntr,x
+waitforcounterchange
+	ld a,TIM3_CNTRH
+	ld xh,a
+	ld a,TIM3_CNTRL
+	ld xl,a
+	cpw x,tim3cntr
+	jreq waitforcounterchange
+newline	
+	inc {linenumber+1}
+	ldw x,linenumber
+	cpw x,#224		;28*8 lines
+	jrule waitforline
+	bres TIM1_DER,#3	; Turn off CC3 DMA
 	iret
 	interrupt NonHandledInterrupt
 NonHandledInterrupt.l
