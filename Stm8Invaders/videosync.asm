@@ -19,7 +19,7 @@ stm8/
 ;
 ;=====================================================
 no_sync		EQU 0
-line_sync	EQU 75	;512-74 clocks is divisable 3 
+line_sync	EQU 75	 
 short_sync	EQU 38
 long_sync	EQU 437
 .synccomp.w

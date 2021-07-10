@@ -355,3 +355,8 @@ Next=Root.Include Files.variables.inc
 [Root.Include Files.variables.inc]
 ElemType=File
 PathName=variables.inc
+Next=Root.Include Files.videosync.inc
+
+[Root.Include Files.videosync.inc]
+ElemType=File
+PathName=videosync.inc
