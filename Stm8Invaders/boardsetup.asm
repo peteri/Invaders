@@ -50,9 +50,12 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 ; Timer 2 out on PB0 (used for SPI clock slave pin)
 	bset PB_DDR,#0
 	bset PB_CR1,#0
-; Timer 3 out on PB1 Frame
+; Timer 3 CC1 out on PB1 Frame
 	bset PB_DDR,#1
 	bset PB_CR1,#1
+; Timer 3 CC2 out on PD0 Frame
+	bset PD_DDR,#0
+	bset PD_CR1,#0
 	ret
 ;=================================================
 ;
@@ -166,12 +169,12 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 ; No DMA 
 	mov TIM3_DER,#%00000000	  ; TIM3 DMA request enable register
 ; Interrupts on compare and update
-	mov TIM3_IER,#%00000010	  ; TIM3 Interrupt enable register
+	mov TIM3_IER,#%00000110	  ; TIM3 Interrupt enable register
 ; Set to PWM1, OC1PE, Capture compare is output
 	mov TIM3_CCMR1,#%01100000 ; TIM3 Capture/Compare mode register 1
-	mov TIM3_CCMR2,#$00	  ; TIM3 Capture/Compare mode register 2
+	mov TIM3_CCMR2,#%01100000 ; TIM3 Capture/Compare mode register 2
 ; Capture compare is active high, output enable	
-	mov TIM3_CCER1,#%00000001 ; TIM3 Capture/Compare enable register 1
+	mov TIM3_CCER1,#%00010001 ; TIM3 Capture/Compare enable register 1
 	mov TIM3_PSCR,#$00	  ; TIM3 Prescaler register
 ; Reload register at ((625+15)/2)-1
 	mov TIM3_ARRH,#$02	  ; TIM3 Auto-Reload Register High
