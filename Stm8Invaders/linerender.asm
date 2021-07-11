@@ -11,11 +11,14 @@ count.b ds.b
 	segment 'ram1'
 .screen.w ds.b $380
 .linenumber.w ds.w
-renderbuff1 ds.b 32
-renderbuff2 ds.b 32
+.renderbuff1.w ds.b 32
+.renderbuff2.w ds.b 32
+temp ds.w
 	segment 'rom'
+;
+; On entry X is where to store the data.
+;
 .renderline.w
-	ldw x,#renderbuff1
 	ldw store,x
 	; make x the start of the line
 	clrw x
@@ -62,6 +65,47 @@ rendercharacter
 	inc {store+1}     ;1
 	dec count         ;1
 	jrne renderloop   ;2 =11
+	ret
+.setup_screen_diag.w
+; Fill screen with Asterix first
+	ldw y,#$3ff
+	ld a,#$4E	; Asterix
+blankloop	
+	ld (screen,y),a
+	decw y
+	jrne blankloop
+; Now we put a character map on screen 	
+	ldw x,#$ff
+fillscreenloop
+	; y=(x&0xf)*32 +(x>>4)
+	ld a,xl
+	and a,#$0f
+	clrw y
+	ld yl,a
+	sllw y
+	sllw y
+	sllw y
+	sllw y
+	sllw y
+	ld a,xl
+	srl a
+	srl a
+	srl a
+	srl a
+	ld temp,a
+	ld a,yl
+	add a,temp
+	ld yl,a
+	ld a,xl
+	ld (screen,y),a
+	decw x
+	jrpl fillscreenloop
+	ldw x,#$ff
+filludgloop
+	ld a,xl
+	ld (udg,x),a
+	decw x
+	jrpl filludgloop
 	ret
 	end
 	

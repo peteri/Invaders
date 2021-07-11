@@ -47,12 +47,15 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 ; Timer 1 output on PD2 (Sync)
 	bset PD_DDR,#2
 	bset PD_CR1,#2
-; Timer 2 out on PB0 (used for SPI clock slave pin)
+; Timer 2 out on PB0 (wired to PB5 SPI-CK)
 	bset PB_DDR,#0
 	bset PB_CR1,#0
 ; Timer 3 CC1 out on PB1 Frame
 	bset PB_DDR,#1
 	bset PB_CR1,#1
+; SPI MISO on PB7 Video Data
+	bset PB_DDR,#7
+	bset PB_CR1,#7
 ; Timer 3 CC2 out on PD0 Frame
 	bset PD_DDR,#0
 	bset PD_CR1,#0
@@ -228,6 +231,16 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 	bres ITC_SPR6,#5	; lower priority of Tim 3 capture
 	ret
 ;=========================================================
+;
+;	Setup SPI 1
+;
+;=========================================================
+.init_spi1.w
+	mov SPI1_CR1,#%11000001
+	mov SPI1_CR2,#%01000010
+	mov SPI1_ICR,#%00000000
+	ret
+;=========================================================
 ;	Setup DMA
 ;
 ; Channel | Peripheral     | Notes
@@ -259,7 +272,7 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 	mov DMA1_C2PARH,#{high SPI1_DR}  ; SPI Data register
 	mov DMA1_C2PARL,#{low SPI1_DR}  ; SPI Data register
 	mov DMA1_C2M0ARH,$FFFF	  ; Gets set by line render
-	mov DMA1_C2CR,#%00101000  ; Incrementing mem to periph
+	mov DMA1_C2CR,#%00101001  ; Incrementing mem to periph
 ; Channel 3
 	mov DMA1_C3SPR,#%00111000
 	mov DMA1_C3NDTR,#$80	; 128 words

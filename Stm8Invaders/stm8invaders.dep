@@ -29,7 +29,7 @@ ExternDep= characterrom.asm
 ExternDep= characterrom.asm
 
 [Root.Source Files.main.asm.Config.0]
-ExternDep= main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" boardsetup.inc variables.inc videosync.inc
+ExternDep= main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" boardsetup.inc variables.inc videosync.inc linerender.inc
 
 [Root.Source Files.main.asm.Config.1]
 ExternDep= main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" boardsetup.inc variables.inc videosync.inc

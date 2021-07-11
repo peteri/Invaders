@@ -29,6 +29,8 @@ clear_stack.l
 	call init_gpio	  ; setup the gpio pins
 	call init_dma	  ; setup dma channels
 	call init_timers  ; setup the timers.
+	call init_spi1	  ; setup SPI1 for video out
+	call setup_screen_diag	
 	rim		  ; interrupts on
 infinite_loop.l
 	jra infinite_loop
@@ -70,26 +72,48 @@ Timer3CompareInt.l
 	bres TIM3_SR1,#2
 	bcpl PC_ODR,#7	;toggle led
 	bset TIM1_DER,#3	; Turn on CC3 DMA
-	ldw x,#$0
-	ldw linenumber,x
-waitforline
-	ld a,TIM3_CNTRH
+	ldw y,#$0
+	ldw linenumber,y
+renderloop
+	ld a,TIM3_CNTRH	;Save current line counter
 	ld xh,a
 	ld a,TIM3_CNTRL
 	ld xl,a
 	ldw tim3cntr,x
+	; Even line
+	btjf linenumber,#1,sendeven
+	ldw x,#renderbuff1
+	ldw DMA1_C2M0ARH,x
+	ldw x,#renderbuff2
+	jra startSPI1
+sendeven	
+	ldw x,#renderbuff2
+	ldw DMA1_C2M0ARH,x
+	ldw x,#renderbuff1
+startSPI1	
+	mov DMA1_C2NDTR,#$20	  ; 32 bytes  to transfer
+	mov SPI1_CR1,#%01000001	;Turn on SPI1
+	mov SPI1_ICR,#%00000010
+	
+	call renderline	; Render the next line
+waitforTXE
+	btjf SPI1_SR,#1,waitforTXE
+waitforBUSY	
+	btjt SPI1_SR,#7,waitforBUSY
+	mov SPI1_CR1,#%00000001	;Turn off SPI1
+	mov SPI1_ICR,#%00000000
 waitforcounterchange
-	ld a,TIM3_CNTRH
+	ld a,TIM3_CNTRH	;Read current line counter
 	ld xh,a
 	ld a,TIM3_CNTRL
 	ld xl,a
-	cpw x,tim3cntr
+	cpw x,tim3cntr ; Wait for line counter to change
 	jreq waitforcounterchange
 newline	
 	inc {linenumber+1}
-	ldw x,linenumber
-	cpw x,#224		;28*8 lines
-	jrule waitforline
+	ldw y,linenumber
+	cpw y,#224		;28*8 lines
+	jrule renderloop	;Not done yet
 	bres TIM1_DER,#3	; Turn off CC3 DMA
 	iret
 	interrupt NonHandledInterrupt
