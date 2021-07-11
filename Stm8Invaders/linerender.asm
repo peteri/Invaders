@@ -10,9 +10,9 @@ linemasked.b ds.b
 count.b ds.b
 	segment 'ram1'
 .screen.w ds.b $380
-.linenumber.w ds.w
-.renderbuff1.w ds.b 32
-.renderbuff2.w ds.b 32
+.linenumber.w ds.w 1
+.renderbuff1.w ds.b $22
+.renderbuff2.w ds.b $22
 temp ds.w
 	segment 'rom'
 ;
@@ -68,12 +68,30 @@ rendercharacter
 	ret
 .setup_screen_diag.w
 ; Fill screen with Asterix first
-	ldw y,#$3ff
+	ldw y,#$37f
 	ld a,#$4E	; Asterix
 blankloop	
 	ld (screen,y),a
 	decw y
-	jrne blankloop
+	jrpl blankloop
+; Fill render buff with $55,$AA
+	ldw y,#$21
+fillrenderbuff	
+	ld a,#$aa
+	ld (renderbuff1,y),a
+	ld (renderbuff2,y),a
+	decw y
+	ld a,#$55
+	ld (renderbuff1,y),a
+	ld (renderbuff2,y),a
+	decw y
+	cpw y,#$FFFF
+	jrne fillrenderbuff
+	ld a,#$42		;Add an elephant
+	ld {renderbuff1+$00},a
+	ld {renderbuff2+$00},a
+	ld {renderbuff1+$21},a
+	ld {renderbuff2+$21},a
 ; Now we put a character map on screen 	
 	ldw x,#$ff
 fillscreenloop

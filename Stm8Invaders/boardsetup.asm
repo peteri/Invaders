@@ -5,16 +5,17 @@ stm8/
 	#include "variables.inc"
 	#include "stm8l152c6.inc"
 	#include "videosync.inc"
+	#include "linerender.inc"
 ram0_start.b	EQU $ram0_segment_start
 ram0_end.b	EQU $ram0_segment_end
 ram1_start.w	EQU $ram1_segment_start
 ram1_end.w	EQU $ram1_segment_end
 ; Video data starts 6uS (5.7us is front porch)
 ; after rising edge
-spi_data_start	EQU  $60
-line_sync	EQU 75	 
-TIM2_CC3	EQU {spi_data_start + line_sync}
-TIM4_reload	EQU {{{spi_data_start + $300} / 4} - 1}
+spi_data_start	EQU  $48
+line_sync	EQU $4B	;75 decimal	 
+TIM2_CC3	EQU {spi_data_start + line_sync +2} ; $AB or 171
+TIM4_reload	EQU {{{spi_data_start + $330} / 4}-1}
 	segment 'ram1'
 disableTim2	DS.B	1	; Sent by DMA channel 1
 enableTim2	DS.B	1	; Sent by DMA channel 0
@@ -59,6 +60,14 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 ; Timer 3 CC2 out on PD0 Frame
 	bset PD_DDR,#0
 	bset PD_CR1,#0
+; Test for SPI stuff
+; SPI MOSI on PB6 Video Data
+;	bset PB_DDR,#6
+;	bset PB_CR1,#6
+; SPI CK on PB6 Video Data
+;	bset PB_DDR,#5
+;	bset PB_CR1,#5
+	
 	ret
 ;=================================================
 ;
@@ -236,9 +245,9 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 ;
 ;=========================================================
 .init_spi1.w
-	mov SPI1_CR1,#%11000001
-	mov SPI1_CR2,#%01000010
-	mov SPI1_ICR,#%00000000
+;	mov SPI1_CR1,#%10000000
+;	mov SPI1_CR2,#%11000011
+	;mov SPI1_ICR,#%00000010
 	ret
 ;=========================================================
 ;	Setup DMA
@@ -268,11 +277,12 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 	mov DMA1_C1CR,#%00111001  ; Enable channel (Circ)
 ; Channel 2
 	mov DMA1_C2SPR,#%00110000 ; Hi priority 8 bit
-	mov DMA1_C2NDTR,#$20	  ; 32 bytes  to transfer
+	mov DMA1_C2NDTR,#$44	  ; 32 bytes  to transfer
 	mov DMA1_C2PARH,#{high SPI1_DR}  ; SPI Data register
 	mov DMA1_C2PARL,#{low SPI1_DR}  ; SPI Data register
-	mov DMA1_C2M0ARH,$FFFF	  ; Gets set by line render
-	mov DMA1_C2CR,#%00101001  ; Incrementing mem to periph
+	mov DMA1_C2M0ARH,#{high renderbuff1}
+	mov DMA1_C2M0ARL,#{low renderbuff1}
+	mov DMA1_C2CR,#%00111001  ; Incrementing mem to periph
 ; Channel 3
 	mov DMA1_C3SPR,#%00111000
 	mov DMA1_C3NDTR,#$80	; 128 words
