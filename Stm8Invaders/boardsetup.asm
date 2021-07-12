@@ -193,10 +193,10 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 	mov TIM3_ARRL,#$7f	  ; TIM3 Auto-Reload Register Low
 ; No of lines to compare start video at 32
 	mov TIM3_CCR1H,#$00	  ; TIM3 Capture/Compare Register 1 High
-	mov TIM3_CCR1L,#$20	  ; TIM3 Capture/Compare Register 1 Low
+	mov TIM3_CCR1L,#$38	  ; TIM3 Capture/Compare Register 1 Low
 ; Start frame 2 at 32+320 
 	mov TIM3_CCR2H,#$01	  ; TIM3 Capture/Compare Register 2 High
-	mov TIM3_CCR2L,#$60	  ; TIM3 Capture/Compare Register 2 Low
+	mov TIM3_CCR2L,#$78	  ; TIM3 Capture/Compare Register 2 Low
 	mov TIM3_BKR,#%11000100	  ; TIM3 Break register
 	mov TIM3_OISR,#$00	; TIM3 Output idle state register
 	bset TIM3_EGR,#0	; Trigger update event so preload-registers copy
@@ -216,7 +216,7 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 ;	Turn on timers
 ;
 ;
-	bset TIM4_CR1, #$0  	; Enable timer 4
+ 	bset TIM4_CR1, #$0  	; Enable timer 4
 	bset TIM3_CR1, #$0  	; Enable timer 3
 	; Timer 2 is controlled by DMA
 	bset TIM1_CR1, #$0	; Enable timer 1

@@ -11,7 +11,7 @@ ExternDep= mapping.asm mapping.inc
 ExternDep= mapping.asm mapping.inc
 
 [Root.Source Files.boardsetup.asm.Config.0]
-ExternDep= boardsetup.asm mapping.inc variables.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" videosync.inc
+ExternDep= boardsetup.asm mapping.inc variables.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" videosync.inc linerender.inc
 
 [Root.Source Files.boardsetup.asm.Config.1]
 ExternDep= boardsetup.asm mapping.inc variables.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" videosync.inc

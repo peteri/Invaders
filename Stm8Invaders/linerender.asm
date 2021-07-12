@@ -22,12 +22,11 @@ temp ds.w
 	ldw store,x
 	; make x the start of the line
 	clrw x
-	ldw x,linenumber
-	sllw x
-	sllw x
-	ld a,xl
-	and a,$e0
+	ld a,{linenumber+1}
+	and a,#$f8
 	ld xl,a
+	sllw x
+	sllw x
 	
 	ld a,{linenumber+1}
 	and a,#7
@@ -35,7 +34,7 @@ temp ds.w
 	add a,#{high charrom}
 	ld romhi,a
 	
-	mov count,#32
+	mov count,#$18
 renderloop:
 	ld a,(screen,x)		; 1
 	incw x            ; 1
@@ -87,7 +86,7 @@ fillrenderbuff
 	decw y
 	cpw y,#$FFFF
 	jrne fillrenderbuff
-	ld a,#$42		;Add an elephant
+	ld a,#$00		;Add an elephant
 	ld {renderbuff1+$00},a
 	ld {renderbuff2+$00},a
 	ld {renderbuff1+$21},a

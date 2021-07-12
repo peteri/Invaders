@@ -83,10 +83,13 @@ renderloop
 	ld a,TIM3_CNTRL
 	ld xl,a
 	ldw tim3cntr,x
-	; Even line
-	btjf linenumber,#0,sendeven
-sendeven	
-	ldw x,#renderbuff1
+	; Even line? Render in odd line buffer
+	ldw x,#{renderbuff2+1}
+	btjf {linenumber+1},#0,dorenderline
+	; odd line so render into even buffers
+	ldw x,#{renderbuff1+1}
+dorenderline	
+	call renderline
 waitforcounterchange
 	ld a,TIM3_CNTRH	;Read current line counter
 	ld xh,a
@@ -97,7 +100,7 @@ waitforcounterchange
 newline	
 	inc {linenumber+1}
 	ldw y,linenumber
-	cpw y,#224		;28*8 lines
+	cpw y,#223		;28*8 lines
 	jrule renderloop	;Not done yet
 	bres TIM1_DER,#3	; Turn off CC3 DMA
 	iret
