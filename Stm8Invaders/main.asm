@@ -68,10 +68,10 @@ dmachan2
 ;==============================================
 	interrupt Timer3CompareInt
 Timer3CompareInt.l
+	bset TIM1_DER,#3	; Turn on CC3 DMA
 	bres TIM3_SR1,#1
 	bres TIM3_SR1,#2
 	bcpl PC_ODR,#7	;toggle led
-	bset TIM1_DER,#3	; Turn on CC3 DMA
 	ldw y,#$0
 	ldw linenumber,y
 	mov SPI1_CR2,#%00000010

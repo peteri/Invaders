@@ -34,7 +34,7 @@ temp ds.w
 	add a,#{high charrom}
 	ld romhi,a
 	
-	mov count,#$18
+	mov count,#$20
 renderloop:
 	ld a,(screen,x)		; 1
 	incw x            ; 1
