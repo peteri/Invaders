@@ -228,6 +228,16 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 ;
 ;=========================================================
 .init_cpu.w
+; Use external clock on PA2
+	mov CLK_ECKCR,#%00010001
+; Wait for HSERDY
+clk_hse_rdy_set
+	btjf CLK_ECKCR,#1,clk_hse_rdy_set
+	mov CLK_SWR,#%00000100
+	bset CLK_SWCR,#1	;Swap clock
+; Wait for clock switch busy clear...
+clk_sw_busy_clear
+	btjt CLK_SWCR,#0,clk_sw_busy_clear
 	mov CLK_CKDIVR,#$00	; Full speed 16Mhz
 	; Timer 4 DMA is on Channel 1
 	mov SYSCFG_RMPCR1,#%0000100
@@ -235,7 +245,7 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 	bset CLK_PCKENR1,#$1	; Send the clock to timer 3
 	bset CLK_PCKENR1,#$2	; Send the clock to timer 4
 	bset CLK_PCKENR1,#$4	; Send the clock to SPI1
-	bset CLK_PCKENR2,#$1	; Send the clock to timer 1
+  	bset CLK_PCKENR2,#$1	; Send the clock to timer 1
 	bset CLK_PCKENR2,#$4	; Turn on DMA1
 	bres ITC_SPR6,#5	; lower priority of Tim 3 capture
 	ret

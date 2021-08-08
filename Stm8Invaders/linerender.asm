@@ -53,6 +53,11 @@ renderudg
 	inc {store+1}    ;1
 	dec count        ;1
 	jrne renderloop  ;1 =14
+	ld a,#$00		;Add an elephant
+	ld {renderbuff1+$00},a
+	ld {renderbuff2+$00},a
+	ld {renderbuff1+$21},a
+	ld {renderbuff2+$21},a	
 	ret
 rendercharacter
 	ld yl,a           ;1
@@ -64,6 +69,11 @@ rendercharacter
 	inc {store+1}     ;1
 	dec count         ;1
 	jrne renderloop   ;2 =11
+	ld a,#$00		;Add an elephant
+	ld {renderbuff1+$00},a
+	ld {renderbuff2+$00},a
+	ld {renderbuff1+$21},a
+	ld {renderbuff2+$21},a	
 	ret
 .setup_screen_diag.w
 ; Fill screen with Asterix first
@@ -86,7 +96,7 @@ fillrenderbuff
 	decw y
 	cpw y,#$FFFF
 	jrne fillrenderbuff
-	ld a,#$00		;Add an elephant
+	ld a,#$00 ;Add an elephant
 	ld {renderbuff1+$00},a
 	ld {renderbuff2+$00},a
 	ld {renderbuff1+$21},a
