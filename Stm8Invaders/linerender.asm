@@ -8,11 +8,6 @@ store.b ds.w
 romhi.b ds.b
 linemasked.b ds.b
 count.b ds.b
-	segment 'ram1'
-.screen.w ds.b $380
-.linenumber.w ds.w 1
-.renderbuff1.w ds.b $22
-.renderbuff2.w ds.b $22
 temp ds.w
 	segment 'rom'
 ;

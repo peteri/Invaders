@@ -97,10 +97,10 @@ String.3.0=lyn $(ObjectFiles), $(OutputPath)$(TargetSName).cod, ;
 String.3.1=obsend $(OutputPath)$(TargetSName).cod,-destType,$(OutputPath)$(TargetSName)-outstm8invaders.s19 .s19,s
 String.4.0=$(OutputPath)$(TargetFName)
 String.5.0=$(OutputPath)$(TargetSName).map $(OutputPath)$(TargetSName).cod $(OutputPath)$(TargetSName).grp $(OutputPath)$(TargetSName).sym
-String.6.0=2021,7,9,22,18,4
+String.6.0=2021,8,13,13,15,27
 String.100.0=ram0:0x0-0xff
-String.100.1=ram1:0x100-0x5fe
-String.100.2=stack:0x5ff-0x7ff
+String.100.1=ram1:0x100-0x6ff
+String.100.2=stack:0x700-0x7ff
 String.100.3=charmap:0x8080-0x80ff
 String.100.4=charset:0x8100-0x88ff
 String.100.5=eeprom:0x1000-0x13ff
@@ -164,9 +164,9 @@ String.8.0=
 String.2.0=Running ST linker
 String.3.0=lyn $(ObjectFiles), $(OutputPath)$(TargetSName).cod, " " 
 String.3.1=obsend $(OutputPath)$(TargetSName).cod,f,$(OutputPath)$(TargetSName).s19,s
-String.4.0=
+String.4.0=$(OutputPath)$(TargetFName)
 String.5.0=$(OutputPath)$(TargetSName).map $(OutputPath)$(TargetSName).cod $(OutputPath)$(TargetSName).grp $(OutputPath)$(TargetSName).sym
-String.6.0=2021,7,3,12,53,11
+String.6.0=2021,8,13,13,15,27
 String.100.0=ram0:0x0-0xff
 String.100.1=ram1:0x100-0x5fe
 String.100.2=stack:0x5ff-0x7ff
@@ -243,6 +243,11 @@ String.6.0=2021,7,3,12,53,11
 [Root.Source Files.mapping.asm]
 ElemType=File
 PathName=mapping.asm
+Next=Root.Source Files.gamedata.asm
+
+[Root.Source Files.gamedata.asm]
+ElemType=File
+PathName=gamedata.asm
 Next=Root.Source Files.boardsetup.asm
 
 [Root.Source Files.boardsetup.asm]
@@ -263,6 +268,11 @@ Next=Root.Source Files.main.asm
 [Root.Source Files.main.asm]
 ElemType=File
 PathName=main.asm
+Next=Root.Source Files.player.asm
+
+[Root.Source Files.player.asm]
+ElemType=File
+PathName=player.asm
 Next=Root.Source Files.stm8l152c6.asm
 
 [Root.Source Files.stm8l152c6.asm]
@@ -340,6 +350,11 @@ Next=Root.Include Files.characterrom.inc
 [Root.Include Files.characterrom.inc]
 ElemType=File
 PathName=characterrom.inc
+Next=Root.Include Files.gamedata.inc
+
+[Root.Include Files.gamedata.inc]
+ElemType=File
+PathName=gamedata.inc
 Next=Root.Include Files.linerender.inc
 
 [Root.Include Files.linerender.inc]
@@ -350,6 +365,11 @@ Next=Root.Include Files.mapping.inc
 [Root.Include Files.mapping.inc]
 ElemType=File
 PathName=mapping.inc
+Next=Root.Include Files.player.inc
+
+[Root.Include Files.player.inc]
+ElemType=File
+PathName=player.inc
 Next=Root.Include Files.variables.inc
 
 [Root.Include Files.variables.inc]

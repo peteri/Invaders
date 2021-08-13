@@ -8,7 +8,7 @@ stm8/
 	#include "linerender.inc"
 stack_start.w	EQU $stack_segment_start
 stack_end.w	EQU $stack_segment_end
-	segment 'ram1'
+	segment 'ram0'
 tim3cntr.w ds.w 1
 	segment 'rom'
 main.l

@@ -16,7 +16,7 @@ spi_data_start	EQU  $48
 line_sync	EQU $4B	;75 decimal	 
 TIM2_CC3	EQU {spi_data_start + line_sync +2} ; $AB or 171
 TIM4_reload	EQU {{{spi_data_start + $330} / 4}-1}
-	segment 'ram1'
+	segment 'ram0'
 disableTim2	DS.B	1	; Sent by DMA channel 1
 enableTim2	DS.B	1	; Sent by DMA channel 0
 	segment 'rom'

@@ -7,8 +7,8 @@ Number=1.3
 [Root.Source Files.mapping.asm.Config.0]
 ExternDep= mapping.asm mapping.inc
 
-[Root.Source Files.mapping.asm.Config.1]
-ExternDep= mapping.asm mapping.inc
+[Root.Source Files.gamedata.asm.Config.0]
+ExternDep= gamedata.asm
 
 [Root.Source Files.boardsetup.asm.Config.0]
 ExternDep= boardsetup.asm mapping.inc variables.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" videosync.inc linerender.inc
@@ -34,6 +34,9 @@ ExternDep= main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_to
 [Root.Source Files.main.asm.Config.1]
 ExternDep= main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" boardsetup.inc variables.inc videosync.inc
 
+[Root.Source Files.player.asm.Config.0]
+ExternDep= player.asm player.inc
+
 [Root.Source Files.stm8l152c6.asm.Config.0]
 ExternDep= stm8l152c6.asm "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152.asm"
 
@@ -41,7 +44,7 @@ ExternDep= stm8l152c6.asm "c:\program files (x86)\stmicroelectronics\st_toolset\
 ExternDep= stm8l152c6.asm "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152.asm"
 
 [Root.Source Files.variables.asm.Config.0]
-ExternDep= variables.asm mapping.inc
+ExternDep= variables.asm mapping.inc player.inc
 
 [Root.Source Files.variables.asm.Config.1]
 ExternDep= variables.asm mapping.inc

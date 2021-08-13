@@ -8,6 +8,6 @@
 	#define ram0_segment_end FF
 	#define RAM1 1
 	#define ram1_segment_start 100
-	#define ram1_segment_end 5FE
-	#define stack_segment_start 5FF
+	#define ram1_segment_end 6FF
+	#define stack_segment_start 700
 	#define stack_segment_end 7FF

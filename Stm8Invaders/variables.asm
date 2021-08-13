@@ -5,7 +5,7 @@ stm8/
 ; Contain all the varible definitions
 ;=============================================
 	#include "mapping.inc"
-
+	#include "player.inc"
 ram0_start.b	EQU $ram0_segment_start
 ram0_end.b	EQU $ram0_segment_end
 ram1_start.w	EQU $ram1_segment_start
@@ -37,13 +37,20 @@ clear_ram1.l
 ;==================================
 	segment 'ram0'
 .led_state.b	ds.b	1
+.linenumber.w ds.w 1
+.syncdma.w	ds.w	1	
+.renderbuff1.w ds.b $22
+.renderbuff2.w ds.b $22	
 ;==================================
 ;
 ; Variables in rest of ram start here
 ;
 ;==================================
 	segment 'ram1'
+.screen.w ds.b $380
 .udg.w		DS.B	$100
-.syncdma.w	ds.w	1	
+.player_one.w	ds.b	player_end_offs	
+.player_two.w	ds.b	player_end_offs
+.saved_shields	ds.b	shield_size
 	end
 	
