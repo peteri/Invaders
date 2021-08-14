@@ -1,5 +1,8 @@
-aliens_offs			EQU {0}
-ref_alien_delta_x_offs		EQU {aliens_offs+55}
+score_offs			EQU 0
+ships_rem_offs			EQU {score_offs+2}
+aliens_offs			EQU {ships_rem_offs}
+number_of_aliens		EQU 55
+ref_alien_delta_x_offs		EQU {aliens_offs+number_of_aliens}
 ref_alien_y_offs		EQU {ref_alien_delta_x_offs+1}
 ref_alien_x_offs		EQU {ref_alien_y_offs+1}
 rack_count_offs			EQU {ref_alien_x_offs+1}
@@ -9,8 +12,8 @@ player_end_offs 		EQU {extra_ship_available_offs+1}
 shield_size			EQU {$1c mult 8}
 	EXTERN	reset.w
 	EXTERN	reset_shields.w
-	EXTERN	save_shields.w
-	EXTERN	restore_shields.w
-	EXTERN	draw_sheilds.w
 	EXTERN	count_aliens.w
 	EXTERN	init_aliens.w
+	EXTERN	update_shields_udg.w
+	EXTERN	swap_shields.w
+	EXTERN	draw_shields.w

@@ -645,7 +645,6 @@ namespace WpfInvaders
                         return SplashMinorState.Idle;
                     }
                     gameData.SplashAlienAnimation = new SplashAlienAnimation();
-                    LineRender.Sprites.Add(gameData.SplashAlienAnimation.AlienMovingY);
                     return AnimateSplashAlien(223, 123, 0);
                 case SplashMajorState.AnimateAlienPullingYOff:
                     WriteText(0x17, 0x0c, "PLA ");
@@ -692,7 +691,6 @@ namespace WpfInvaders
                     return SplashDelay(SplashDelayTwoSecond);
                 case SplashMajorState.AnimateCoinExplodeAlienIn:
                     gameData.SplashAlienAnimation = new SplashAlienAnimation();
-                    LineRender.Sprites.Add(gameData.SplashAlienAnimation.AlienMovingY);
                     return AnimateSplashAlien(0, 115, 0, 0x1a * 8);
                 case SplashMajorState.AnimateCoinExplodeFireBullet:
                     gameData.AlienShotSquigly.Shot.X = 115 + 8;

@@ -37,20 +37,27 @@ clear_ram1.l
 ;==================================
 	segment 'ram0'
 .led_state.b	ds.b	1
-.linenumber.w ds.w 1
-.syncdma.w	ds.w	1	
-.renderbuff1.w ds.b $22
-.renderbuff2.w ds.b $22	
+.linenumber.b	ds.w	1
+.syncdma.b	ds.w	1	
+.renderbuff1.b	ds.b $22
+.renderbuff2.b	ds.b $22
+.current_player.b ds.w	1
+.numaliens.b	ds.b	1
+.hi_score.b	ds.w	1
+.credits.b	ds.b	1
+.isr_delay.b	ds.b	1
+.game_mode.b	ds.b	1
+.demo_mode.b	ds.b	1
+.alien_shot_reload_rate.b ds.b	1
 ;==================================
 ;
 ; Variables in rest of ram start here
 ;
 ;==================================
 	segment 'ram1'
-.screen.w ds.b $380
+.screen.w 	ds.b 	$380
 .udg.w		DS.B	$100
 .player_one.w	ds.b	player_end_offs	
 .player_two.w	ds.b	player_end_offs
-.saved_shields	ds.b	shield_size
 	end
 	

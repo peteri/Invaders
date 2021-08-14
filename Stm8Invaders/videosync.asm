@@ -3,7 +3,6 @@ stm8/
 
 	#include "mapping.inc"
 	#include "variables.inc"
-	#include "stm8l152c6.inc"
 	segment 'rom'
 
 ;=====================================================

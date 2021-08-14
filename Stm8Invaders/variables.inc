@@ -1,11 +1,22 @@
+; ram segment 0
 	EXTERN	led_state.b
-	EXTERN	clear_memory.w
-	EXTERN	syncdma.w
-	EXTERN	udg.w
-	EXTERN	player_one
-	;EXTERN	player_two
+	EXTERN	syncdma.b
+	EXTERN	linenumber.b
+	EXTERN	renderbuff1.b
+	EXTERN	renderbuff2.b
+	EXTERN	current_player.b
+	EXTERN	numaliens.b
+	EXTERN	hi_score.b
+	EXTERN	credits.b
+	EXTERN	isr_delay.b
+	EXTERN	game_mode.b
+	EXTERN	demo_mode.b
+	EXTERN	alien_shot_reload_rate.b
+; ram segment 1
+	EXTERN	player_one.w
+	EXTERN	player_two.w
 	EXTERN	screen.w
-	EXTERN	linenumber.w
-	EXTERN	renderbuff1.w
-	EXTERN	renderbuff2.w
+	EXTERN	udg.w
+; Subroutines	
+	EXTERN	clear_memory.w
 	
