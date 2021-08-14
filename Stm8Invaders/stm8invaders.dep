@@ -32,7 +32,7 @@ ExternDep= characterrom.asm
 ExternDep= characterrom.asm
 
 [Root.Source Files.main.asm.Config.0]
-ExternDep= main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" boardsetup.inc variables.inc videosync.inc linerender.inc constants.inc
+ExternDep= main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" boardsetup.inc variables.inc videosync.inc linerender.inc constants.inc attractscreen.inc waittask.inc screenhelper.inc
 
 [Root.Source Files.main.asm.Config.1]
 ExternDep= main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" boardsetup.inc variables.inc videosync.inc
@@ -41,7 +41,7 @@ ExternDep= main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_to
 ExternDep= player.asm player.inc variables.inc characterrom.inc
 
 [Root.Source Files.screenhelper.asm.Config.0]
-ExternDep= screenhelper.asm variables.inc characterrom.inc
+ExternDep= screenhelper.asm variables.inc characterrom.inc constants.inc
 
 [Root.Source Files.stm8l152c6.asm.Config.0]
 ExternDep= stm8l152c6.asm "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152.asm"
@@ -60,3 +60,6 @@ ExternDep= videosync.asm mapping.inc variables.inc
 
 [Root.Source Files.videosync.asm.Config.1]
 ExternDep= videosync.asm mapping.inc variables.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc"
+
+[Root.Source Files.waittask.asm.Config.0]
+ExternDep= waittask.asm mapping.inc variables.inc constants.inc screenhelper.inc

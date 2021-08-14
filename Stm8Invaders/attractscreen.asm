@@ -89,6 +89,7 @@ minor_idle.w
 	ldw	y,#states
 still_in_table
 	ldw	state,y
+	ldw	y,(y)
 	jp	(y)
 ; Wait for the delay...	
 minor_wait.w

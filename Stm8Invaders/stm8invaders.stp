@@ -298,11 +298,16 @@ Next=Root.Source Files.videosync.asm
 [Root.Source Files.videosync.asm]
 ElemType=File
 PathName=videosync.asm
+Next=Root.Source Files.waittask.asm
+
+[Root.Source Files.waittask.asm]
+ElemType=File
+PathName=waittask.asm
 
 [Root.Include Files]
 ElemType=Folder
 PathName=Include Files
-Child=Root.Include Files.boardsetup.inc
+Child=Root.Include Files.attractscreen.inc
 Config.0=Root.Include Files.Config.0
 Config.1=Root.Include Files.Config.1
 
@@ -352,6 +357,11 @@ String.100.0=abslist $(IntermPath)$(InputName).lsr -exe $(OutputPath)$(TargetFNa
 String.2.0=Performing Custom Build on $(InputFile)
 String.6.0=2021,7,3,12,53,11
 
+[Root.Include Files.attractscreen.inc]
+ElemType=File
+PathName=attractscreen.inc
+Next=Root.Include Files.boardsetup.inc
+
 [Root.Include Files.boardsetup.inc]
 ElemType=File
 PathName=boardsetup.inc
@@ -400,3 +410,8 @@ Next=Root.Include Files.videosync.inc
 [Root.Include Files.videosync.inc]
 ElemType=File
 PathName=videosync.inc
+Next=Root.Include Files.waittask.inc
+
+[Root.Include Files.waittask.inc]
+ElemType=File
+PathName=waittask.inc

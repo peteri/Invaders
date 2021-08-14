@@ -96,7 +96,6 @@ Timer3CompareInt.l
 	bset TIM1_DER,#3	; Turn on CC3 DMA
 	bres TIM3_SR1,#1
 	bres TIM3_SR1,#2
-	bcpl PC_ODR,#7	;toggle led
 	ldw y,#$0
 	ldw linenumber,y
 	mov SPI1_CR2,#%00000010
@@ -125,7 +124,7 @@ waitforcounterchange
 newline	
 	inc	{linenumber+1}
 	ldw	y,linenumber
-	cpw	y,#{scr_height+1}	;28*8 lines
+	cpw	y,#{scr_height mult 8 +1}	;28*8 lines
 	jrule	renderloop	;Not done yet
 	bres	TIM1_DER,#3	; Turn off CC3 DMA
 	; Do the in game frame tick
@@ -136,6 +135,7 @@ newline
 	; Took too long in the game tick
 	; time to light up the error and die
 	jrne	took_too_long
+	bcpl PC_ODR,#7	;toggle led
 	iret
 took_too_long
 	; turn on the green led die and loop

@@ -229,15 +229,15 @@ enableTim2	DS.B	1	; Sent by DMA channel 0
 ;=========================================================
 .init_cpu.w
 ; Use external clock on PA2
-	mov CLK_ECKCR,#%00010001
+;	mov CLK_ECKCR,#%00010001
 ; Wait for HSERDY
 clk_hse_rdy_set
-	btjf CLK_ECKCR,#1,clk_hse_rdy_set
-	mov CLK_SWR,#%00000100
-	bset CLK_SWCR,#1	;Swap clock
+;	btjf CLK_ECKCR,#1,clk_hse_rdy_set
+;	mov CLK_SWR,#%00000100
+;	bset CLK_SWCR,#1	;Swap clock
 ; Wait for clock switch busy clear...
 clk_sw_busy_clear
-	btjt CLK_SWCR,#0,clk_sw_busy_clear
+;	btjt CLK_SWCR,#0,clk_sw_busy_clear
 	mov CLK_CKDIVR,#$00	; Full speed 16Mhz
 	; Timer 4 DMA is on Channel 1
 	mov SYSCFG_RMPCR1,#%0000100
