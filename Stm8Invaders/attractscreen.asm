@@ -25,7 +25,7 @@ states.w
 	dc.w	score_table_two_sec_delay 
 	dc.w	ani_alien_in_to_get_y 
 	dc.w	ani_alien_pulling_y_off 
-	dc.w	ani_alien_hiding_off_stage_delay 
+	dc.w	ani_alien_off_stage_delay 
 	dc.w	ani_alien_pushing_y_back_on 
 	dc.w	ani_alien_job_done_delay 
 skip_animate_1.w	
@@ -117,7 +117,7 @@ print_message_wait_for_delay
 	ret
 minor_play_demo_wait_death
 	jra	back_to_minor_idle
-minor_play_demo_wait_end_explode
+minor_play_demo_wait_end_exp
 	jra	back_to_minor_idle
 minor_animate_splash_alien
 	ret
@@ -182,7 +182,7 @@ score_table_two_sec_delay.w
 	jp	splash_delay
 ani_alien_in_to_get_y.w
 ani_alien_pulling_y_off.w
-ani_alien_hiding_off_stage_delay.w
+ani_alien_off_stage_delay.w
 ani_alien_pushing_y_back_on.w
 ani_alien_job_done_delay.w
 ani_alien_removal.w
