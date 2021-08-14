@@ -30,11 +30,11 @@ clear_stack.l
 	; time for more setup
 	call init_cpu	  ; speed up the cpu and turn on stuff
 	call clear_memory ; Clear rest of ram
+	call power_on_reset ; setup the game
 	call init_gpio	  ; setup the gpio pins
 	call init_dma	  ; setup dma channels
 	call init_timers  ; setup the timers.
 	call init_spi1	  ; setup SPI1 for video out
-	call power_on_reset
 	rim		  ; interrupts on
 infinite_loop.l
 	jra infinite_loop
