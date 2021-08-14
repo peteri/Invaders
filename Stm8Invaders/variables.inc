@@ -12,6 +12,10 @@
 	EXTERN	game_mode.b
 	EXTERN	demo_mode.b
 	EXTERN	alien_shot_reload_rate.b
+	EXTERN	suspend_play.b
+	EXTERN	vblank_status.b
+	EXTERN	tweak_flag.b
+	EXTERN	skip_player.b
 ; ram segment 1
 	EXTERN	player_one.w
 	EXTERN	player_two.w

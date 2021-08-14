@@ -5,12 +5,12 @@ stm8/
 	#include "variables.inc"
 	#include "constants.inc"
 	#include "screenhelper.inc"
-	segment 'ram1'
+	segment 'ram0'
 state.b	ds.w	1
 minor_state.b	ds.w	1
 delayed_msg.b	ds.w	1
 delayed_msg_pos.b	ds.w	1
-animate_splash	ds.b	1
+animate_splash.b	ds.b	1
 	segment 'rom'
 ;jump table for major states	
 states.w	
@@ -66,9 +66,18 @@ one_or_two_players_msg.w	dc.b	"<1 OR 2 PLAYERS>",0
 one_player_one_coin_msg.w	dc.b	"1 PLAYER  1 COIN",0
 two_players_two_coins_msg.w dc.b	"2 PLAYERS 2 COINS",0
 ;
+;	reset the attract state.
+;
+.reset_attract_state.w
+	ldw	y,#{states-2}
+	ldw	state,y
+	ldw	y,#minor_idle
+	ldw	minor_state,y
+	ret
+;
 ; Attract task called once per frame.
 ;
-.attract_task
+.attract_task.w
 	jp	[minor_state]
 ;Idle advance to next major state	
 minor_idle.w

@@ -49,6 +49,10 @@ clear_ram1.l
 .isr_delay.b	ds.b	1
 .game_mode.b	ds.b	1
 .demo_mode.b	ds.b	1
+.suspend_play.b	ds.b	1
+.tweak_flag.b	ds.b	1
+.skip_player.b	ds.b	1
+.vblank_status.b	ds.b	1
 .alien_shot_reload_rate.b ds.b	1
 ;==================================
 ;

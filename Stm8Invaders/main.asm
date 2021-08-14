@@ -7,6 +7,9 @@ stm8/
 	#include "videosync.inc"
 	#include "linerender.inc"
 	#include "constants.inc"
+	#include "attractscreen.inc"
+	#include "waittask.inc"
+	#include "screenhelper.inc"
 stack_start.w	EQU $stack_segment_start
 stack_end.w	EQU $stack_segment_end
 	segment 'ram0'
@@ -31,9 +34,31 @@ clear_stack.l
 	call init_dma	  ; setup dma channels
 	call init_timers  ; setup the timers.
 	call init_spi1	  ; setup SPI1 for video out
+	call power_on_reset
 	rim		  ; interrupts on
 infinite_loop.l
 	jra infinite_loop
+;==============================================
+;
+;	PowerOnReset routine
+;
+;==============================================
+power_on_reset
+	call	draw_status
+	call	reset_attract_state
+	call	reset_wait_state
+	mov	game_mode,#0
+	mov	demo_mode,#0
+	ret
+draw_status
+	call	clear_screen
+	call	draw_screen_head
+	call	draw_player_one_score
+	call	draw_player_two_score
+	call	draw_high_score
+	call	draw_credit_label
+	call	draw_num_credits
+	ret
 ;==============================================
 ;	Interrupt handler for DMA channel
 ;	transaction complete.
@@ -127,7 +152,60 @@ NonHandledInterrupt.l
 ;
 ;=============================================
 game_tick
+	dec	isr_delay
+	call	handle_coin_switch
+	btjf	suspend_play,#0,not_wait_task
+	jp	run_wait_task
+not_wait_task	
+	btjt	game_mode,#0,run_game
+	btjt	demo_mode,#0,run_game
+	ld	a,credits
+	jreq	do_attract_screen
+	jp	enter_wait_start_loop
+do_attract_screen
+	jp	attract_task
+run_game
+	call	game_loop_step
+	mov	vblank_status,#0
+	btjf	tweak_flag,#0,skip_run_game_objects
+	mov	skip_player,#1
+	call	run_game_objects
+skip_run_game_objects
+	mov	tweak_flag,#0
+	call	game_loop_step
+	call	cursor_next_alien
+	mov	vblank_status,#$80
+;	ld	a,{alien_shot_rolling+extra_count_offs}
+;	ld	shot_sync,a
+	call	draw_alien
+	mov	skip_player,#0
+	call	run_game_objects
+	call	time_to_saucer
+	jp	game_loop_step
+;=============================================
+;
+;	stub routines start here
+;
+;=============================================
+handle_coin_switch
 	ret
+game_loop_step
+	ret
+cursor_next_alien
+	ret
+draw_alien
+	ret
+time_to_saucer
+	ret
+run_game_objects
+	ret
+enter_wait_start_loop
+	ret
+;=============================================
+;
+;	interrupt vector loop
+;
+;=============================================
 	segment 'vectit'
 	dc.l {$82000000+main}			; reset
 	dc.l {$82000000+NonHandledInterrupt}	; trap
