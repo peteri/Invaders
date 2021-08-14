@@ -6,6 +6,7 @@ stm8/
 ;=============================================
 	#include "mapping.inc"
 	#include "player.inc"
+	#include "constants.inc"
 ram0_start.b	EQU $ram0_segment_start
 ram0_end.b	EQU $ram0_segment_end
 ram1_start.w	EQU $ram1_segment_start
@@ -39,8 +40,8 @@ clear_ram1.l
 .led_state.b	ds.b	1
 .linenumber.b	ds.w	1
 .syncdma.b	ds.w	1	
-.renderbuff1.b	ds.b $22
-.renderbuff2.b	ds.b $22
+.renderbuff1.b	ds.b 	{scr_width+2}
+.renderbuff2.b	ds.b	{scr_width+2}
 .current_player.b ds.w	1
 .numaliens.b	ds.b	1
 .hi_score.b	ds.w	1
@@ -55,7 +56,7 @@ clear_ram1.l
 ;
 ;==================================
 	segment 'ram1'
-.screen.w 	ds.b 	$380
+.screen.w 	ds.b 	{scr_height mult scr_width}
 .udg.w		DS.B	$100
 .player_one.w	ds.b	player_end_offs	
 .player_two.w	ds.b	player_end_offs

@@ -6,6 +6,7 @@ stm8/
 	#include "variables.inc"
 	#include "videosync.inc"
 	#include "linerender.inc"
+	#include "constants.inc"
 stack_start.w	EQU $stack_segment_start
 stack_end.w	EQU $stack_segment_end
 	segment 'ram0'
@@ -27,7 +28,6 @@ clear_stack.l
 	call init_cpu	  ; speed up the cpu and turn on stuff
 	call clear_memory ; Clear rest of ram
 	call init_gpio	  ; setup the gpio pins
-	call setup_screen_diag	
 	call init_dma	  ; setup dma channels
 	call init_timers  ; setup the timers.
 	call init_spi1	  ; setup SPI1 for video out
@@ -98,16 +98,36 @@ waitforcounterchange
 	cpw x,tim3cntr ; Wait for line counter to change
 	jreq waitforcounterchange
 newline	
-	inc {linenumber+1}
-	ldw y,linenumber
-	cpw y,#223		;28*8 lines
-	jrule renderloop	;Not done yet
-	bres TIM1_DER,#3	; Turn off CC3 DMA
+	inc	{linenumber+1}
+	ldw	y,linenumber
+	cpw	y,#{scr_height+1}	;28*8 lines
+	jrule	renderloop	;Not done yet
+	bres	TIM1_DER,#3	; Turn off CC3 DMA
+	; Do the in game frame tick
+	call	game_tick
+	; Did the compare registers fire?
+	ld	a,TIM3_SR1
+	and	a,#%00000110
+	; Took too long in the game tick
+	; time to light up the error and die
+	jrne	took_too_long
 	iret
+took_too_long
+	; turn on the green led die and loop
+	bset PE_ODR,#7	
+	sim
+	jra	took_too_long
 	interrupt NonHandledInterrupt
 NonHandledInterrupt.l
 	iret
-
+;=============================================
+;
+; 	Main tick routine
+;	Called from frame interrupt.
+;
+;=============================================
+game_tick
+	ret
 	segment 'vectit'
 	dc.l {$82000000+main}			; reset
 	dc.l {$82000000+NonHandledInterrupt}	; trap

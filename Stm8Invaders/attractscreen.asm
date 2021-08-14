@@ -101,7 +101,7 @@ more_message
 	ldw	delayed_msg,y
 	ldw	x,delayed_msg_pos
 	ld	(x),a
-	addw	x,#$0020
+	addw	x,#scr_width
 	ldw	delayed_msg_pos,x
 	mov	isr_delay,#5
 	ldw	y,#minor_print_msg_delay

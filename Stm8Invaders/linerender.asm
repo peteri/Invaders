@@ -3,6 +3,7 @@ stm8/
 
 	#include "characterrom.inc"
 	#include "variables.inc"
+	#include "constants.inc"
 	segment 'ram0'
 store.b ds.w
 romhi.b ds.b
@@ -29,7 +30,7 @@ temp ds.w
 	add a,#{high charrom}
 	ld romhi,a
 	
-	mov count,#$20
+	mov count,#scr_width
 renderloop:
 	ld a,(screen,x)		; 1
 	incw x            ; 1
@@ -51,8 +52,8 @@ renderudg
 	ld a,#$00		;Add an elephant
 	ld {renderbuff1+$00},a
 	ld {renderbuff2+$00},a
-	ld {renderbuff1+$21},a
-	ld {renderbuff2+$21},a	
+	ld {renderbuff1+scr_width+1},a
+	ld {renderbuff2+scr_width+1},a	
 	ret
 rendercharacter
 	ld yl,a           ;1
@@ -67,67 +68,8 @@ rendercharacter
 	ld a,#$00		;Add an elephant
 	ld {renderbuff1+$00},a
 	ld {renderbuff2+$00},a
-	ld {renderbuff1+$21},a
-	ld {renderbuff2+$21},a	
-	ret
-.setup_screen_diag.w
-; Fill screen with Asterix first
-	ldw y,#$37f
-	ld a,#$4E	; Asterix
-blankloop	
-	ld (screen,y),a
-	decw y
-	jrpl blankloop
-; Fill render buff with $55,$AA
-	ldw y,#$21
-fillrenderbuff	
-	ld a,#$aa
-	ld (renderbuff1,y),a
-	ld (renderbuff2,y),a
-	decw y
-	ld a,#$55
-	ld (renderbuff1,y),a
-	ld (renderbuff2,y),a
-	decw y
-	cpw y,#$FFFF
-	jrne fillrenderbuff
-	ld a,#$00 ;Add an elephant
-	ld {renderbuff1+$00},a
-	ld {renderbuff2+$00},a
-	ld {renderbuff1+$21},a
-	ld {renderbuff2+$21},a
-; Now we put a character map on screen 	
-	ldw x,#$ff
-fillscreenloop
-	; y=(x&0xf)*32 +(x>>4)
-	ld a,xl
-	and a,#$0f
-	clrw y
-	ld yl,a
-	sllw y
-	sllw y
-	sllw y
-	sllw y
-	sllw y
-	ld a,xl
-	srl a
-	srl a
-	srl a
-	srl a
-	ld temp,a
-	ld a,yl
-	add a,temp
-	ld yl,a
-	ld a,xl
-	ld (screen,y),a
-	decw x
-	jrpl fillscreenloop
-	ldw x,#$ff
-filludgloop
-	ld a,xl
-	ld (udg,x),a
-	decw x
-	jrpl filludgloop
+	ld {renderbuff1+scr_width+1},a
+	ld {renderbuff2+scr_width+1},a	
 	ret
 	end
 	
