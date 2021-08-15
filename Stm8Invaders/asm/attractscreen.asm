@@ -6,12 +6,17 @@ stm8/
 	#include "constants.inc"
 	#include "screenhelper.inc"
 	#include "characterrom.inc"
+	#include "sprite.inc"
 	segment 'ram0'
 state.b	ds.w	1
 minor_state.b	ds.w	1
 delayed_msg.b	ds.w	1
 delayed_msg_pos.b	ds.w	1
 animate_splash.b	ds.b	1
+ani_image	ds.b	1
+ani_target_x	ds.b	1
+ani_delta_x	ds.b	1
+ani_count	ds.b	1
 	segment 'rom'
 ;jump table for major states	
 states.w	
@@ -134,6 +139,26 @@ minor_play_demo_wait_death
 minor_play_demo_wait_end_exp
 	jra	back_to_minor_idle
 minor_animate_splash_alien
+	dec	ani_count
+	jrne	move_splash_alien
+	mov	ani_count,#4
+	ld	a,ani_image
+	cp	a,{sp_splash_alien+sprite_image_offs}
+	jrne	image_different
+	inc	a
+image_different
+	ld	{sp_splash_alien+sprite_image_offs},a
+move_splash_alien
+	ld	a,{sp_splash_alien+sprite_x_offs}
+	add	a,ani_delta_x
+	ld	{sp_splash_alien+sprite_x_offs},a
+	cp	a,ani_target_x
+	jrne	set_alien_image
+	ldw	y,#minor_idle
+	ldw	minor_state,y
+set_alien_image	
+	ldw	x,#sp_splash_alien
+	call	sprite_set_image
 	ret
 ;
 ;	When ever the minor state is idle
@@ -195,11 +220,36 @@ score_table_two_sec_delay.w
 	ld	a,#splash_delay_two_second
 	jp	splash_delay
 ani_alien_in_to_get_y.w
+	ld	a,animate_splash
+	jrne	animate_alien_in
+	ldw	x,#skip_animate_1
+	ldw	state,x
+	ret
+animate_alien_in
+	ldw	x,#{223 mult 256 + 123}
+	ldw	y,#{$000+184}
+	jp	animate_alien_init
 ani_alien_pulling_y_off.w
+	ldw	x,#{120 mult 256 + 221}
+	ldw	y,#{$200+184}
+	jp	animate_alien_init
 ani_alien_off_stage_delay.w
+	ld	a,#splash_delay_one_second
+	jp	splash_delay
 ani_alien_pushing_y_back_on.w
+	ldw	x,#{221 mult 256 + 120}
+	ldw	y,#{$400+184}
+	jp	animate_alien_init
 ani_alien_job_done_delay.w
+	ld	a,#splash_delay_one_second
+	jp	splash_delay
 ani_alien_removal.w
+	mov	{sp_splash_alien+sprite_visible},#0
+	ldw	y,#play
+	ldw	x,#$170c
+	call	write_text
+	ld	a,#splash_delay_one_second
+	jp	splash_delay
 play_demo.w
 	ret
 after_play_delay.w
@@ -262,6 +312,36 @@ print_delayed_message.w
 	ldw	delayed_msg_pos,x
 	ldw	y,#minor_print_msg_char
 	ldw	minor_state,y
+	ret
+; xh=start alien position
+; xl=target alien postion
+; yh=image to use
+; yl=y position
+animate_alien_init.w
+	ld	a,xl
+	ld	ani_target_x,a
+	ld	a,xh
+	ld	{sp_splash_alien+sprite_x_offs},a
+	mov	ani_delta_x,#$00
+	cp	a,ani_target_x
+	jrult	moving_left_to_right
+	mov	ani_delta_x,#$FF
+moving_left_to_right
+	ld	a,yl
+	ld	{sp_splash_alien+sprite_y_offs},a
+	mov	{sp_splash_alien+sprite_visible},#1
+	mov	ani_count,#4
+	ld	a,yh
+	ld	ani_image,a
+	ld	{sp_splash_alien+sprite_image_offs},a
+	ld	a,xh
+	jreq	not_starting_zero
+	inc	{sp_splash_alien+sprite_image_offs}
+not_starting_zero
+	ldw	x,#minor_animate_splash_alien
+	ldw	minor_state,x
+	ldw	x,#sp_splash_alien
+	call	sprite_set_image
 	ret
 	end
 	

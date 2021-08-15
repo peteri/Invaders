@@ -243,6 +243,11 @@ String.6.0=2021,7,3,12,53,11
 [Root.Source Files.mapping.asm]
 ElemType=File
 PathName=mapping.asm
+Next=Root.Source Files.asm\spritedata.asm
+
+[Root.Source Files.asm\spritedata.asm]
+ElemType=File
+PathName=asm\spritedata.asm
 Next=Root.Source Files.asm\alienshot.asm
 
 [Root.Source Files.asm\alienshot.asm]
@@ -440,6 +445,11 @@ Next=Root.Include Files.inc\sprite.inc
 [Root.Include Files.inc\sprite.inc]
 ElemType=File
 PathName=inc\sprite.inc
+Next=Root.Include Files.inc\spritedata.inc
+
+[Root.Include Files.inc\spritedata.inc]
+ElemType=File
+PathName=inc\spritedata.inc
 Next=Root.Include Files.inc\timerobject.inc
 
 [Root.Include Files.inc\timerobject.inc]

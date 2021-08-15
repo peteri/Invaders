@@ -7,11 +7,14 @@ Number=1.3
 [Root.Source Files.mapping.asm.Config.0]
 ExternDep= mapping.asm mapping.inc
 
+[Root.Source Files.asm\spritedata.asm.Config.0]
+ExternDep= asm\spritedata.asm
+
 [Root.Source Files.asm\alienshot.asm.Config.0]
 ExternDep= asm\alienshot.asm inc\variables.inc inc\constants.inc
 
 [Root.Source Files.asm\attractscreen.asm.Config.0]
-ExternDep= asm\attractscreen.asm mapping.inc inc\variables.inc inc\constants.inc inc\screenhelper.inc inc\characterrom.inc
+ExternDep= asm\attractscreen.asm mapping.inc inc\variables.inc inc\constants.inc inc\screenhelper.inc inc\characterrom.inc inc\sprite.inc
 
 [Root.Source Files.asm\boardsetup.asm.Config.0]
 ExternDep= asm\boardsetup.asm mapping.inc inc\variables.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" inc\videosync.inc inc\linerender.inc
@@ -23,10 +26,10 @@ ExternDep= asm\characterrom.asm
 ExternDep= asm\gamedata.asm
 
 [Root.Source Files.asm\linerender.asm.Config.0]
-ExternDep= asm\linerender.asm inc\characterrom.inc inc\variables.inc inc\constants.inc
+ExternDep= asm\linerender.asm inc\characterrom.inc inc\variables.inc inc\constants.inc inc\sprite.inc
 
 [Root.Source Files.asm\main.asm.Config.0]
-ExternDep= asm\main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" inc\boardsetup.inc inc\variables.inc inc\videosync.inc inc\linerender.inc inc\constants.inc inc\attractscreen.inc inc\waittask.inc inc\screenhelper.inc
+ExternDep= asm\main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152c6.inc" "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\STM8L152.inc" inc\boardsetup.inc inc\variables.inc inc\videosync.inc inc\linerender.inc inc\constants.inc inc\attractscreen.inc inc\waittask.inc inc\screenhelper.inc inc\timerobject.inc inc\sprite.inc
 
 [Root.Source Files.asm\player.asm.Config.0]
 ExternDep= asm\player.asm inc\player.inc inc\variables.inc inc\characterrom.inc
@@ -41,7 +44,7 @@ ExternDep= asm\playershot.asm inc\variables.inc inc\constants.inc
 ExternDep= asm\screenhelper.asm inc\variables.inc inc\characterrom.inc inc\constants.inc
 
 [Root.Source Files.asm\sprite.asm.Config.0]
-ExternDep= asm\sprite.asm inc\variables.inc inc\constants.inc
+ExternDep= asm\sprite.asm inc\variables.inc inc\constants.inc inc\sprite.inc inc\spritedata.inc
 
 [Root.Source Files.asm\stm8l152c6.asm.Config.0]
 ExternDep= asm\stm8l152c6.asm "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152.asm"

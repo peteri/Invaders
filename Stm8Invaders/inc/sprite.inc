@@ -8,6 +8,5 @@ sprite_y_offs		EQU	{sprite_x_offs+1}
 sprite_size		EQU	{sprite_y_offs+1}
 	EXTERN	sprite_init.w
 	EXTERN	sprite_set_image.w
-	EXTERN	sprite_draw.w
 	EXTERN	sprite_collided.w
 	EXTERN	sprite_battle_damage.w

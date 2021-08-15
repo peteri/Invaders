@@ -37,9 +37,9 @@ count.b		ds.b
 ; DMA will slice some of that away.
 ; To render 32 cells takes 18*32 cycles (576)
 ; For the sprites we have a max of 9 sprites with 4 visible
-; at most (three alien bullets or explosions + player)
-; cycles = 9*9 + 36 * 4 = 225
-; Total cycle count for render loop is ~800 cycles
+; at most (three alien bullets or explosions + player
+; bullet or explosion) cycles = 9*9 + 38 * 4 = 233
+; Total cycle count for render loop is ~840 cycles
 renderloop:
 	ld	a,(screen,x)	;1
 	incw	x		;1
@@ -76,9 +76,9 @@ rendersprite_loop
 	jreq	next_sprite		;1/2
 	ld	a,(sprite_x_offs,x)	;1
 	sub	a,{linenumber+1}	;1
-	jrult	rendersprite_loop	;1/2
+	jrult	next_sprite		;1/2
 	cp	a,(sprite_width_offs,x) ;1
-	jruge	rendersprite_loop	;1/2
+	jruge	next_sprite		;1/2
 	pushw	x			;2 (=12) Save how far we are
 	; make x=our src data
 	sll	a			;1
@@ -95,13 +95,15 @@ rendersprite_loop
 	add	a,{store_copy+1}	;1
 	ld	yl,a			;1
 	ld	a,(y)			;1
+	or	a,(x)			;1
 	ld	(x),a			;1
 	incw	y			;1
 	incw	x			;1
 	ld	yl,a			;1
 	ld	a,(y)			;1
+	or	a,(x)			;1
 	ld	(x),a			;1
-	popw	x			;2 (=16 Restore our sprite ptr
+	popw	x			;2 (=18 Restore our sprite ptr
 next_sprite
 	addw	x,#sprite_size		;2
 	cpw	x,#sprites_end		;2
