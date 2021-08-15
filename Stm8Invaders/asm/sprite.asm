@@ -7,6 +7,7 @@ stm8/
 	#include "spritedata.inc"
 	segment 'ram0'
 sprite_base	ds.w	1
+sprite_mod7	ds.b	1
 	segment 'rom'
 ;=======================================
 ;
@@ -64,14 +65,19 @@ sprite_setup
 	ldw	y,(sprite_data_offs,y)
 	incw	y	;add one for width in ROM.
 	ldw	sprite_base,y
-	ldw	y,x
-	; y = image*width*2*(sprite_y &0x07)+sprite_base
-	ldw	y,(sprite_image_offs,y)
-	sllw	y
+	; y = (image*8+(sprite_y &0x07))*width*2+sprite_base
 	ld	a,(sprite_y_offs,x)
 	and	a,#7
-	mul	y,a
+	ld	sprite_mod7,a
+	ld	a,(sprite_image_offs,x)
+	sll	a
+	sll	a
+	sll	a
+	add	a,sprite_mod7
+	clrw	y
+	ld	yl,a
 	ld	a,(sprite_width_offs,x)
+	sll	a
 	mul	y,a
 	addw	y,sprite_base
 	ldw	(sprite_data_cur_img_offs,x),y

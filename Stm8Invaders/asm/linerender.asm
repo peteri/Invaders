@@ -74,9 +74,9 @@ rendersprites
 rendersprite_loop
 	ld	a,(x)			;1
 	jreq	next_sprite		;1/2
-	ld	a,(sprite_x_offs,x)	;1
-	sub	a,{linenumber+1}	;1
-	jrult	next_sprite		;1/2
+	ld	a,{linenumber+1}	;1
+	sub	a,(sprite_x_offs,x)	;1
+	jrc	next_sprite		;1/2
 	cp	a,(sprite_width_offs,x) ;1
 	jruge	next_sprite		;1/2
 	pushw	x			;2 (=12) Save how far we are
@@ -96,13 +96,12 @@ rendersprite_loop
 	ld	yl,a			;1
 	ld	a,(y)			;1
 	or	a,(x)			;1
-	ld	(x),a			;1
+	ld	(y),a			;1
 	incw	y			;1
 	incw	x			;1
-	ld	yl,a			;1
 	ld	a,(y)			;1
 	or	a,(x)			;1
-	ld	(x),a			;1
+	ld	(y),a			;1
 	popw	x			;2 (=18 Restore our sprite ptr
 next_sprite
 	addw	x,#sprite_size		;2

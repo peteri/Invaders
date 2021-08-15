@@ -179,6 +179,7 @@ play_animate
 	ldw	x,#$170c
 	jp	print_delayed_message
 print_space_invaders.w
+	call	turn_on_alien
 	ldw	y,#space_inv
 	ldw	x,#$1407
 	jp	print_delayed_message
@@ -230,6 +231,9 @@ animate_alien_in
 	ldw	y,#{$000+184}
 	jp	animate_alien_init
 ani_alien_pulling_y_off.w
+	ldw	y,#play_space
+	ldw	x,#$170c
+	call	write_text
 	ldw	x,#{120 mult 256 + 221}
 	ldw	y,#{$200+184}
 	jp	animate_alien_init
@@ -322,7 +326,7 @@ animate_alien_init.w
 	ld	ani_target_x,a
 	ld	a,xh
 	ld	{sp_splash_alien+sprite_x_offs},a
-	mov	ani_delta_x,#$00
+	mov	ani_delta_x,#$01
 	cp	a,ani_target_x
 	jrult	moving_left_to_right
 	mov	ani_delta_x,#$FF
@@ -340,6 +344,14 @@ moving_left_to_right
 not_starting_zero
 	ldw	x,#minor_animate_splash_alien
 	ldw	minor_state,x
+	ldw	x,#sp_splash_alien
+	call	sprite_set_image
+	ret
+turn_on_alien
+	mov	{sp_splash_alien+sprite_x_offs},#$30
+	mov	{sp_splash_alien+sprite_y_offs},#$31
+	mov	{sp_splash_alien+sprite_image_offs},#2
+	mov	{sp_splash_alien+sprite_visible},#1
 	ldw	x,#sp_splash_alien
 	call	sprite_set_image
 	ret
