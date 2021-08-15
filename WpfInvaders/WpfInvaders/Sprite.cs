@@ -2,8 +2,8 @@
 {
     internal class Sprite
     {
-        private readonly byte[,,,] data;
-        private readonly int width;
+        internal readonly byte[,,,] data;
+        internal readonly int width;
         internal bool Visible;
         internal int X;
         internal int Y;
