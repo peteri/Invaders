@@ -10,10 +10,13 @@ stm8/
 	#include "attractscreen.inc"
 	#include "waittask.inc"
 	#include "screenhelper.inc"
+	#include "timerobject.inc"
+	#include "sprite.inc"
 stack_start.w	EQU $stack_segment_start
 stack_end.w	EQU $stack_segment_end
 	segment 'ram0'
 tim3cntr.w ds.w 1
+cur_timer_obj	ds.w	1
 	segment 'rom'
 main.l
 	; initialize SP
@@ -47,6 +50,7 @@ power_on_reset
 	call	draw_status
 	call	reset_attract_state
 	call	reset_wait_state
+	call	sprite_init
 	mov	game_mode,#0
 	mov	demo_mode,#0
 	ret
@@ -175,13 +179,57 @@ skip_run_game_objects
 	call	game_loop_step
 	call	cursor_next_alien
 	mov	vblank_status,#$80
-;	ld	a,{alien_shot_rolling+extra_count_offs}
-;	ld	shot_sync,a
+	ld	a,{alien_rolling_timer+timer_extra_count_offs}
+	ld	shot_sync,a
 	call	draw_alien
 	mov	skip_player,#0
 	call	run_game_objects
 	call	time_to_saucer
 	jp	game_loop_step
+;==============================================
+;
+;	Run various objects that live on timers
+;
+;==============================================
+run_game_objects
+	ldw	x,#player_base_timer
+	btjf	skip_player,#0,no_skip_player
+	ldw	x,#player_shot_timer
+no_skip_player
+	ldw	cur_timer_obj,x
+game_object_loop
+	ldw	y,cur_timer_obj
+	ldw	x,y
+	;Timer zero? Run action
+	ldw	x,(timer_tick_offs,x)
+	jreq	game_object_tick_action
+	;Not zero so decrement
+	decw	x
+	ldw	(timer_tick_offs,y),x
+game_object_next_timer
+	;Move along to next timer
+	addw	y,#timer_size
+	ldw	cur_timer_obj,y
+	;loop if not off end
+	cpw	y,#timer_objects_end
+	jrult	game_object_loop
+	ret
+game_object_tick_action
+	;Deal with extra count
+	ld	a,(timer_extra_count_offs,y)
+	jreq	game_object_call_action
+	dec	a
+	ld	(timer_extra_count_offs,y),a
+	jra	game_object_next_timer
+game_object_call_action
+	;Time to run the action
+	ldw	x,y
+	ldw	x,(timer_action_offs,x)
+	;Action is null? don't bother
+	jreq	game_object_next_timer
+	call	(x)
+	ldw	y,cur_timer_obj
+	jra	game_object_next_timer
 ;=============================================
 ;
 ;	stub routines start here
@@ -196,8 +244,6 @@ cursor_next_alien
 draw_alien
 	ret
 time_to_saucer
-	ret
-run_game_objects
 	ret
 enter_wait_start_loop
 	ret

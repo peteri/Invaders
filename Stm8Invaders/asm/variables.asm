@@ -54,8 +54,28 @@ clear_ram1.l
 .suspend_play.b	ds.b	1
 .tweak_flag.b	ds.b	1
 .skip_player.b	ds.b	1
+.shot_sync.b	ds.b	1
 .vblank_status.b	ds.b	1
 .alien_shot_reload_rate.b ds.b	1
+; Sprites
+.sprites_start.b
+.sp_alien_plunger_shot.b	ds.b	sprite_size
+.sp_alien_plunger_exp.b		ds.b	sprite_size
+.sp_alien_rolling_shot.b	ds.b	sprite_size
+.sp_alien_rolling_exp.b		ds.b	sprite_size
+.sp_alien_squigly_shot.b	ds.b	sprite_size
+.sp_alien_squigly_exp.b		ds.b	sprite_size
+.sp_player_shot.b		ds.b	sprite_size
+.sp_player_shot_exp.b		ds.b	sprite_size
+.sp_splash_alien.b		ds.b	sprite_size
+.sprites_end.b
+; timer objects (don't reorder these)
+.player_base_timer.b	ds.b	timer_size
+.player_shot_timer.b	ds.b	timer_size
+.alien_rolling_timer.b	ds.b	timer_size
+.alien_plunger_timer.b	ds.b	timer_size
+.alien_squigly_timer.b	ds.b	timer_size
+.timer_objects_end.b
 ;==================================
 ;
 ; Variables in rest of ram start here

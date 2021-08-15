@@ -16,6 +16,25 @@
 	EXTERN	vblank_status.b
 	EXTERN	tweak_flag.b
 	EXTERN	skip_player.b
+	EXTERN	shot_sync.b
+	EXTERN	sprites_start.b
+	EXTERN	sp_alien_plunger_shot.b
+	EXTERN	sp_alien_plunger_exp.b
+	EXTERN	sp_alien_rolling_shot.b
+	EXTERN	sp_alien_rolling_exp.b
+	EXTERN	sp_alien_squigly_shot.b
+	EXTERN	sp_alien_squigly_exp.b
+	EXTERN	sp_player_shot.b
+	EXTERN	sp_player_shot_exp.b
+	EXTERN	sp_splash_alien.b
+	EXTERN	sprites_end.b
+	EXTERN	alien_plunger_timer.b
+	EXTERN	alien_rolling_timer.b
+	EXTERN	alien_squigly_timer.b
+	EXTERN	player_shot_timer.b
+	EXTERN	player_base_timer.b
+	EXTERN	timer_objects_end.b
+	
 ; ram segment 1
 	EXTERN	player_one.w
 	EXTERN	player_two.w

@@ -19,20 +19,21 @@ namespace Stm8autogen
             incLines.Add(";=============================================");
             incLines.Add("; Generated include file for the sprites.");
             incLines.Add(";=============================================");
-            asmLines.Add("\tsegment \"rom\"");
-            foreach (var sprite in sprites)
+            asmLines.Add("\tsegment \'rom\'");
+            foreach (var sn in sprites)
             {
-                AddLabel(sprite.name, "data");
-                int imageCount = sprite.sprite.data.GetUpperBound(0) + 1;
+                AddLabel(sn.name, "data");
+                asmLines.Add($"\tdc.b\t{sn.sprite.width}\t; width");
+                int imageCount = sn.sprite.data.GetUpperBound(0) + 1;
                 for (int image = 0; image < imageCount; image++)
                 {
                     for (int shift = 0; shift < 8; shift++)
                     {
-                        AddLabel(sprite.name, $"img{image}_shift{shift}");
-                        for (int n = 0; n < sprite.sprite.width; n++)
+                        for (int n = 0; n < sn.sprite.width; n++)
                             asmLines.Add("\tdc.w\t %" +
-                                ByteToStr(sprite.sprite.data[image, shift, n, 1]) +
-                                ByteToStr(sprite.sprite.data[image, shift, n, 0])
+                                ByteToStr(sn.sprite.data[image, shift, n, 0]) +
+                                ByteToStr(sn.sprite.data[image, shift, n, 1]) +
+                                ((n==0)? $"\t;image {image} shift {shift}" : "")
                                 );
                     }
                 }
@@ -55,8 +56,8 @@ namespace Stm8autogen
             string retVal = "";
             for(int i=0;i<8;i++)
             {
-                retVal += (b & 0x01) == 0 ? "0" : "1";
-                b = (byte) (b >> 1);
+                retVal += (b & 0x80) == 0 ? "0" : "1";
+                b = (byte) (b << 1);
             }
             return retVal;
         }
