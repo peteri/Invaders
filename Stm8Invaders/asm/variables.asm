@@ -6,6 +6,8 @@ stm8/
 ;=============================================
 	#include "mapping.inc"
 	#include "player.inc"
+	#include "sprite.inc"
+	#include "timerobject.inc"
 	#include "constants.inc"
 ram0_start.b	EQU $ram0_segment_start
 ram0_end.b	EQU $ram0_segment_end

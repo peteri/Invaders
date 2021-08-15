@@ -5,6 +5,7 @@ stm8/
 	#include "variables.inc"
 	#include "constants.inc"
 	#include "screenhelper.inc"
+	#include "characterrom.inc"
 	segment 'ram0'
 state.b	ds.w	1
 minor_state.b	ds.w	1
@@ -94,7 +95,7 @@ still_in_table
 ; Wait for the delay...	
 minor_wait.w
 	ld	a,isr_delay
-	jreq	minor_idle
+	jreq	back_to_minor_idle
 	ret
 ; print single character then either delay or idle	
 minor_print_msg_char
@@ -109,8 +110,11 @@ back_to_minor_idle
 more_message	
 	incw	y
 	ldw	delayed_msg,y
+	clrw	x
+	ld	xl,a
+	ld	a,(charactermap,x)
 	ldw	x,delayed_msg_pos
-	ld	(x),a
+	ld	(screen,x),a
 	addw	x,#scr_width
 	ldw	delayed_msg_pos,x
 	mov	isr_delay,#5
@@ -120,7 +124,7 @@ more_message
 ; Delay while printing
 minor_print_msg_delay
 	ld	a,isr_delay
-	jreq	print_message_wait_for_delay
+	jrne	print_message_wait_for_delay
 	ldw	y,#minor_print_msg_char
 	ldw	minor_state,y
 print_message_wait_for_delay	
@@ -139,7 +143,7 @@ minor_animate_splash_alien
 one_second_delay.w
 	mov	alien_shot_reload_rate,#8
 	call	clear_play_field
-	ld	a,splash_delay_one_second
+	ld	a,#splash_delay_one_second
 	jp	splash_delay
 print_play.w
 	ldw	y,#play_at
@@ -147,37 +151,37 @@ print_play.w
 	jrne	play_animate
 	ldw	y,#play
 play_animate	
-	ldw	x,#$0c17
+	ldw	x,#$170c
 	jp	print_delayed_message
 print_space_invaders.w
 	ldw	y,#space_inv
-	ldw	x,#$0714
+	ldw	x,#$1407
 	jp	print_delayed_message
 print_advance_table.w
 	ldw	y,#score_advance
-	ldw	x,#$0410
+	ldw	x,#$1004
 	call	write_text
 	ldw	y,#saucer
-	ldw	x,#$070e
+	ldw	x,#$0e07
 	call	write_text_unmapped
 	ldw	y,#invader_type_c
-	ldw	x,#$080c
+	ldw	x,#$0c08
 	call	write_text_unmapped
 	ldw	y,#invader_type_b
-	ldw	x,#$080a
+	ldw	x,#$0a08
 	call	write_text_unmapped
 	ldw	y,#invader_type_a
 	ldw	x,#$0808
 	call	write_text_unmapped
-	ld	a,splash_delay_one_second
+	ld	a,#splash_delay_one_second
 	jp	splash_delay
 print_mystery.w
 	ldw	y,#mystery
-	ldw	x,#$0a0e
+	ldw	x,#$0e0a
 	jp	print_delayed_message
 print_30_points.w
 	ldw	y,#thirty_points
-	ldw	x,#$0a0c
+	ldw	x,#$0c0a
 	jp	print_delayed_message
 print_20_points.w
 	ldw	y,#twenty_points
@@ -185,10 +189,10 @@ print_20_points.w
 	jp	print_delayed_message
 print_10_points.w
 	ldw	y,#ten_points
-	ldw	x,#$0a08
+	ldw	x,#$080a
 	jp	print_delayed_message
 score_table_two_sec_delay.w
-	ld	a,splash_delay_two_second
+	ld	a,#splash_delay_two_second
 	jp	splash_delay
 ani_alien_in_to_get_y.w
 ani_alien_pulling_y_off.w
@@ -199,7 +203,7 @@ ani_alien_removal.w
 play_demo.w
 	ret
 after_play_delay.w
-	ld	a,splash_delay_one_second
+	ld	a,#splash_delay_one_second
 	jp	splash_delay
 insert_coin.w
 	call	clear_play_field
@@ -208,33 +212,38 @@ insert_coin.w
 	jrne	coin_animate
 	ldw	y,#insert_coin_msg
 coin_animate
-	ldw	x,#$0811
-	call	write_text
-	ret
+	ldw	x,#$1108
+	jp	write_text
 one_or_two_players.w
 	ldw	y,#one_or_two_players_msg
-	ldw	x,#$060d
+	ldw	x,#$0d06
 	jp	print_delayed_message
 one_player_one_coin.w
 	ldw	y,#one_player_one_coin_msg
-	ldw	x,#$060a
+	ldw	x,#$0a06
 	jp	print_delayed_message
 two_players_two_coins.w
 	ldw	y,#two_players_two_coins_msg
-	ldw	x,#$0607
+	ldw	x,#$0706
 	jp	print_delayed_message
 ani_coin_exp_alien_in_delay.w
 ani_coin_exp_alien_in.w
 ani_coin_exp_fire_bullet.w
 ani_coin_exp_remove_extra_c.w 
-	ldw	y,#insert_coin
-	ldw	x,#$0811
-	call	write_text
-	ret
+	ldw	y,#insert_coin_msg
+	ldw	x,#$1108
+	jp	write_text
 after_coin_delay.w
-	ld	a,splash_delay_two_second
+	ld	a,#splash_delay_two_second
 	jp	splash_delay
 toggle_animate_state.w
+; TODO Turn off alien
+	ld	a,animate_splash
+	jreq	set_true
+	mov	animate_splash,#0
+	ret
+set_true	
+	mov	animate_splash,#1
 	ret
 ; Setup for a delay and change minor state to wait
 ; a = number of ticks to delay

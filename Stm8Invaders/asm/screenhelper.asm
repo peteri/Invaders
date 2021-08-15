@@ -8,7 +8,7 @@ stm8/
 screen_pos.b	ds.w	1	
 message_ptr.b	ds.w	1
 	segment 'ram1'
-hex_temp	ds.b
+hex_temp	ds.b	5
 	segment	'rom'
 screen_head_msg	dc.b	" SCORE<1> HI-SCORE SCORE<2> ",0
 credit_msg	dc.b	"CREDIT ",0
@@ -64,7 +64,7 @@ write_text_loop_exit_unmapped
 	ldw	x,#2
 clear_play_field_loop
 	ld	a,#$23
-	ld	(screen,y),a
+	ld	(screen,x),a
 	incw	x
 	ld	a,xl
 	and	a,#$1f
@@ -88,23 +88,23 @@ clear_screen_loop
 	ldw	y,#screen_head_msg
 	jp	write_text
 .draw_credit_label.w
-	ldw	x,#$1101
+	ldw	x,#$0111
 	ldw	y,#credit_msg
 	jp	write_text
 .draw_player_one_score.w
-	ldw	x,#$031c
+	ldw	x,#$1c03
 	ldw	y,player_one
 	jp	write_hex_word
 .draw_player_two_score.w
-	ldw	x,#$151c
+	ldw	x,#$1c15
 	ldw	y,player_two
 	jp	write_hex_word
 .draw_high_score.w
-	ldw	x,#$0b1c
+	ldw	x,#$1c0b
 	ldw	y,hi_score
 	jp	write_hex_word
 .draw_num_credits.w
-	ldw	x,#$1801
+	ldw	x,#$0118
 	ld	a,credits
 	clrw	y
 	ld	yl,a
