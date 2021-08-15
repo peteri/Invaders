@@ -71,7 +71,7 @@ Int.108=0
 String.6.0=2021,7,3,12,53,11
 String.100.0=$(TargetFName)
 String.101.0=
-String.103.0=.\;
+String.103.0=.\;asm;inc;
 
 [Root.Config.0.Settings.2]
 String.2.0=
@@ -80,7 +80,7 @@ String.100.0=STM8L152C6
 
 [Root.Config.0.Settings.3]
 String.2.0=Assembling $(InputFile)...
-String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt)
+String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt) -I=inc
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(InputName).lst
 String.6.0=2021,7,3,12,53,11
@@ -140,7 +140,7 @@ Int.108=0
 String.6.0=2021,7,3,12,53,11
 String.100.0=$(TargetFName)
 String.101.0=
-String.103.0=.\;
+String.103.0=.\;asm;inc;
 
 [Root.Config.1.Settings.2]
 String.2.0=
@@ -149,7 +149,7 @@ String.100.0=STM8L152C6
 
 [Root.Config.1.Settings.3]
 String.2.0=Assembling $(InputFile)...
-String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt)
+String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt) -I=inc
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(InputName).lst
 String.6.0=2021,7,3,12,53,11
@@ -212,7 +212,7 @@ Int.1=0
 
 [Root.Source Files.Config.0.Settings.1]
 String.2.0=Assembling $(InputFile)...
-String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt)
+String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt) -I=inc
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(InputName).lst
 String.6.0=2021,7,3,12,53,11
@@ -230,7 +230,7 @@ Int.1=0
 
 [Root.Source Files.Config.1.Settings.1]
 String.2.0=Assembling $(InputFile)...
-String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt)
+String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt) -I=inc
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(InputName).lst
 String.6.0=2021,7,3,12,53,11
@@ -243,71 +243,96 @@ String.6.0=2021,7,3,12,53,11
 [Root.Source Files.mapping.asm]
 ElemType=File
 PathName=mapping.asm
-Next=Root.Source Files.attractscreen.asm
+Next=Root.Source Files.asm\alienshot.asm
 
-[Root.Source Files.attractscreen.asm]
+[Root.Source Files.asm\alienshot.asm]
 ElemType=File
-PathName=attractscreen.asm
-Next=Root.Source Files.gamedata.asm
+PathName=asm\alienshot.asm
+Next=Root.Source Files.asm\attractscreen.asm
 
-[Root.Source Files.gamedata.asm]
+[Root.Source Files.asm\attractscreen.asm]
 ElemType=File
-PathName=gamedata.asm
-Next=Root.Source Files.boardsetup.asm
+PathName=asm\attractscreen.asm
+Next=Root.Source Files.asm\boardsetup.asm
 
-[Root.Source Files.boardsetup.asm]
+[Root.Source Files.asm\boardsetup.asm]
 ElemType=File
-PathName=boardsetup.asm
-Next=Root.Source Files.linerender.asm
+PathName=asm\boardsetup.asm
+Next=Root.Source Files.asm\characterrom.asm
 
-[Root.Source Files.linerender.asm]
+[Root.Source Files.asm\characterrom.asm]
 ElemType=File
-PathName=linerender.asm
-Next=Root.Source Files.characterrom.asm
+PathName=asm\characterrom.asm
+Next=Root.Source Files.asm\gamedata.asm
 
-[Root.Source Files.characterrom.asm]
+[Root.Source Files.asm\gamedata.asm]
 ElemType=File
-PathName=characterrom.asm
-Next=Root.Source Files.main.asm
+PathName=asm\gamedata.asm
+Next=Root.Source Files.asm\linerender.asm
 
-[Root.Source Files.main.asm]
+[Root.Source Files.asm\linerender.asm]
 ElemType=File
-PathName=main.asm
-Next=Root.Source Files.player.asm
+PathName=asm\linerender.asm
+Next=Root.Source Files.asm\main.asm
 
-[Root.Source Files.player.asm]
+[Root.Source Files.asm\main.asm]
 ElemType=File
-PathName=player.asm
-Next=Root.Source Files.screenhelper.asm
+PathName=asm\main.asm
+Next=Root.Source Files.asm\player.asm
 
-[Root.Source Files.screenhelper.asm]
+[Root.Source Files.asm\player.asm]
 ElemType=File
-PathName=screenhelper.asm
-Next=Root.Source Files.stm8l152c6.asm
+PathName=asm\player.asm
+Next=Root.Source Files.asm\playerbase.asm
 
-[Root.Source Files.stm8l152c6.asm]
+[Root.Source Files.asm\playerbase.asm]
 ElemType=File
-PathName=stm8l152c6.asm
-Next=Root.Source Files.variables.asm
+PathName=asm\playerbase.asm
+Next=Root.Source Files.asm\playershot.asm
 
-[Root.Source Files.variables.asm]
+[Root.Source Files.asm\playershot.asm]
 ElemType=File
-PathName=variables.asm
-Next=Root.Source Files.videosync.asm
+PathName=asm\playershot.asm
+Next=Root.Source Files.asm\screenhelper.asm
 
-[Root.Source Files.videosync.asm]
+[Root.Source Files.asm\screenhelper.asm]
 ElemType=File
-PathName=videosync.asm
-Next=Root.Source Files.waittask.asm
+PathName=asm\screenhelper.asm
+Next=Root.Source Files.asm\sprite.asm
 
-[Root.Source Files.waittask.asm]
+[Root.Source Files.asm\sprite.asm]
 ElemType=File
-PathName=waittask.asm
+PathName=asm\sprite.asm
+Next=Root.Source Files.asm\stm8l152c6.asm
+
+[Root.Source Files.asm\stm8l152c6.asm]
+ElemType=File
+PathName=asm\stm8l152c6.asm
+Next=Root.Source Files.asm\timerobject.asm
+
+[Root.Source Files.asm\timerobject.asm]
+ElemType=File
+PathName=asm\timerobject.asm
+Next=Root.Source Files.asm\variables.asm
+
+[Root.Source Files.asm\variables.asm]
+ElemType=File
+PathName=asm\variables.asm
+Next=Root.Source Files.asm\videosync.asm
+
+[Root.Source Files.asm\videosync.asm]
+ElemType=File
+PathName=asm\videosync.asm
+Next=Root.Source Files.asm\waittask.asm
+
+[Root.Source Files.asm\waittask.asm]
+ElemType=File
+PathName=asm\waittask.asm
 
 [Root.Include Files]
 ElemType=Folder
 PathName=Include Files
-Child=Root.Include Files.attractscreen.inc
+Child=Root.Include Files.inc\alienshot.inc
 Config.0=Root.Include Files.Config.0
 Config.1=Root.Include Files.Config.1
 
@@ -329,7 +354,7 @@ Int.1=0
 
 [Root.Include Files.Config.0.Settings.1]
 String.2.0=Assembling $(InputFile)...
-String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt)
+String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt) -I=inc
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(InputName).lst
 String.6.0=2021,7,3,12,53,11
@@ -347,7 +372,7 @@ Int.1=0
 
 [Root.Include Files.Config.1.Settings.1]
 String.2.0=Assembling $(InputFile)...
-String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt)
+String.3.0=asm -sym -li=$(IntermPath)$(InputName).lsr $(InputFile) $(ToolsetIncOpts) -obj=$(IntermPath)$(InputName).$(ObjectExt) -I=inc
 String.4.0=$(IntermPath)$(InputName).$(ObjectExt)
 String.5.0=$(InputName).lst
 String.6.0=2021,7,3,12,53,11
@@ -357,61 +382,86 @@ String.100.0=abslist $(IntermPath)$(InputName).lsr -exe $(OutputPath)$(TargetFNa
 String.2.0=Performing Custom Build on $(InputFile)
 String.6.0=2021,7,3,12,53,11
 
-[Root.Include Files.attractscreen.inc]
+[Root.Include Files.inc\alienshot.inc]
 ElemType=File
-PathName=attractscreen.inc
-Next=Root.Include Files.boardsetup.inc
+PathName=inc\alienshot.inc
+Next=Root.Include Files.inc\attractscreen.inc
 
-[Root.Include Files.boardsetup.inc]
+[Root.Include Files.inc\attractscreen.inc]
 ElemType=File
-PathName=boardsetup.inc
-Next=Root.Include Files.characterrom.inc
+PathName=inc\attractscreen.inc
+Next=Root.Include Files.inc\boardsetup.inc
 
-[Root.Include Files.characterrom.inc]
+[Root.Include Files.inc\boardsetup.inc]
 ElemType=File
-PathName=characterrom.inc
-Next=Root.Include Files.constants.inc
+PathName=inc\boardsetup.inc
+Next=Root.Include Files.inc\characterrom.inc
 
-[Root.Include Files.constants.inc]
+[Root.Include Files.inc\characterrom.inc]
 ElemType=File
-PathName=constants.inc
-Next=Root.Include Files.gamedata.inc
+PathName=inc\characterrom.inc
+Next=Root.Include Files.inc\constants.inc
 
-[Root.Include Files.gamedata.inc]
+[Root.Include Files.inc\constants.inc]
 ElemType=File
-PathName=gamedata.inc
-Next=Root.Include Files.linerender.inc
+PathName=inc\constants.inc
+Next=Root.Include Files.inc\gamedata.inc
 
-[Root.Include Files.linerender.inc]
+[Root.Include Files.inc\gamedata.inc]
 ElemType=File
-PathName=linerender.inc
+PathName=inc\gamedata.inc
+Next=Root.Include Files.inc\linerender.inc
+
+[Root.Include Files.inc\linerender.inc]
+ElemType=File
+PathName=inc\linerender.inc
+Next=Root.Include Files.inc\player.inc
+
+[Root.Include Files.inc\player.inc]
+ElemType=File
+PathName=inc\player.inc
+Next=Root.Include Files.inc\playerbase.inc
+
+[Root.Include Files.inc\playerbase.inc]
+ElemType=File
+PathName=inc\playerbase.inc
+Next=Root.Include Files.inc\playershot.inc
+
+[Root.Include Files.inc\playershot.inc]
+ElemType=File
+PathName=inc\playershot.inc
+Next=Root.Include Files.inc\screenhelper.inc
+
+[Root.Include Files.inc\screenhelper.inc]
+ElemType=File
+PathName=inc\screenhelper.inc
+Next=Root.Include Files.inc\sprite.inc
+
+[Root.Include Files.inc\sprite.inc]
+ElemType=File
+PathName=inc\sprite.inc
+Next=Root.Include Files.inc\timerobject.inc
+
+[Root.Include Files.inc\timerobject.inc]
+ElemType=File
+PathName=inc\timerobject.inc
+Next=Root.Include Files.inc\variables.inc
+
+[Root.Include Files.inc\variables.inc]
+ElemType=File
+PathName=inc\variables.inc
+Next=Root.Include Files.inc\videosync.inc
+
+[Root.Include Files.inc\videosync.inc]
+ElemType=File
+PathName=inc\videosync.inc
+Next=Root.Include Files.inc\waittask.inc
+
+[Root.Include Files.inc\waittask.inc]
+ElemType=File
+PathName=inc\waittask.inc
 Next=Root.Include Files.mapping.inc
 
 [Root.Include Files.mapping.inc]
 ElemType=File
 PathName=mapping.inc
-Next=Root.Include Files.player.inc
-
-[Root.Include Files.player.inc]
-ElemType=File
-PathName=player.inc
-Next=Root.Include Files.screenhelper.inc
-
-[Root.Include Files.screenhelper.inc]
-ElemType=File
-PathName=screenhelper.inc
-Next=Root.Include Files.variables.inc
-
-[Root.Include Files.variables.inc]
-ElemType=File
-PathName=variables.inc
-Next=Root.Include Files.videosync.inc
-
-[Root.Include Files.videosync.inc]
-ElemType=File
-PathName=videosync.inc
-Next=Root.Include Files.waittask.inc
-
-[Root.Include Files.waittask.inc]
-ElemType=File
-PathName=waittask.inc
