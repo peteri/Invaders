@@ -16,11 +16,23 @@ count.b		ds.b
 ; On entry X is where to store the data.
 ;
 .renderline.w
+	mov	count,#scr_width
 	ldw	store,x
 	ldw	store_copy,x
 	; make x the start of the line
 	clrw	x
 	ld	a,{linenumber+1}
+	cp	a,#{scr_height mult 8}
+	jrult	line_on_screen	;off screen?
+	clr	a	;clear the buffers
+	ldw	y,store
+render_clear_loop
+	ld	(y),a
+	incw	y
+	dec	count
+	jrne	render_clear_loop
+	ret
+line_on_screen	
 	and	a,#$f8
 	ld	xl,a
 	sllw	x
@@ -32,7 +44,6 @@ count.b		ds.b
 	add	a,#{high charrom}
 	ld	romhi,a
 	
-	mov	count,#scr_width
 ; We have a theoretical 1024 cycles to render the screen
 ; DMA will slice some of that away.
 ; To render 32 cells takes 18*32 cycles (576)

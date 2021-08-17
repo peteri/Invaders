@@ -179,7 +179,6 @@ play_animate
 	ldw	x,#$170c
 	jp	print_delayed_message
 print_space_invaders.w
-	call	turn_on_alien
 	ldw	y,#space_inv
 	ldw	x,#$1407
 	jp	print_delayed_message
@@ -261,10 +260,10 @@ after_play_delay.w
 	jp	splash_delay
 insert_coin.w
 	call	clear_play_field
-	ldw	y,#insert_ccoin_msg
-	ld	a,animate_splash
-	jrne	coin_animate
 	ldw	y,#insert_coin_msg
+	ld	a,animate_splash
+	jreq	coin_animate
+	ldw	y,#insert_ccoin_msg
 coin_animate
 	ldw	x,#$1108
 	jp	write_text
@@ -281,7 +280,17 @@ two_players_two_coins.w
 	ldw	x,#$0706
 	jp	print_delayed_message
 ani_coin_exp_alien_in_delay.w
+	ld	a,animate_splash
+	jrne	do_coin_animate
+	ldw	x,#skip_animate_2
+	ldw	state,x
+do_coin_animate	
+	ld	a,#splash_delay_two_second
+	jp	splash_delay
 ani_coin_exp_alien_in.w
+	ldw	x,#{0 mult 256 + 115}
+	ldw	y,#{$000+208}
+	jp	animate_alien_init
 ani_coin_exp_fire_bullet.w
 ani_coin_exp_remove_extra_c.w 
 	ldw	y,#insert_coin_msg
@@ -291,7 +300,7 @@ after_coin_delay.w
 	ld	a,#splash_delay_two_second
 	jp	splash_delay
 toggle_animate_state.w
-; TODO Turn off alien
+	mov	{sp_splash_alien+sprite_visible},#0
 	ld	a,animate_splash
 	jreq	set_true
 	mov	animate_splash,#0
@@ -339,19 +348,11 @@ moving_left_to_right
 	ld	ani_image,a
 	ld	{sp_splash_alien+sprite_image_offs},a
 	ld	a,xh
-	jreq	not_starting_zero
+	jrne	not_starting_zero
 	inc	{sp_splash_alien+sprite_image_offs}
 not_starting_zero
 	ldw	x,#minor_animate_splash_alien
 	ldw	minor_state,x
-	ldw	x,#sp_splash_alien
-	call	sprite_set_image
-	ret
-turn_on_alien
-	mov	{sp_splash_alien+sprite_x_offs},#$30
-	mov	{sp_splash_alien+sprite_y_offs},#$31
-	mov	{sp_splash_alien+sprite_image_offs},#2
-	mov	{sp_splash_alien+sprite_visible},#1
 	ldw	x,#sp_splash_alien
 	call	sprite_set_image
 	ret

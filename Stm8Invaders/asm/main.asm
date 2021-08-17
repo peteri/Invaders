@@ -128,7 +128,7 @@ waitforcounterchange
 newline	
 	inc	{linenumber+1}
 	ldw	y,linenumber
-	cpw	y,#{scr_height mult 8 +1}	;28*8 lines
+	cpw	y,#{scr_height mult 8 +1}	;28*8+2 lines
 	jrule	renderloop	;Not done yet
 	bres	TIM1_DER,#3	; Turn off CC3 DMA
 	; Do the in game frame tick
