@@ -31,7 +31,7 @@
         {
             int col = mainWindow.FindColumn(gameData.PlayerBase.PlayerX + 8);
             if (col == -1) return 1;
-            if (col == 11) return 11;
+            if (col >= 11) return 11;
             return col + 1;
         }
 
