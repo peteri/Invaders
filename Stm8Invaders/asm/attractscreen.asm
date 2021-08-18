@@ -7,6 +7,8 @@ stm8/
 	#include "screenhelper.inc"
 	#include "characterrom.inc"
 	#include "sprite.inc"
+	#include "alienshot.inc"
+	#include "timerobject.inc"
 	segment 'ram0'
 state.b	ds.w	1
 minor_state.b	ds.w	1
@@ -127,16 +129,16 @@ more_message
 	ldw	minor_state,y
 	ret
 ; Delay while printing
-minor_print_msg_delay
+minor_print_msg_delay.w
 	ld	a,isr_delay
 	jrne	print_message_wait_for_delay
 	ldw	y,#minor_print_msg_char
 	ldw	minor_state,y
 print_message_wait_for_delay	
 	ret
-minor_play_demo_wait_death
+minor_play_demo_wait_death.w
 	jra	back_to_minor_idle
-minor_play_demo_wait_end_exp
+minor_play_demo_wait_end_exp.w
 	jra	back_to_minor_idle
 minor_animate_splash_alien
 	dec	ani_count
@@ -159,6 +161,11 @@ move_splash_alien
 set_alien_image	
 	ldw	x,#sp_splash_alien
 	call	sprite_set_image
+	ret
+await_coin_shot_explosion.w
+	mov	vblank_status,#$80
+	call	[{alien_squigly_timer+timer_action_offs}]
+	btjf	{alien_squigly_shot+shot_flags},#shot_active,back_to_minor_idle
 	ret
 ;
 ;	When ever the minor state is idle
@@ -292,6 +299,13 @@ ani_coin_exp_alien_in.w
 	ldw	y,#{$000+208}
 	jp	animate_alien_init
 ani_coin_exp_fire_bullet.w
+	mov	{sp_alien_squigly_shot+sprite_x_offs},#{115+8}
+	mov	{sp_alien_squigly_shot+sprite_y_offs},#$c5
+	mov	alien_shot_delta_y,#$FF
+	mov	shot_sync,#2
+	ldw	y,#await_coin_shot_explosion
+	ldw	minor_state,y
+	ret
 ani_coin_exp_remove_extra_c.w 
 	ldw	y,#insert_coin_msg
 	ldw	x,#$1108

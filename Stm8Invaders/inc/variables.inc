@@ -17,6 +17,7 @@
 	EXTERN	tweak_flag.b
 	EXTERN	skip_player.b
 	EXTERN	shot_sync.b
+	EXTERN	alien_shot_delta_y.b
 	EXTERN	sprites_start.b
 	EXTERN	sp_alien_plunger_shot.b
 	EXTERN	sp_alien_plunger_exp.b
@@ -34,6 +35,9 @@
 	EXTERN	player_shot_timer.b
 	EXTERN	player_base_timer.b
 	EXTERN	timer_objects_end.b
+	EXTERN	alien_plunger_shot.b
+	EXTERN	alien_rolling_shot.b
+	EXTERN	alien_squigly_shot.b	
 	
 ; ram segment 1
 	EXTERN	player_one.w

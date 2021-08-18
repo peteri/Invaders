@@ -8,6 +8,7 @@ stm8/
 	#include "player.inc"
 	#include "sprite.inc"
 	#include "timerobject.inc"
+	#include "alienshot.inc"
 	#include "constants.inc"
 ram0_start.b	EQU $ram0_segment_start
 ram0_end.b	EQU $ram0_segment_end
@@ -57,6 +58,7 @@ clear_ram1.l
 .shot_sync.b	ds.b	1
 .vblank_status.b	ds.b	1
 .alien_shot_reload_rate.b ds.b	1
+.alien_shot_delta_y.b	ds.b	1
 ; Sprites
 .sprites_start.b
 .sp_alien_plunger_shot.b	ds.b	sprite_size
@@ -76,6 +78,11 @@ clear_ram1.l
 .alien_plunger_timer.b	ds.b	timer_size
 .alien_squigly_timer.b	ds.b	timer_size
 .timer_objects_end.b
+; alien bullets
+.alien_plunger_shot.b	ds.b	plunger_shot_size
+.alien_rolling_shot.b	ds.b	rolling_shot_size
+.alien_squigly_shot.b	ds.b	squigly_shot_size
+;
 ;==================================
 ;
 ; Variables in rest of ram start here
