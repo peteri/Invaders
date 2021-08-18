@@ -75,5 +75,7 @@ no_alien
 	decw	y
 	jrpl	count_aliens_loop
 	ret
+.find_column.w
+	ret
 	END
 	

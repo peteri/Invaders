@@ -16,7 +16,6 @@ stack_start.w	EQU $stack_segment_start
 stack_end.w	EQU $stack_segment_end
 	segment 'ram0'
 tim3cntr.w ds.w 1
-cur_timer_obj	ds.w	1
 	segment 'rom'
 main.l
 	; initialize SP
@@ -186,50 +185,6 @@ skip_run_game_objects
 	call	run_game_objects
 	call	time_to_saucer
 	jp	game_loop_step
-;==============================================
-;
-;	Run various objects that live on timers
-;
-;==============================================
-run_game_objects
-	ldw	x,#player_base_timer
-	btjf	skip_player,#0,no_skip_player
-	ldw	x,#player_shot_timer
-no_skip_player
-	ldw	cur_timer_obj,x
-game_object_loop
-	ldw	y,cur_timer_obj
-	ldw	x,y
-	;Timer zero? Run action
-	ldw	x,(timer_tick_offs,x)
-	jreq	game_object_tick_action
-	;Not zero so decrement
-	decw	x
-	ldw	(timer_tick_offs,y),x
-game_object_next_timer
-	;Move along to next timer
-	addw	y,#timer_size
-	ldw	cur_timer_obj,y
-	;loop if not off end
-	cpw	y,#timer_objects_end
-	jrult	game_object_loop
-	ret
-game_object_tick_action
-	;Deal with extra count
-	ld	a,(timer_extra_count_offs,y)
-	jreq	game_object_call_action
-	dec	a
-	ld	(timer_extra_count_offs,y),a
-	jra	game_object_next_timer
-game_object_call_action
-	;Time to run the action
-	ldw	x,y
-	ldw	x,(timer_action_offs,x)
-	;Action is null? don't bother
-	jreq	game_object_next_timer
-	call	(x)
-	ldw	y,cur_timer_obj
-	jra	game_object_next_timer
 ;=============================================
 ;
 ;	stub routines start here

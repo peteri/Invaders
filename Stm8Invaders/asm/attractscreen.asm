@@ -165,7 +165,7 @@ set_alien_image
 await_coin_shot_explosion.w
 	mov	vblank_status,#$80
 	call	[{alien_squigly_timer+timer_action_offs}]
-	btjf	{alien_squigly_shot+shot_flags},#shot_active,back_to_minor_idle
+	btjf	{alien_squigly_shot+shot_flags_offs},#shot_active,back_to_minor_idle
 	ret
 ;
 ;	When ever the minor state is idle

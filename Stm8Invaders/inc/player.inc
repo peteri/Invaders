@@ -17,3 +17,4 @@ shield_size			EQU {$1c mult 8}
 	EXTERN	update_shields_udg.w
 	EXTERN	swap_shields.w
 	EXTERN	draw_shields.w
+	EXTERN	find_column.w

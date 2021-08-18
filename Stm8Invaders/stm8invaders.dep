@@ -11,7 +11,7 @@ ExternDep= mapping.asm mapping.inc
 ExternDep= asm\spritedata.asm
 
 [Root.Source Files.asm\alienshot.asm.Config.0]
-ExternDep= asm\alienshot.asm inc\variables.inc inc\constants.inc
+ExternDep= asm\alienshot.asm inc\variables.inc inc\constants.inc inc\alienshot.inc inc\timerobject.inc inc\player.inc inc\sprite.inc
 
 [Root.Source Files.asm\attractscreen.asm.Config.0]
 ExternDep= asm\attractscreen.asm mapping.inc inc\variables.inc inc\constants.inc inc\screenhelper.inc inc\characterrom.inc inc\sprite.inc inc\alienshot.inc inc\timerobject.inc
@@ -50,7 +50,7 @@ ExternDep= asm\sprite.asm inc\variables.inc inc\constants.inc inc\sprite.inc inc
 ExternDep= asm\stm8l152c6.asm "c:\program files (x86)\stmicroelectronics\st_toolset\asm\include\stm8l152.asm"
 
 [Root.Source Files.asm\timerobject.asm.Config.0]
-ExternDep= asm\timerobject.asm inc\variables.inc inc\constants.inc
+ExternDep= asm\timerobject.asm inc\variables.inc inc\constants.inc inc\timerobject.inc
 
 [Root.Source Files.asm\variables.asm.Config.0]
 ExternDep= asm\variables.asm mapping.inc inc\player.inc inc\sprite.inc inc\timerobject.inc inc\alienshot.inc inc\constants.inc
