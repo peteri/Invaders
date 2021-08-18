@@ -18,6 +18,9 @@
 	EXTERN	skip_player.b
 	EXTERN	shot_sync.b
 	EXTERN	alien_shot_delta_y.b
+	EXTERN	player_base_x.b
+	EXTERN	player_alive.b
+	
 	EXTERN	sprites_start.b
 	EXTERN	sp_alien_plunger_shot.b
 	EXTERN	sp_alien_plunger_exp.b

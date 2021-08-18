@@ -59,6 +59,9 @@ clear_ram1.l
 .vblank_status.b	ds.b	1
 .alien_shot_reload_rate.b ds.b	1
 .alien_shot_delta_y.b	ds.b	1
+;player
+.player_base_x.b	ds.b	1
+.player_alive.b	ds.b	1
 ; Sprites
 .sprites_start.b
 .sp_alien_plunger_shot.b	ds.b	sprite_size
