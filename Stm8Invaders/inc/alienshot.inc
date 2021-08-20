@@ -9,8 +9,15 @@ shot_saucer_timer_offs	EQU {shot_current_shot_col_offs}
 shot_active	EQU	0
 shot_blowing_up	EQU	1
 plunger_shot_active	EQU	2
-fire_shot	EQU	4
+fire_shot	EQU	3
+saucer_active	EQU	4
+saucer_hit	EQU	5
+sauce_start	EQU	6
+
 
 plunger_shot_size EQU	{shot_current_shot_col_offs+1}
 rolling_shot_size EQU	{shot_sprite_exp_offs+1}
 squigly_shot_size EQU	{shot_saucer_timer_offs+1}
+
+	EXTERN	init_alien_shots.w
+	

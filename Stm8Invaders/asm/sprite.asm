@@ -82,7 +82,9 @@ sprite_setup
 	addw	y,sprite_base
 	ldw	(sprite_data_cur_img_offs,x),y
 	ret
+; Enter with x=sprite address
 .sprite_collided.w
+; Enter with x=sprite address
 .sprite_battle_damage.w	
 	ret
 	END

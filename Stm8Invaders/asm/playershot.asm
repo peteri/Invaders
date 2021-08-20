@@ -4,5 +4,7 @@ stm8/
 	#include "variables.inc"
 	#include "constants.inc"
 	segment 'rom'
+.player_shot_init.w	
+	ret
 	END
 	

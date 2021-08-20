@@ -14,7 +14,6 @@ state.b	ds.w	1
 minor_state.b	ds.w	1
 delayed_msg.b	ds.w	1
 delayed_msg_pos.b	ds.w	1
-animate_splash.b	ds.b	1
 ani_image	ds.b	1
 ani_target_x	ds.b	1
 ani_delta_x	ds.b	1
@@ -179,8 +178,7 @@ one_second_delay.w
 	jp	splash_delay
 print_play.w
 	ldw	y,#play_at
-	ld	a,animate_splash
-	jrne	play_animate
+	btjt	game_flags_1,#flag1_animate_splash,play_animate
 	ldw	y,#play
 play_animate	
 	ldw	x,#$170c
@@ -227,8 +225,7 @@ score_table_two_sec_delay.w
 	ld	a,#splash_delay_two_second
 	jp	splash_delay
 ani_alien_in_to_get_y.w
-	ld	a,animate_splash
-	jrne	animate_alien_in
+	btjt	game_flags_1,#flag1_animate_splash,animate_alien_in
 	ldw	x,#skip_animate_1
 	ldw	state,x
 	ret
@@ -268,8 +265,7 @@ after_play_delay.w
 insert_coin.w
 	call	clear_play_field
 	ldw	y,#insert_coin_msg
-	ld	a,animate_splash
-	jreq	coin_animate
+	btjf	game_flags_1,#flag1_animate_splash,coin_animate
 	ldw	y,#insert_ccoin_msg
 coin_animate
 	ldw	x,#$1108
@@ -287,8 +283,7 @@ two_players_two_coins.w
 	ldw	x,#$0706
 	jp	print_delayed_message
 ani_coin_exp_alien_in_delay.w
-	ld	a,animate_splash
-	jrne	do_coin_animate
+	btjt	game_flags_1,#flag1_animate_splash,do_coin_animate
 	ldw	x,#skip_animate_2
 	ldw	state,x
 do_coin_animate	
@@ -315,12 +310,7 @@ after_coin_delay.w
 	jp	splash_delay
 toggle_animate_state.w
 	mov	{sp_splash_alien+sprite_visible},#0
-	ld	a,animate_splash
-	jreq	set_true
-	mov	animate_splash,#0
-	ret
-set_true	
-	mov	animate_splash,#1
+	bcpl	game_flags_1,#flag1_animate_splash
 	ret
 ; Setup for a delay and change minor state to wait
 ; a = number of ticks to delay

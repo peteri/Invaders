@@ -8,5 +8,7 @@ demo_command ds.b 1
 blow_up_counter ds.b 1
 blow_up_Changes ds.b 1
 	segment 'rom'
+.player_base_init.w	
+	ret
 	END
 	

@@ -23,7 +23,7 @@ ExternDep= asm\boardsetup.asm mapping.inc inc\variables.inc "c:\program files (x
 ExternDep= asm\characterrom.asm
 
 [Root.Source Files.asm\gamedata.asm.Config.0]
-ExternDep= asm\gamedata.asm
+ExternDep= asm\gamedata.asm inc\variables.inc inc\constants.inc inc\player.inc inc\sprite.inc inc\alienshot.inc inc\timerobject.inc inc\playerbase.inc
 
 [Root.Source Files.asm\linerender.asm.Config.0]
 ExternDep= asm\linerender.asm inc\characterrom.inc inc\variables.inc inc\constants.inc inc\sprite.inc

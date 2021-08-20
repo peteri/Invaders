@@ -40,7 +40,6 @@ clear_ram1.l
 ;
 ;==================================
 	segment 'ram0'
-.led_state.b	ds.b	1
 .linenumber.b	ds.w	1
 .syncdma.b	ds.w	1	
 .renderbuff1.b	ds.b 	{scr_width+2}
@@ -50,18 +49,25 @@ clear_ram1.l
 .hi_score.b	ds.w	1
 .credits.b	ds.b	1
 .isr_delay.b	ds.b	1
-.game_mode.b	ds.b	1
-.demo_mode.b	ds.b	1
-.suspend_play.b	ds.b	1
-.tweak_flag.b	ds.b	1
-.skip_player.b	ds.b	1
+.game_flags_1.b	ds.b	1
+.game_flags_2.b	ds.b	1
 .shot_sync.b	ds.b	1
 .vblank_status.b	ds.b	1
 .alien_shot_reload_rate.b ds.b	1
 .alien_shot_delta_y.b	ds.b	1
+.ref_alien_x.b		ds.b	1
+.ref_alien_y.b		ds.b	1
+.ref_alien_delta_x.b	ds.b	1
+.ref_alien_delta_y.b	ds.b	1
+.saucer_score_index.b	ds.b	1
+.score_delta.b		ds.w	1
+.alien_explode_timer.b	ds.b	1
+.time_to_saucer.b	ds.w	1
+.alien_cur_index.b	ds.b	1
+.alien_fire_delay.b	ds.b	1
 ;player
 .player_base_x.b	ds.b	1
-.player_alive.b	ds.b	1
+.player_alive.b		ds.b	1
 ; Sprites
 .sprites_start.b
 .sp_alien_plunger_shot.b	ds.b	sprite_size

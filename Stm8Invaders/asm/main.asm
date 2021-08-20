@@ -50,8 +50,8 @@ power_on_reset
 	call	reset_attract_state
 	call	reset_wait_state
 	call	sprite_init
-	mov	game_mode,#0
-	mov	demo_mode,#0
+	bres	game_flags_1,#flag1_game_mode
+	bres	game_flags_1,#flag1_demo_mode
 	ret
 draw_status
 	call	clear_screen
@@ -157,11 +157,11 @@ NonHandledInterrupt.l
 game_tick
 	dec	isr_delay
 	call	handle_coin_switch
-	btjf	suspend_play,#0,not_wait_task
+	btjf	game_flags_1,#flag1_suspend_play,not_wait_task
 	jp	run_wait_task
 not_wait_task	
-	btjt	game_mode,#0,run_game
-	btjt	demo_mode,#0,run_game
+	btjt	game_flags_1,#flag1_game_mode,run_game
+	btjt	game_flags_1,#flag1_demo_mode,run_game
 	ld	a,credits
 	jreq	do_attract_screen
 	jp	enter_wait_start_loop
@@ -170,20 +170,20 @@ do_attract_screen
 run_game
 	call	game_loop_step
 	mov	vblank_status,#0
-	btjf	tweak_flag,#0,skip_run_game_objects
-	mov	skip_player,#1
+	btjf	game_flags_1,#flag1_tweak,skip_run_game_objects
+	bset	game_flags_1,#flag1_skip_player
 	call	run_game_objects
 skip_run_game_objects
-	mov	tweak_flag,#0
+	bres	game_flags_1,#flag1_tweak
 	call	game_loop_step
 	call	cursor_next_alien
 	mov	vblank_status,#$80
 	ld	a,{alien_rolling_timer+timer_extra_count_offs}
 	ld	shot_sync,a
 	call	draw_alien
-	mov	skip_player,#0
+	bres	game_flags_1,#flag1_skip_player
 	call	run_game_objects
-	call	time_to_saucer
+	call	start_saucer
 	jp	game_loop_step
 ;=============================================
 ;
@@ -198,7 +198,7 @@ cursor_next_alien
 	ret
 draw_alien
 	ret
-time_to_saucer
+start_saucer
 	ret
 enter_wait_start_loop
 	ret

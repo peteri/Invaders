@@ -14,7 +14,7 @@ cur_timer_obj	ds.w	1
 ;==============================================
 .run_game_objects.w
 	ldw	x,#player_base_timer
-	btjf	skip_player,#0,no_skip_player
+	btjf	game_flags_1,#flag1_skip_player,no_skip_player
 	ldw	x,#player_shot_timer
 no_skip_player
 	ldw	cur_timer_obj,x

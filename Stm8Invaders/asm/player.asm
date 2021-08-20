@@ -50,8 +50,11 @@ reset_shields_loop
 	jrpl	reset_shields_loop
 	ret
 .update_shields_udg.w
+	ret
 .swap_shields.w
+	ret
 .draw_shields.w
+	ret
 .init_aliens.w
 	ldw	y,#{number_of_aliens-1}
 	ldw	x,current_player
