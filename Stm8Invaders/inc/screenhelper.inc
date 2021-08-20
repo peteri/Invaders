@@ -9,4 +9,7 @@
 	EXTERN	draw_high_score.w
 	EXTERN	draw_credit_label.w
 	EXTERN	draw_num_credits.w
+	EXTERN	draw_bottom_line.w
+	EXTERN	display_ship_count.w
+	EXTERN	draw_ships.w
 	

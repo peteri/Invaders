@@ -9,6 +9,10 @@ stm8/
 	#include "sprite.inc"
 	#include "alienshot.inc"
 	#include "timerobject.inc"
+	#include "gamedata.inc"
+	#include "player.inc"
+	#include "playerbase.inc"
+	#include "playershot.inc"
 	segment 'ram0'
 state.b	ds.w	1
 minor_state.b	ds.w	1
@@ -135,10 +139,37 @@ minor_print_msg_delay.w
 	ldw	minor_state,y
 print_message_wait_for_delay	
 	ret
+; Wait for player to die in demo mode
 minor_play_demo_wait_death.w
-	jra	back_to_minor_idle
+	ld	a,player_alive
+	cp	a,player_alive_alive
+	jrne	set_demo_wait_end
+	ld	a,credits
+	jrne	set_demo_wait_end
+	ret
+set_demo_wait_end
+	ldw	y,#player_shot_available
+	ldw	player_shot_status,y
+	ldw	y,#minor_play_demo_wait_end_exp
+	ldw	minor_state,y
+	ret
+; Wait for player to stop exploding in demo mode
 minor_play_demo_wait_end_exp.w
+	ld	a,player_alive
+	cp	a,player_alive_alive
+	jreq	set_demo_wait_set_idle
+	ld	a,credits
+	jrne	set_demo_wait_set_idle
+	ret
+set_demo_wait_set_idle	
+	ldw	y,#player_shot_available
+	ldw	player_shot_status,y
+	bres	game_flags_1,#flag1_demo_mode
+	bset	game_flags_1,#flag1_tweak
+	call	sprite_hide_all
+back_to_minor_idle_1	
 	jra	back_to_minor_idle
+;animate the alien	
 minor_animate_splash_alien
 	dec	ani_count
 	jrne	move_splash_alien
@@ -161,10 +192,11 @@ set_alien_image
 	ldw	x,#sp_splash_alien
 	call	sprite_set_image
 	ret
+; wait the coin being hit	
 await_coin_shot_explosion.w
 	mov	vblank_status,#$80
 	call	[{alien_squigly_timer+timer_action_offs}]
-	btjf	{alien_squigly_shot+shot_flags_offs},#shot_active,back_to_minor_idle
+	btjf	{alien_squigly_shot+shot_flags_offs},#shot_active,back_to_minor_idle_1
 	ret
 ;
 ;	When ever the minor state is idle
@@ -258,6 +290,20 @@ ani_alien_removal.w
 	ld	a,#splash_delay_one_second
 	jp	splash_delay
 play_demo.w
+	call	clear_play_field
+	ldw	x,#player_one
+	ldw	current_player,x
+	call	reset_player
+	call	remove_ship
+	bres	game_flags_2,#flag2_allow_quick_move
+	
+	call	reset_variables
+	call	draw_shields
+	call	draw_bottom_line
+	bset	game_flags_1,#flag1_demo_mode
+	
+	ldw	x,#minor_play_demo_wait_death
+	ldw	state,x
 	ret
 after_play_delay.w
 	ld	a,#splash_delay_one_second

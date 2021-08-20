@@ -87,5 +87,7 @@ sprite_setup
 ; Enter with x=sprite address
 .sprite_battle_damage.w	
 	ret
+.sprite_hide_all.w
+	ret
 	END
 	

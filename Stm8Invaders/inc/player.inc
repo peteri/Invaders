@@ -10,7 +10,7 @@ num_aliens_offs			EQU {rack_count_offs+1}
 extra_ship_available_offs	EQU {num_aliens_offs+1}
 player_end_offs 		EQU {extra_ship_available_offs+1} 
 shield_size			EQU {$1c mult 8}
-	EXTERN	reset.w
+	EXTERN	reset_player.w
 	EXTERN	reset_shields.w
 	EXTERN	count_aliens.w
 	EXTERN	init_aliens.w
@@ -18,3 +18,4 @@ shield_size			EQU {$1c mult 8}
 	EXTERN	swap_shields.w
 	EXTERN	draw_shields.w
 	EXTERN	find_column.w
+	EXTERN	remove_ship.w

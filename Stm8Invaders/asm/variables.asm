@@ -102,5 +102,7 @@ clear_ram1.l
 .udg.w		DS.B	$100
 .player_one.w	ds.b	player_end_offs	
 .player_two.w	ds.b	player_end_offs
+.player_shot_status.w	ds.w	1
+
 	end
 	

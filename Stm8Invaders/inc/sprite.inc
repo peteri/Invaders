@@ -10,3 +10,4 @@ sprite_size		EQU	{sprite_y_offs+1}
 	EXTERN	sprite_set_image.w
 	EXTERN	sprite_collided.w
 	EXTERN	sprite_battle_damage.w
+	EXTERN	sprite_hide_all.w

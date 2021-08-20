@@ -53,6 +53,8 @@
 	EXTERN	player_two.w
 	EXTERN	screen.w
 	EXTERN	udg.w
+	EXTERN	player_shot_status.w
+	
 ; Subroutines	
 	EXTERN	clear_memory.w
 ;

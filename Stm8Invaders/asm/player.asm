@@ -6,7 +6,7 @@ stm8/
 	segment 'ram1'
 saved_shields	ds.b	shield_size
 	segment 'rom'
-.reset.w
+.reset_player.w
 	ldw	x,current_player
 	ld	a,#0
 	ld	(score_offs,x),a
@@ -54,6 +54,8 @@ reset_shields_loop
 .swap_shields.w
 	ret
 .draw_shields.w
+	ret
+.remove_ship.w
 	ret
 .init_aliens.w
 	ldw	y,#{number_of_aliens-1}
