@@ -7,6 +7,7 @@ stm8/
 	#include "alienshot.inc"
 	#include "timerobject.inc"
 	#include "playerbase.inc"
+	#include "playershot.inc"
 	segment 'rom'
 .reset_variables
 	ldw	x,current_player
@@ -34,7 +35,7 @@ rack_left_to_right
 	bres	game_flags_2,#flag2_alien_exploding
 	bres	game_flags_2,#flag2_invaded
 	bres	game_flags_2,#flag2_shot_count
-	ldw	y,$0600
+	ldw	y,#$0600
 	ldw	time_to_saucer,y
 	mov	alien_cur_index,#$ff
 	mov	alien_fire_delay,#$30
@@ -47,9 +48,10 @@ rack_left_to_right
 slow_move
 	call	sprite_init
 	call	init_alien_shots
+	call	player_shot_init
 	bres	{alien_squigly_shot+shot_flags_offs},#saucer_active
 	bres	{alien_squigly_shot+shot_flags_offs},#saucer_hit
-	bres	{alien_squigly_shot+shot_flags_offs},#sauce_start
+	bres	{alien_squigly_shot+shot_flags_offs},#saucer_start
 	bset	{alien_plunger_shot+shot_flags_offs},#plunger_shot_active
 	ret
 	END

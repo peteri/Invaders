@@ -12,7 +12,7 @@ plunger_shot_active	EQU	2
 fire_shot	EQU	3
 saucer_active	EQU	4
 saucer_hit	EQU	5
-sauce_start	EQU	6
+saucer_start	EQU	6
 
 
 plunger_shot_size EQU	{shot_current_shot_col_offs+1}

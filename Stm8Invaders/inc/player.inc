@@ -14,7 +14,6 @@ shield_size			EQU {$1c mult 8}
 	EXTERN	reset_shields.w
 	EXTERN	count_aliens.w
 	EXTERN	init_aliens.w
-	EXTERN	update_shields_udg.w
 	EXTERN	swap_shields.w
 	EXTERN	draw_shields.w
 	EXTERN	find_column.w

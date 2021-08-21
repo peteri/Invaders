@@ -243,6 +243,11 @@ String.6.0=2021,7,3,12,53,11
 [Root.Source Files.mapping.asm]
 ElemType=File
 PathName=mapping.asm
+Next=Root.Source Files.asm\aliens.asm
+
+[Root.Source Files.asm\aliens.asm]
+ElemType=File
+PathName=asm\aliens.asm
 Next=Root.Source Files.asm\spritedata.asm
 
 [Root.Source Files.asm\spritedata.asm]
@@ -337,7 +342,7 @@ PathName=asm\waittask.asm
 [Root.Include Files]
 ElemType=Folder
 PathName=Include Files
-Child=Root.Include Files.inc\alienshot.inc
+Child=Root.Include Files.inc\aliens.inc
 Config.0=Root.Include Files.Config.0
 Config.1=Root.Include Files.Config.1
 
@@ -386,6 +391,11 @@ String.100.0=abslist $(IntermPath)$(InputName).lsr -exe $(OutputPath)$(TargetFNa
 [Root.Include Files.Config.1.Settings.2]
 String.2.0=Performing Custom Build on $(InputFile)
 String.6.0=2021,7,3,12,53,11
+
+[Root.Include Files.inc\aliens.inc]
+ElemType=File
+PathName=inc\aliens.inc
+Next=Root.Include Files.inc\alienshot.inc
 
 [Root.Include Files.inc\alienshot.inc]
 ElemType=File

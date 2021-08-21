@@ -21,6 +21,9 @@ stack_start.w	EQU $stack_segment_start
 stack_end.w	EQU $stack_segment_end
 	segment 'ram0'
 tim3cntr.w ds.w 1
+	segment 'ram1'
+shothit_row_y		ds.b	1
+shothit_alien_index	ds.b	1
 	segment 'rom'
 main.l
 	; initialize SP
@@ -250,8 +253,27 @@ check_alien_exploding
 	ldw	player_shot_status,y
 	bres	game_flags_2,#flag2_alien_exploding
 	ret
-;heck_alien_hit
+;check_alien_hit
 player_shot_hit_ret	
+	ret
+;=============================================
+;
+;	Start the saucer if the timer
+; 	has expired.
+;
+;=============================================
+start_saucer.w
+	ld	a,ref_alien_x
+	cp	a,#$78
+	jrult	start_saucer_ret
+	ldw	y,time_to_saucer
+	jrne	start_saucer_decy
+	ldw	y,#$0600
+	bset	{alien_squigly_shot+shot_flags_offs},#saucer_start
+start_saucer_decy
+	decw	y
+	ldw	time_to_saucer,y
+start_saucer_ret	
 	ret
 ;=============================================
 ;
@@ -260,11 +282,8 @@ player_shot_hit_ret
 ;=============================================
 handle_coin_switch
 	ret
-start_saucer.w
-	ret
 enter_wait_start_loop
 	ret
-	
 ;=============================================
 ;
 ;	interrupt vector loop
