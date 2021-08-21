@@ -12,6 +12,11 @@ stm8/
 	#include "screenhelper.inc"
 	#include "timerobject.inc"
 	#include "sprite.inc"
+	#include "aliens.inc"
+	#include "player.inc"
+	#include "alienshot.inc"
+	#include "playerbase.inc"
+	#include "playershot.inc"
 stack_start.w	EQU $stack_segment_start
 stack_end.w	EQU $stack_segment_end
 	segment 'ram0'
@@ -187,21 +192,79 @@ skip_run_game_objects
 	jp	game_loop_step
 ;=============================================
 ;
+;
+;=============================================
+game_loop_step
+	call	player_fire_or_demo
+	call	player_shot_hit
+	call	count_aliens
+	btjf	game_flags_1,#flag1_game_mode,game_loop_game_mode
+	call	attract_task
+game_loop_game_mode
+	;TODO Add non-demo mode code
+	ret
+;=============================================
+;
+; Check for player fire or always fire
+; in demo mode.
+;
+;=============================================
+player_fire_or_demo
+	ld	a,player_alive
+	cp	a,player_alive_alive
+	jreq	player_fire_or_demo_ret
+	ldw	y,{player_base_timer+timer_tick_offs}
+	jrne	player_fire_or_demo_ret
+	ldw	y,player_shot_status
+	cpw	y,#player_shot_available
+	jrne	player_fire_or_demo_ret
+	btjf	game_flags_1,#flag1_game_mode,player_fire_game
+	ldw	y,#player_shot_initiated
+	ldw	player_shot_status,y
+	jp	increment_demo_command
+player_fire_game
+	; TODO check switches
+player_fire_or_demo_ret
+	ret
+;=============================================
+;
+; Check if the player shot has hit something
+;
+;=============================================
+player_shot_hit
+	ldw	y,player_shot_status
+	cpw	y,#player_shot_normal_move
+	jrne	player_shot_hit_ret
+	ld	a,{sp_player_shot+sprite_x_offs}
+	cp	a,#$d8	;Off top of screen?
+	jrult	check_alien_exploding
+	ldw	y,#player_shot_hit_something
+	ldw	player_shot_status,y
+	bres	game_flags_2,#flag2_alien_exploding
+check_alien_exploding
+	btjf	game_flags_2,#flag2_alien_exploding,player_shot_hit_ret
+	cp	a,#$ce	;Hit saucer?
+	jrult	check_alien_hit
+	bset	{alien_squigly_shot+shot_flags_offs},#saucer_hit
+	ldw	y,#player_shot_alien_exploded
+	ldw	player_shot_status,y
+	bres	game_flags_2,#flag2_alien_exploding
+	ret
+;heck_alien_hit
+player_shot_hit_ret	
+	ret
+;=============================================
+;
 ;	stub routines start here
 ;
 ;=============================================
 handle_coin_switch
 	ret
-game_loop_step
-	ret
-cursor_next_alien
-	ret
-draw_alien
-	ret
-start_saucer
+start_saucer.w
 	ret
 enter_wait_start_loop
 	ret
+	
 ;=============================================
 ;
 ;	interrupt vector loop

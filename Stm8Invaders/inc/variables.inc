@@ -77,3 +77,4 @@ flag2_alien_exploding	EQU	2
 flag2_invaded		EQU	3
 flag2_shot_count	EQU	4
 flag2_allow_quick_move	EQU	5
+flag2_player_hit_alien	EQU	6
