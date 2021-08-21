@@ -91,6 +91,7 @@ alien_wipe_check_line_two
 	ld	a,({screen-1},x)
 	cp	a,#$1c
 	jruge	alien_wipe_check_loop_done
+	ld	a,(shields_line_two,y)
 	cp	a,#$20
 	jrult	alien_wipe_check_loop_done
 	call	clear_udg
@@ -113,6 +114,9 @@ swap_udg_sheild_loop
 	incw	x
 	cpw	x,#shield_size
 	ret
+;	
+; Clear the UDG character in the accumulator
+;
 clear_udg	
 	pushw	y
 	sll	a

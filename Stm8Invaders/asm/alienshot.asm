@@ -205,5 +205,12 @@ alien_squigly_shot_column_exit
 	ld	{alien_squigly_shot+shot_current_shot_col_offs},a
 	ld	a,(squigly_shot_columns,y)
 	ret
+;==============================================
+;
+;	Stub routine
+;
+;==============================================
+.inc_saucer_score_and_shot_count.w
+	ret
 	END
 	

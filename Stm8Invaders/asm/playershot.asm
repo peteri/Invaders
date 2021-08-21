@@ -7,13 +7,84 @@ stm8/
 explosion_timer	ds.b	1
 	segment 'rom'
 .player_shot_init.w
-.player_shot_available.w
-.player_shot_initiated.w
-.player_shot_normal_move.w 
-.player_shot_hit_something.w 
-.player_shot_alien_exploded.w 
-.player_shot_alien_exploding.w	
-
+	mov	explosion_timer,#$10
+	ldw	x,#player_shot_action
+	ldw	{alien_shot_timer+timer_action_offs},x
 	ret
+player_shot_action
+	ld	a,{sp_shot_player+sprite_x_offs}
+	and	a,#$80
+	cp	a,vblank_status
+	jreq	do_player_shot_action
+	ret
+do_player_shot_action
+	ld	y,player_shot_status
+	jp	(y)
+.player_shot_available.w
+	mov	{sp_shot_player+sprite_visible},#0
+	ret
+.player_shot_initiated.w
+	mov	{sp_shot_player+sprite_visible},#1
+	mov	{sp_shot_player+sprite_y_offs},#$28
+	ld	a,player_base_x
+	add	a,#8
+	ld	{sp_shot_player+sprite_x_offs},a
+	ldw	x,#sp_sprite_set_image
+	jp	sprite_set_image
+.player_shot_normal_move.w
+	ld	a,{sp_shot_player+sprite_y_offs}
+	add	a,#4
+	ld	{sp_shot_player+sprite_y_offs},a
+	ldw	x,#sp_sprite_set_image
+	call	sprite_set_image
+	ldw	x,#sp_sprite_set_image
+	call	sprite_collided
+	cp	a,#0
+	jrne	shot_normal_move_exit
+	bset	game_flags_2,#flag2_alien_exploding
+shot_normal_move_exit	
+	ret
+.player_shot_hit_something.w
+	dec	explosion_timer
+	jrne	check_first_time
+	mov	{sp_player_shot_exp+sprite_visible},#0
+	jp	end_blow_up
+check_first_time	
+	ld	a,explosion_timer
+	cp	a,#$0f
+	jrne	shot_normal_move_exit
+	mov	{sp_player_shot+sprite_visible},#0
+	ldw	x,#sp_player_shot
+	call	sprite_battle_damage
+	; Copy player shot sprite to explosion
+	ld	a,{sp_shot_player+sprite_x_offs}
+	sub	a,#3
+	ld	a,{sp_shot_player_exp+sprite_x_offs}
+	ld	a,{sp_shot_player+sprite_y_offs}
+	sub	a,#2
+	ld	a,{sp_shot_player_exp+sprite_y_offs}
+	mov	{sp_player_shot_exp+sprite_visible},#1
+	ldw	x,#sp_player_shot_exp
+	jp	sprite_set_image
+.player_shot_alien_exploding.w	
+	ret
+.player_shot_alien_exploded.w
+	jp	end_blow_up
+	ret
+end_blow_up
+	ldw	y,player_shot_status
+	cpw	y,#player_shot_hit_something
+	jrne	no_battle_damage
+	ldw	x,#sp_player_shot_exp
+	call	sprite_battle_damage
+no_battle_damage
+	ldw	x,#player_shot_available
+	ldw	player_shot_status,x
+	mov	{sp_shot_player+sprite_y_offs},#$28
+	mov	{sp_shot_player+sprite_x_offs},#$00
+	ldw	x,#sp_sprite_set_image
+	call	sprite_set_image
+	mov	explosion_timer,#$10
+	jp	inc_saucer_score_and_shot_count
 	END
 	
