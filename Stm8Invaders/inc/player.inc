@@ -1,6 +1,6 @@
 score_offs			EQU 0
 ships_rem_offs			EQU {score_offs+2}
-aliens_offs			EQU {ships_rem_offs}
+aliens_offs			EQU {ships_rem_offs+1}
 number_of_aliens		EQU 55
 ref_alien_delta_x_offs		EQU {aliens_offs+number_of_aliens}
 ref_alien_y_offs		EQU {ref_alien_delta_x_offs+1}

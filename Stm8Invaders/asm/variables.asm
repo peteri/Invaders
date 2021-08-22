@@ -103,6 +103,8 @@ clear_ram1.l
 .player_one.w	ds.b	player_end_offs	
 .player_two.w	ds.b	player_end_offs
 .player_shot_status.w	ds.w	1
-
+.alien_explode_x.w	ds.b	1
+.alien_explode_x_offset.w ds.b	1
+.alien_explode_y.w ds.b	1
 	end
 	

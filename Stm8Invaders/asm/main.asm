@@ -22,8 +22,8 @@ stack_end.w	EQU $stack_segment_end
 	segment 'ram0'
 tim3cntr.w ds.w 1
 	segment 'ram1'
-shothit_row_y		ds.b	1
 shothit_alien_index	ds.b	1
+shothit_col_x	ds.b	1
 	segment 'rom'
 main.l
 	; initialize SP
@@ -238,7 +238,7 @@ player_shot_hit
 	ldw	y,player_shot_status
 	cpw	y,#player_shot_normal_move
 	jrne	player_shot_hit_ret
-	ld	a,{sp_player_shot+sprite_x_offs}
+	ld	a,{sp_player_shot+sprite_y_offs}
 	cp	a,#$d8	;Off top of screen?
 	jrult	check_alien_exploding
 	ldw	y,#player_shot_hit_something
@@ -249,13 +249,103 @@ check_alien_exploding
 	cp	a,#$ce	;Hit saucer?
 	jrult	check_alien_hit
 	bset	{alien_squigly_shot+shot_flags_offs},#saucer_hit
+	bres	game_flags_2,#flag2_alien_exploding
 	ldw	y,#player_shot_alien_exploded
 	ldw	player_shot_status,y
-	bres	game_flags_2,#flag2_alien_exploding
 	ret
-;check_alien_hit
+check_alien_hit
+	bres	game_flags_2,#flag2_player_hit_alien
+	cp	a,ref_alien_y
+	jrult	check_player_hit_alien_flag
+	ld	a,ref_alien_y
+	add	a,#8
+	clrw	y
+	ld	yl,a
+find_alien_row_loop	
+	ld	a,yl
+	cp	a,{sp_player_shot+sprite_y_offs}
+	jruge	found_alien_row
+	add	a,#$10
+	ld	yl,a
+	ld	a,yh
+	add	a,#11
+	ld	yh,a
+	jra	find_alien_row_loop
+check_player_hit_alien_flag
+	btjt game_flags_2,#flag2_player_hit_alien,player_shot_hit_ret
+	bres	game_flags_2,#flag2_alien_exploding
+	ldw	y,#player_shot_hit_something
+	ldw	player_shot_status,y
 player_shot_hit_ret	
 	ret
+found_alien_row	
+	ld	a,yh
+	ld	shothit_alien_index,a
+	ld	a,{sp_player_shot+sprite_x_offs}
+	call	find_column
+	ld	yl,a	;Save column in yl for later
+	cp	a,#0
+	jrult	check_player_hit_alien_flag
+	cp	a,#10
+	jrugt	check_player_hit_alien_flag
+	add	a,shothit_alien_index
+	ld	shothit_alien_index,a
+	clrw	x
+	ld	xl,a
+	addw	x,current_player
+	ld	a,(aliens_offs,x)
+	jreq	check_player_hit_alien_flag
+	ld	a,#0	;get rid of the alien
+	ld	(aliens_offs,x),a
+	ld	a,yl
+	sll	a
+	sll	a
+	sll	a
+	sll	a
+	add	a,ref_alien_x
+	ld	shothit_col_x,a
+; If we haven't draw this alien yet in the new ref_alien_x 
+; then the adjust the ColX back to the correct position. 
+; Y is correct as we use the sprite position rounded.	
+	ld	a,shothit_alien_index
+	cp	a,alien_cur_index
+	jrule	no_delta_x_adjust
+	ld	a,numaliens
+	cp	a,1
+	jreq	no_delta_x_adjust
+	ld	a,shothit_col_x
+	add	a,ref_alien_delta_x
+	ld	shothit_col_x,a
+no_delta_x_adjust
+	mov	alien_explode_timer,#$10
+	ld	a,shothit_col_x
+	sll	a
+	sll	a
+	sll	a
+	ld	alien_explode_x,a
+	ld	a,shothit_col_x
+	and	a,#7
+	ld	alien_explode_x_offset,a
+	ld	a,{sp_player_shot+sprite_y_offs}
+	ld	alien_explode_y,a
+	call	explode_alien
+	mov 	{sp_player_shot+sprite_visible},#0
+	ldw	y,#player_shot_alien_exploding
+	ldw	player_shot_status,y
+	bset	game_flags_2,#flag2_player_hit_alien
+	;phew now figure out what the player scored....
+	ldw	y,#$0010
+	ld	a,shothit_alien_index
+	cp	a,{11 mult 2}
+	jrult 	store_score
+	ldw	y,#$0020
+	cp	a,{11 mult 4}
+	jrult 	store_score
+	ldw	y,#$0030
+store_score	
+	ldw	score_delta,y
+	bset	game_flags_2,#flag2_adjust_score
+	jp	check_player_hit_alien_flag
 ;=============================================
 ;
 ;	Start the saucer if the timer

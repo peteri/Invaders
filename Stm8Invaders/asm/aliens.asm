@@ -7,6 +7,7 @@ stm8/
 	ret
 .draw_alien.w
 	ret
-
+.explode_alien.w
+	ret
 	END
 	

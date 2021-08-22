@@ -54,7 +54,9 @@
 	EXTERN	screen.w
 	EXTERN	udg.w
 	EXTERN	player_shot_status.w
-	
+	EXTERN	alien_explode_x.w
+	EXTERN	alien_explode_x_offset.w
+	EXTERN	alien_explode_y.w
 ; Subroutines	
 	EXTERN	clear_memory.w
 ;

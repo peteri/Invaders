@@ -20,5 +20,5 @@ rolling_shot_size EQU	{shot_sprite_exp_offs+1}
 squigly_shot_size EQU	{shot_saucer_timer_offs+1}
 
 	EXTERN	init_alien_shots.w
-	EXTERN	inc_saucer_score_and_shot_count.w
+	EXTERN	inc_saucer_score_shot_count.w
 	

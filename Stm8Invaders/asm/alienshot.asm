@@ -210,7 +210,7 @@ alien_squigly_shot_column_exit
 ;	Stub routine
 ;
 ;==============================================
-.inc_saucer_score_and_shot_count.w
+.inc_saucer_score_shot_count.w
 	ret
 	END
 	
