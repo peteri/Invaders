@@ -4,12 +4,18 @@ stm8/
 	#include "player.inc"
 	#include "screenhelper.inc"
 	#include "playerbase.inc"
+	#include "playershot.inc"
 	segment 'ram1'
 alien_character_cur_y	ds.b	1
 alien_character_cur_x	ds.b	1	
-alien_character_cur_offs	ds.b	1	
+alien_character_cur_x_offs	ds.b	1	
 alien_character_start	ds.b	1	
 	segment 'rom'
+;=========================================
+;
+;	Move along to the next alien to draw
+;
+;=========================================
 .cursor_next_alien.w
 	btjf	game_flags_1,#flag1_player_ok,cursor_next_alien_exit
 	btjt	game_flags_3,#flag3_wait_on_draw,cursor_next_alien_exit
@@ -55,11 +61,146 @@ aliens_invaded
 	call	remove_ship
 	call	display_ship_count
 	ret
+;=========================================
+;
+;	Calculates where our alien is.
+;
+;=========================================
 calculate_alien_position
+	ld	a,ref_alien_y
+	srl	a
+	srl	a
+	srl	a
+	ld	alien_character_cur_y,a
+	ld	a,alien_cur_index
+	clrw	x
+	ld	xh,a
+;	xh=curAlien
+;	xl=alienRow
+;	a=curAlien
+alien_row_loop
+	cp	a,#11
+	jrult	found_alien
+	sub	a,#11
+	ld	xh,a
+	ld	a,alien_character_cur_y
+	add	a,#2
+	ld	alien_character_cur_y,a
+	incw	x
+	ld	a,xh
+	jra	alien_row_loop
+found_alien
+	ld	a,ref_alien_x
+	srl	a
+	srl	a
+	srl	a
+	ld	alien_character_cur_x,a
+	ld	a,xh
+	sll	a
+	add	a,alien_character_cur_x
+	ld	alien_character_cur_x,a
+	ld	a,alien_character_cur_x
+	and	a,#7
+	ld	alien_character_cur_x_offs,a
+	ld	a,xl
+	and	a,#$FE
+	sll	a
+	sll	a
+	sll	a
+	or	a,#$80
+	ld	alien_character_start,a
+	ret
+;==========================================
+;
+;	Time for an exploding alien
+;
+;==========================================
+explode_alien_timer
+	dec	alien_explode_timer
+	jrne	still_exploding
+	call	erase_explosion
+	ldw	x,#player_shot_alien_exploded
+	ldw	player_shot_status,x
+	bres	game_flags_2,#flag2_alien_exploding
+still_exploding
+	ret
+;==========================================
+;
+;	Draws our alien.
+;
+;==========================================
+.draw_alien.w
+	btft	game_flags_2,#flag2_alien_exploding,explode_alien_timer
+	clrw	y
+	ld	a,alien_character_cur_y
+	ld	yl,a
+	clrw	x
+	ld	a,alien_character_cur_x
+	ld	xl,a
+	ld	a,scr_width
+	mul	x,a
+	addw	x,y
+;	x=currOffset
+; Side effect of the original shift logic is that the row 
+; above the current invader is cleared when an alien is drawn.
+	ld	a,#$23
+	ld	(screen+$01,x),a
+	ld	(screen+$21,x),a
+; If we're advancing Right to left and we only have type C 
+; aliens left we go one more step so we don't wipe out the
+; row above us in the NE direction.
+	btjf	game_flags_1,#flag1_rack_dir_rtol,going_left_to_right
+	ld	a,alien_character_cur_x_offs
+	jreq	draw_new_alien
+	ld	a,#$23
+	ld	(screen+$41,x),a
+	jra	draw_new_alien
+going_left_to_right	
+; If we're advancing left to right and we only have type C 
+; aliens left at the edges with a partial row of B aliens
+; below i.e. the rack looks like this  
+;     45a5a5a5a5a56   
+;       45a56 456 
+;
+; then as the row of type B aliens moves down it looks like 
+;     45a5a5a5a5a56   
+;         a56 456 
+;       78	
+	ld	a,alien_character_start
+	add	a,$0a
+	cp	a,(screen+$41,x)
+	jrne	six_test
+	ld	a,alien_character_start
+	add	a,$04
+	ld	(screen+$41,x),a
+; As the row of type B aliens moves down it looks like this
+;     45a5a5a5a5a56      
+;           6 456 
+;       7878	
+six_test
+	ld	a,alien_character_start
+	add	a,$06
+	cp	a,(screen+$41,x)
+	jrne	draw_new_alien
+	ld	a,#$23
+	ld	(screen+$41,x),a
+draw_new_alien
+	ld	a,numaliens
+	cp	a,#$01
+	jrne	regular_alien
+	call	draw_fast_single_alien
+	jra	draw_alien_exit
+draw_alien_exit
+	bres	game_flags_3,#flag3_wait_on_draw
+	ret
+;================================
+; Stub routines start here
+;================================
+draw_fast_single_alien	
 	ret
 rack_bump
 	ret
-.draw_alien.w
+erase_explosion
 	ret
 .explode_alien.w
 	ret

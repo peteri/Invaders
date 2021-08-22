@@ -371,9 +371,9 @@ found_alien_row
 no_delta_x_adjust
 	mov	alien_explode_timer,#$10
 	ld	a,shothit_col_x
-	sll	a
-	sll	a
-	sll	a
+	srl	a
+	srl	a
+	srl	a
 	ld	alien_explode_x,a
 	ld	a,shothit_col_x
 	and	a,#7

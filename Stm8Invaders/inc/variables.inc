@@ -86,3 +86,4 @@ flag2_pause_game	EQU	7
 ;
 flag3_wait_on_draw	EQU	0
 flag3_no_aliens_found	EQU	1
+flag3_single_alien_is_type1	EQU	2
