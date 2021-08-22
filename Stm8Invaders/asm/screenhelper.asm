@@ -115,10 +115,10 @@ write_hex_byte
 	and	a,#$0f
 	add	a,#$30
 	ld	{hex_temp+1},a
-	sllw	y
-	sllw	y
-	sllw	y
-	sllw	y
+	srlw	y
+	srlw	y
+	srlw	y
+	srlw	y
 	ld	a,yl
 	and	a,#$0f
 	add	a,#$30
@@ -132,26 +132,26 @@ write_hex_byte
 	and	a,#$0f
 	add	a,#$30
 	ld	{hex_temp+3},a
-	sllw	y
-	sllw	y
-	sllw	y
-	sllw	y
+	srlw	y
+	srlw	y
+	srlw	y
+	srlw	y
 	ld	a,yl
 	and	a,#$0f
 	add	a,#$30
 	ld	{hex_temp+2},a
-	sllw	y
-	sllw	y
-	sllw	y
-	sllw	y
+	srlw	y
+	srlw	y
+	srlw	y
+	srlw	y
 	ld	a,yl
 	and	a,#$0f
 	add	a,#$30
 	ld	{hex_temp+1},a
-	sllw	y
-	sllw	y
-	sllw	y
-	sllw	y
+	srlw	y
+	srlw	y
+	srlw	y
+	srlw	y
 	ld	a,yl
 	and	a,#$0f
 	add	a,#$30

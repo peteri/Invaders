@@ -148,7 +148,7 @@ newline
 	ldw	y,frame_counter
 	incw	y
 	ldw	frame_counter,y
-	ldw	x,#$0100
+	ldw	x,#$1c10
 	call	write_hex_word	
 game_paused
 	; Did the compare registers fire?
@@ -172,13 +172,15 @@ NonHandledInterrupt.l
 ; Can be single stepped by tapping button for less than 200ms
 ; long press removes pause entirely
 handle_pause
+	btjt	game_flags_2,#flag2_pause_game,already_paused
 	ldw	y,frame_counter
-	cpw	y,#670		; Part way through drawing aliens	
+	cpw	y,#$270		; Part way through drawing aliens	
 	jreq	set_pause_flag
 	cpw	y,#989
 	jreq	set_pause_flag
+already_paused
 	; button up?
-	btjt	PC_IDR,#1,button_down
+	btjf	PC_IDR,#1,button_down
 	ld	a,pause_button_timer
 	jreq	handle_pause_exit
 	ld	a,pause_button_timer
