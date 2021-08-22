@@ -47,8 +47,8 @@
 	EXTERN	alien_plunger_shot.b
 	EXTERN	alien_rolling_shot.b
 	EXTERN	alien_squigly_shot.b	
-	
 ; ram segment 1
+	EXTERN	game_flags_3.w
 	EXTERN	player_one.w
 	EXTERN	player_two.w
 	EXTERN	screen.w
@@ -81,3 +81,8 @@ flag2_shot_count	EQU	4
 flag2_allow_quick_move	EQU	5
 flag2_player_hit_alien	EQU	6
 flag2_pause_game	EQU	7
+;
+;	Game flags 3 bit positions
+;
+flag3_wait_on_draw	EQU	0
+flag3_no_aliens_found	EQU	1

@@ -140,15 +140,16 @@ newline
 	cpw	y,#{scr_height mult 8 +1}	;28*8+2 lines
 	jrule	renderloop	;Not done yet
 	bres	TIM1_DER,#3	; Turn off CC3 DMA
-	; Do the in game frame tick
-	incw	frame_counter
-	ldw	y,frame_counter
-	ldw	x,#$0100
-	call	write_hex_word
 	; check for pause
 	call	handle_pause
-	btjt	game_flags2,#flag2_pause_game,game_paused
+	btjt	game_flags_2,#flag2_pause_game,game_paused
 	call	game_tick
+	; Do the in game frame tick
+	ldw	y,frame_counter
+	incw	y
+	ldw	frame_counter,y
+	ldw	x,#$0100
+	call	write_hex_word	
 game_paused
 	; Did the compare registers fire?
 	ld	a,TIM3_SR1
@@ -172,7 +173,9 @@ NonHandledInterrupt.l
 ; long press removes pause entirely
 handle_pause
 	ldw	y,frame_counter
-	cpw	y,#700
+	cpw	y,#670		; Part way through drawing aliens	
+	jreq	set_pause_flag
+	cpw	y,#989
 	jreq	set_pause_flag
 	; button up?
 	btjt	PC_IDR,#1,button_down
@@ -186,9 +189,10 @@ handle_pause
 ;Ok button has gone up... If the timer is in the first
 ;200ms (10 frames) then assume we want to single step
 ;If it's longer the assume we want to stop pausing
-	bres	game_flags2,#flag2_pause_game
+check_pause_length
+	bres	game_flags_2,#flag2_pause_game
 	cp	a,#90
-	jrgt	single_shot
+	jrugt	single_shot
 	mov	pause_button_timer,#0
 	ret
 single_shot	
@@ -202,7 +206,7 @@ button_down
 dec_pause_timer	
 	dec	pause_button_timer
 set_pause_flag	
-	bset	game_flags2,#flag2_pause_game
+	bset	game_flags_2,#flag2_pause_game
 	ret
 ;=============================================
 ;

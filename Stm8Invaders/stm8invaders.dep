@@ -8,7 +8,7 @@ Number=1.3
 ExternDep= mapping.asm mapping.inc
 
 [Root.Source Files.asm\aliens.asm.Config.0]
-ExternDep= asm\aliens.asm inc\variables.inc
+ExternDep= asm\aliens.asm inc\variables.inc inc\player.inc inc\screenhelper.inc inc\playerbase.inc
 
 [Root.Source Files.asm\spritedata.asm.Config.0]
 ExternDep= asm\spritedata.asm
@@ -41,7 +41,7 @@ ExternDep= asm\player.asm inc\player.inc inc\variables.inc inc\characterrom.inc 
 ExternDep= asm\playerbase.asm inc\variables.inc inc\constants.inc
 
 [Root.Source Files.asm\playershot.asm.Config.0]
-ExternDep= asm\playershot.asm inc\variables.inc inc\constants.inc
+ExternDep= asm\playershot.asm inc\variables.inc inc\constants.inc inc\sprite.inc inc\alienshot.inc inc\timerobject.inc
 
 [Root.Source Files.asm\screenhelper.asm.Config.0]
 ExternDep= asm\screenhelper.asm inc\variables.inc inc\characterrom.inc inc\constants.inc

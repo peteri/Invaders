@@ -106,5 +106,6 @@ clear_ram1.l
 .alien_explode_x.w	ds.b	1
 .alien_explode_x_offset.w ds.b	1
 .alien_explode_y.w ds.b	1
+.game_flags_3.w	ds.b	1
 	end
 	
