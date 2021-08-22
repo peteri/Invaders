@@ -217,9 +217,90 @@ set_single_alien_type
 draw_alien_exit
 	bres	game_flags_3,#flag3_wait_on_draw
 	ret
+;==============================================
+;
+; draw the alien with a shifted offset of zero
+;
+;==============================================
 draw_alien_zero	
+	ld	a,alien_character_start
+	add	a,$07
+	cp	a,({screen-$20},x)
+	jrne	draw_alien_zero_1
+	ld	a,#$23
+	ld	({screen-$20},x),a
+draw_alien_zero_1
+	ld	a,alien_character_start
+	add	a,$0f
+	cp	a,({screen-$20},x)
+	jrne	draw_alien_zero_2
+	ld	a,alien_character_start
+	add	a,#$01
+	ld	({screen-$20},x),a
+draw_alien_zero_2	
+	ld	a,alien_character_start
+	ld	({screen},x),a
+	ld	a,alien_character_start
+	add	a,$08
+	cp	a,({screen-$40},x)
+	jrne	draw_alien_zero_3
+	ld	a,alien_character_start
+	add	a,#$0f
+	ld	({screen+$20},x),a
+	ret
+draw_alien_zero_3	
+	ld	a,alien_character_start
+	add	a,#$01
+	ld	({screen+$20},x),a
+	ret
+;==============================================
+;
+; draw the alien with a shifted offset of two
+;
+;==============================================
 draw_alien_two	
+	ld	a,alien_character_start
+	add	a,$06
+	cp	a,({screen-$20},x)
+	jrne	draw_alien_two_1
+	ld	a,alien_character_start
+	add	a,$0b
+	ld	({screen+$00},x),a
+	jra	draw_alien_two_2
+draw_alien_two_1
+	ld	a,alien_character_start
+	add	a,$02
+	ld	({screen+$00},x),a
+draw_alien_two_2
+	ld	a,alien_character_start
+	add	a,$03
+	ld	({screen+$20},x),a
+
+	btjf	game_flags_1,#flag1_rack_dir_rtol,draw_alien_two_exit
+	ld	a,alien_character_start
+	add	a,$0a
+	cp	a,({screen-$40},x)
+	jrne	draw_alien_two_1
+	ld	a,alien_character_start
+	add	a,$04
+	ld	({screen+$40},x),a
+	jra	draw_alien_two_exit
+draw_alien_two_3
+	ld	a,#$23
+	ld	({screen+$40},x),a
+draw_alien_two_exit
+	ret
+;==============================================
+;
+; draw the alien with a shifted offset of four
+;
+;==============================================
 draw_alien_four	
+;==============================================
+;
+; draw the alien with a shifted offset of six
+;
+;==============================================
 draw_alien_six
 	ret
 ;================================
