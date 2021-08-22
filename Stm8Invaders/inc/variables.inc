@@ -80,3 +80,4 @@ flag2_invaded		EQU	3
 flag2_shot_count	EQU	4
 flag2_allow_quick_move	EQU	5
 flag2_player_hit_alien	EQU	6
+flag2_pause_game	EQU	7

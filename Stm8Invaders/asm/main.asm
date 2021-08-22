@@ -24,6 +24,8 @@ tim3cntr.w ds.w 1
 	segment 'ram1'
 shothit_alien_index	ds.b	1
 shothit_col_x	ds.b	1
+frame_counter	ds.w	1
+pause_button_timer	ds.b	1
 	segment 'rom'
 main.l
 	; initialize SP
@@ -139,7 +141,15 @@ newline
 	jrule	renderloop	;Not done yet
 	bres	TIM1_DER,#3	; Turn off CC3 DMA
 	; Do the in game frame tick
+	incw	frame_counter
+	ldw	y,frame_counter
+	ldw	x,#$0100
+	call	write_hex_word
+	; check for pause
+	call	handle_pause
+	btjt	game_flags2,#flag2_pause_game,game_paused
 	call	game_tick
+game_paused
 	; Did the compare registers fire?
 	ld	a,TIM3_SR1
 	and	a,#%00000110
@@ -156,6 +166,44 @@ took_too_long
 	interrupt NonHandledInterrupt
 NonHandledInterrupt.l
 	iret
+; Handles pausing the game
+; Can either trigger off a frame counter.
+; Can be single stepped by tapping button for less than 200ms
+; long press removes pause entirely
+handle_pause
+	ldw	y,frame_counter
+	cpw	y,#700
+	jreq	set_pause_flag
+	; button up?
+	btjt	PC_IDR,#1,button_down
+	ld	a,pause_button_timer
+	jreq	handle_pause_exit
+	ld	a,pause_button_timer
+	cp	a,#$ff	;single step?
+	jrne	check_pause_length
+	mov	pause_button_timer,#0
+	jra	set_pause_flag
+;Ok button has gone up... If the timer is in the first
+;200ms (10 frames) then assume we want to single step
+;If it's longer the assume we want to stop pausing
+	bres	game_flags2,#flag2_pause_game
+	cp	a,#90
+	jrgt	single_shot
+	mov	pause_button_timer,#0
+	ret
+single_shot	
+	mov	pause_button_timer,#$ff
+handle_pause_exit
+	ret
+button_down
+	ld	a,pause_button_timer
+	jrne	dec_pause_timer
+	mov	pause_button_timer,#100
+dec_pause_timer	
+	dec	pause_button_timer
+set_pause_flag	
+	bset	game_flags2,#flag2_pause_game
+	ret
 ;=============================================
 ;
 ; 	Main tick routine

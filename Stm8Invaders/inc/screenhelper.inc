@@ -12,4 +12,5 @@
 	EXTERN	draw_bottom_line.w
 	EXTERN	display_ship_count.w
 	EXTERN	draw_ships.w
+	EXTERN	write_hex_word.w
 	

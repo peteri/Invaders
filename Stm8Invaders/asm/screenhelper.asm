@@ -125,7 +125,7 @@ write_hex_byte
 	ld	{hex_temp+0},a
 	ldw	y,#hex_temp
 	jp	write_text_unmapped
-write_hex_word
+.write_hex_word.w
 	ld	a,#$00
 	ld	{hex_temp+4},a
 	ld	a,yl
