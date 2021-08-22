@@ -60,7 +60,6 @@ aliens_invaded
 	ldw	x,current_player
 	ld	(ships_rem_offs,x),a
 	call	remove_ship
-	call	display_ship_count
 	ret
 ;=========================================
 ;

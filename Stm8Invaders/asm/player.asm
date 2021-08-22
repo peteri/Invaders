@@ -13,9 +13,11 @@ shields_line_length	EQU 20
 shields_line_one 
 	dc.b	$00,$01,$02,$23,$23,$06,$07,$08,$09,$23
 	dc.b	$23,$0e,$0f,$10,$23,$23,$14,$15,$16,$17
+	dc.b	$00
 shields_line_two 
 	dc.b	$03,$04,$05,$23,$23,$0a,$0b,$0c,$0d,$23
 	dc.b	$23,$11,$12,$13,$23,$23,$18,$19,$1a,$1b	
+	dc.b	$00
 ;=============================================
 ;
 ;	Reset the player
@@ -158,13 +160,13 @@ clear_udg
 	ld	a,(ships_rem_offs,x)
 	jreq	remove_ship_exit
 	and	a,#$0f	;Display ship count
-	add	a,#$20
+	add	a,#$30
 	ldw	y,#$0021
 	ld	(screen,y),a
 ; draw players ships	
 	ldw	x,current_player
 	dec	(ships_rem_offs,x)
-	ldw	y,#$0023
+	ldw	y,#$0061
 	ld	a,(ships_rem_offs,x)
 	ld	xl,a
 draw_ship_loop	

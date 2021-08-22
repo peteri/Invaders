@@ -158,9 +158,16 @@ write_hex_byte
 	ld	{hex_temp+0},a
 	ldw	y,#hex_temp
 	jp	write_text_unmapped
-.display_ship_count.w
-.draw_ships.w
 .draw_bottom_line.w
+	ldw	x,#$0002
+	ldw	y,#$0000
+	ld	a,#$F3
+draw_bottom_line_loop
+	ld	(screen,x),a
+	addw	x,#scr_width
+	incw	y
+	cpw	y,#scr_height
+	jrult	draw_bottom_line_loop
 	ret
 	END
 	
