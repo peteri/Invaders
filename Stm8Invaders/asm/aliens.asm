@@ -5,6 +5,7 @@ stm8/
 	#include "screenhelper.inc"
 	#include "playerbase.inc"
 	#include "playershot.inc"
+	#include "constants.inc"
 	segment 'ram1'
 alien_character_cur_y	ds.b	1
 alien_character_cur_x	ds.b	1	
@@ -130,22 +131,21 @@ still_exploding
 ;
 ;==========================================
 .draw_alien.w
-	btft	game_flags_2,#flag2_alien_exploding,explode_alien_timer
-	clrw	y
-	ld	a,alien_character_cur_y
-	ld	yl,a
+	btjt	game_flags_2,#flag2_alien_exploding,explode_alien_timer
 	clrw	x
 	ld	a,alien_character_cur_x
 	ld	xl,a
-	ld	a,scr_width
+	ld	a,#scr_width
 	mul	x,a
-	addw	x,y
+	ld	a,xl
+	add	a,alien_character_cur_y
+	ld	xl,a
 ;	x=currOffset
 ; Side effect of the original shift logic is that the row 
 ; above the current invader is cleared when an alien is drawn.
 	ld	a,#$23
-	ld	(screen+$01,x),a
-	ld	(screen+$21,x),a
+	ld	({screen+$01},x),a
+	ld	({screen+$21},x),a
 ; If we're advancing Right to left and we only have type C 
 ; aliens left we go one more step so we don't wipe out the
 ; row above us in the NE direction.
@@ -153,7 +153,7 @@ still_exploding
 	ld	a,alien_character_cur_x_offs
 	jreq	draw_new_alien
 	ld	a,#$23
-	ld	(screen+$41,x),a
+	ld	({screen+$41},x),a
 	jra	draw_new_alien
 going_left_to_right	
 ; If we're advancing left to right and we only have type C 
@@ -168,11 +168,11 @@ going_left_to_right
 ;       78	
 	ld	a,alien_character_start
 	add	a,$0a
-	cp	a,(screen+$41,x)
+	cp	a,({screen+$41},x)
 	jrne	six_test
 	ld	a,alien_character_start
 	add	a,$04
-	ld	(screen+$41,x),a
+	ld	({screen+$41},x),a
 ; As the row of type B aliens moves down it looks like this
 ;     45a5a5a5a5a56      
 ;           6 456 
@@ -180,18 +180,47 @@ going_left_to_right
 six_test
 	ld	a,alien_character_start
 	add	a,$06
-	cp	a,(screen+$41,x)
+	cp	a,({screen+$41},x)
 	jrne	draw_new_alien
 	ld	a,#$23
-	ld	(screen+$41,x),a
+	ld	({screen+$41},x),a
 draw_new_alien
 	ld	a,numaliens
 	cp	a,#$01
 	jrne	regular_alien
 	call	draw_fast_single_alien
 	jra	draw_alien_exit
+regular_alien
+	ld	a,alien_character_cur_x_offs
+	cp	a,#0
+	jrne	alien_test2
+	call	draw_alien_zero
+	jra	set_single_alien_type	
+alien_test2	
+	cp	a,#2
+	jrne	alien_test4
+	call	draw_alien_two
+	jra	set_single_alien_type	
+alien_test4	
+	cp	a,#4
+	jrne	alien_test6
+	call	draw_alien_four
+	jra	set_single_alien_type	
+alien_test6	
+	cp	a,#6
+	jrne	set_single_alien_type
+	call	draw_alien_six
+set_single_alien_type
+	bres	game_flags_3,#flag3_single_alien_is_type1
+	btjt	alien_character_cur_x_offs,#2,draw_alien_exit
+	bset	game_flags_3,#flag3_single_alien_is_type1
 draw_alien_exit
 	bres	game_flags_3,#flag3_wait_on_draw
+	ret
+draw_alien_zero	
+draw_alien_two	
+draw_alien_four	
+draw_alien_six
 	ret
 ;================================
 ; Stub routines start here
