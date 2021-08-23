@@ -129,8 +129,21 @@ still_exploding
 ;	Draws our alien.
 ;
 ;==========================================
+draw_alien_exit_early
+	bres	game_flags_3,#flag3_wait_on_draw
+	ret
 .draw_alien.w
 	btjt	game_flags_2,#flag2_alien_exploding,explode_alien_timer
+	ld	a,alien_cur_index
+	cp	a,#$ff
+	jreq	draw_alien_exit_early
+	; alien still there?
+	clrw	x
+	ld	xl,a
+	addw	x,current_player
+	ld	a,(aliens_offs,x)
+	jreq	draw_alien_exit_early
+;figure out where on screen.	
 	clrw	x
 	ld	a,alien_character_cur_x
 	ld	xl,a
@@ -166,11 +179,11 @@ going_left_to_right
 ;         a56 456 
 ;       78	
 	ld	a,alien_character_start
-	add	a,$0a
+	add	a,#$0a
 	cp	a,({screen+$41},x)
 	jrne	six_test
 	ld	a,alien_character_start
-	add	a,$04
+	add	a,#$04
 	ld	({screen+$41},x),a
 ; As the row of type B aliens moves down it looks like this
 ;     45a5a5a5a5a56      
@@ -178,7 +191,7 @@ going_left_to_right
 ;       7878	
 six_test
 	ld	a,alien_character_start
-	add	a,$06
+	add	a,#$06
 	cp	a,({screen+$41},x)
 	jrne	draw_new_alien
 	ld	a,#$23
@@ -223,14 +236,14 @@ draw_alien_exit
 ;==============================================
 draw_alien_zero	
 	ld	a,alien_character_start
-	add	a,$07
+	add	a,#$07
 	cp	a,({screen-$20},x)
 	jrne	draw_alien_zero_1
 	ld	a,#$23
 	ld	({screen-$20},x),a
 draw_alien_zero_1
 	ld	a,alien_character_start
-	add	a,$0f
+	add	a,#$0f
 	cp	a,({screen-$20},x)
 	jrne	draw_alien_zero_2
 	ld	a,alien_character_start
@@ -240,7 +253,7 @@ draw_alien_zero_2
 	ld	a,alien_character_start
 	ld	({screen},x),a
 	ld	a,alien_character_start
-	add	a,$08
+	add	a,#$08
 	cp	a,({screen-$40},x)
 	jrne	draw_alien_zero_3
 	ld	a,alien_character_start
@@ -259,29 +272,29 @@ draw_alien_zero_3
 ;==============================================
 draw_alien_two	
 	ld	a,alien_character_start
-	add	a,$06
+	add	a,#$06
 	cp	a,({screen-$20},x)
 	jrne	draw_alien_two_1
 	ld	a,alien_character_start
-	add	a,$0b
+	add	a,#$0b
 	ld	({screen+$00},x),a
 	jra	draw_alien_two_2
 draw_alien_two_1
 	ld	a,alien_character_start
-	add	a,$02
+	add	a,#$02
 	ld	({screen+$00},x),a
 draw_alien_two_2
 	ld	a,alien_character_start
-	add	a,$03
+	add	a,#$03
 	ld	({screen+$20},x),a
 
 	btjf	game_flags_1,#flag1_rack_dir_rtol,draw_alien_two_exit
 	ld	a,alien_character_start
-	add	a,$0a
+	add	a,#$0a
 	cp	a,({screen-$40},x)
 	jrne	draw_alien_two_1
 	ld	a,alien_character_start
-	add	a,$04
+	add	a,#$04
 	ld	({screen+$40},x),a
 	jra	draw_alien_two_exit
 draw_alien_two_3

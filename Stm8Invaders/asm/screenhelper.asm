@@ -60,6 +60,22 @@ write_text_loop_unmapped
 	jra	write_text_loop_unmapped
 write_text_loop_exit_unmapped
 	ret
+;special case allowing us to write a $00	
+; terminated by $ff
+.write_text_unmapped_FF.w	
+	ldw	message_ptr,y
+	call	convert_x_to_screen_pos
+	ldw	y,message_ptr
+write_text_loop_unmapped_FF
+	ld	a,(y)
+	cp	a,#$ff
+	jreq	write_text_loop_exit_unmapped_FF
+	incw	y
+	ld	(screen,x),a
+	addw	x,#$20
+	jra	write_text_loop_unmapped_FF
+write_text_loop_exit_unmapped_FF
+	ret
 .clear_play_field.w
 	ldw	x,#2
 clear_play_field_loop

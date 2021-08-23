@@ -174,7 +174,7 @@ NonHandledInterrupt.l
 handle_pause
 	btjt	game_flags_2,#flag2_pause_game,already_paused
 	ldw	y,frame_counter
-	cpw	y,#$272		; Part way through drawing aliens	
+	cpw	y,#$273		; Part way through drawing aliens	
 	jreq	set_pause_flag
 	cpw	y,#989
 	jreq	set_pause_flag

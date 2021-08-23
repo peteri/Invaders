@@ -13,11 +13,11 @@ shields_line_length	EQU 20
 shields_line_one 
 	dc.b	$00,$01,$02,$23,$23,$06,$07,$08,$09,$23
 	dc.b	$23,$0e,$0f,$10,$23,$23,$14,$15,$16,$17
-	dc.b	$00
+	dc.b	$ff
 shields_line_two 
 	dc.b	$03,$04,$05,$23,$23,$0a,$0b,$0c,$0d,$23
 	dc.b	$23,$11,$12,$13,$23,$23,$18,$19,$1a,$1b	
-	dc.b	$00
+	dc.b	$ff
 ;=============================================
 ;
 ;	Reset the player
@@ -38,7 +38,7 @@ shields_line_two
 	ld	a,#$18
 	ld	(ref_alien_x_offs,x),a
 	ld	a,#$78
-	ld	(ref_alien_x_offs,x),a
+	ld	(ref_alien_y_offs,x),a
 	call	init_aliens
 ; fall through into reset shields
 ;=============================================
@@ -145,10 +145,10 @@ clear_udg
 .draw_shields.w
 	ldw	y,#shields_line_one
 	ldw	x,#$0704
-	call	write_text_unmapped
+	call	write_text_unmapped_FF
 	ldw	y,#shields_line_two
 	ldw	x,#$0604
-	jp	write_text_unmapped
+	jp	write_text_unmapped_FF
 ;=============================================
 ;
 ;	Remove a ship and redraw the bottom
