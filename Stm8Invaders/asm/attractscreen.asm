@@ -14,7 +14,7 @@ stm8/
 	#include "playerbase.inc"
 	#include "playershot.inc"
 	segment 'ram0'
-state.b	ds.w	1
+.attract_state.b	ds.w	1
 minor_state.b	ds.w	1
 delayed_msg.b	ds.w	1
 delayed_msg_pos.b	ds.w	1
@@ -48,7 +48,8 @@ skip_animate_1.w
 	dc.w	one_player_one_coin 
 	dc.w	two_players_two_coins 
 	dc.w	ani_coin_exp_alien_in_delay 
-	dc.w	ani_coin_exp_alien_in 
+	dc.w	ani_coin_exp_alien_in
+.ani_coin_pointer.w
 	dc.w	ani_coin_exp_fire_bullet 
 	dc.w	ani_coin_exp_remove_extra_c 
 skip_animate_2.w
@@ -81,7 +82,7 @@ two_players_two_coins_msg.w dc.b	"2 PLAYERS 2 COINS",0
 ;
 .reset_attract_state.w
 	ldw	y,#{states-2}
-	ldw	state,y
+	ldw	attract_state,y
 	ldw	y,#minor_idle
 	ldw	minor_state,y
 	ret
@@ -92,14 +93,14 @@ two_players_two_coins_msg.w dc.b	"2 PLAYERS 2 COINS",0
 	jp	[minor_state]
 ;Idle advance to next major state	
 minor_idle.w
-	ldw	y,state
+	ldw	y,attract_state
 	incw	y
 	incw	y
 	cpw	y,#last_state
 	jrne	still_in_table
 	ldw	y,#states
 still_in_table
-	ldw	state,y
+	ldw	attract_state,y
 	ldw	y,(y)
 	jp	(y)
 ; Wait for the delay...	
@@ -259,7 +260,7 @@ score_table_two_sec_delay.w
 ani_alien_in_to_get_y.w
 	btjt	game_flags_1,#flag1_animate_splash,animate_alien_in
 	ldw	x,#skip_animate_1
-	ldw	state,x
+	ldw	attract_state,x
 	ret
 animate_alien_in
 	ldw	x,#{223 mult 256 + 123}
@@ -303,7 +304,7 @@ play_demo.w
 	bset	game_flags_1,#flag1_demo_mode
 	
 	ldw	x,#minor_play_demo_wait_death
-	ldw	state,x
+	ldw	attract_state,x
 	ret
 after_play_delay.w
 	ld	a,#splash_delay_one_second
@@ -331,7 +332,7 @@ two_players_two_coins.w
 ani_coin_exp_alien_in_delay.w
 	btjt	game_flags_1,#flag1_animate_splash,do_coin_animate
 	ldw	x,#skip_animate_2
-	ldw	state,x
+	ldw	attract_state,x
 do_coin_animate	
 	ld	a,#splash_delay_two_second
 	jp	splash_delay

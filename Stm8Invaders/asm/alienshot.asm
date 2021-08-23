@@ -7,6 +7,7 @@ stm8/
 	#include "timerobject.inc"
 	#include "player.inc"
 	#include "sprite.inc"
+	#include "attractscreen.inc"
 	segment 'rom'	
 .init_alien_shots.w
 	call	alien_shot_plunger_init
@@ -23,7 +24,83 @@ reset_shot_data.w
 	ld	yl,a
 	ld	(y),a
 	ret
+;============================================
+;
+; On entry
+; x = current shot
+; sp+2 - othershot1
+; sp+4 - othershot2
+; sp+6 - address of col shot routine
+;
+;============================================
 handle_alien_shot.w
+	ld	a,(shot_flags_offs,x)
+	and	a,shot_active
+	jreq	shot_not_active
+	jp	move_shot
+shot_not_active	
+	ldw	y,attract_state
+	cpw	y,#ani_coin_pointer
+	jreq	activate_shot
+	btjt	game_flags_2,#flag2_alien_shot_enable,alien_shots_enabled
+	ld	a,#0
+	ld	(shot_step_count_offs,x),a
+	ldw	y,(2,sp)
+	ld	a,(shot_step_count_offs,y)
+	jreq	test_other_shot2
+	cp	a,alien_shot_reload_rate
+	jrugt	test_other_shot2
+	ret
+test_other_shot2	
+	ldw	y,(4,sp)
+	ld	a,(shot_step_count_offs,y)
+	jreq	get_shot_column
+	cp	a,alien_shot_reload_rate
+	jrugt	get_shot_column
+	ret
+get_shot_column
+	ldw	y,(6,sp)
+	call	y
+	clrw	y
+	dec	a
+	ld	(4,sp),a	; Save away our result
+	sll	a
+	sll	a
+	sll	a
+	sll	a
+	add	a,ref_alien_x
+	add	a,#7
+	exg	a,yl
+	ld	a,(shot_sprite_offs,x)
+	exg	a,yl
+	ld	(sprite_x_offs,y),a
+	ld	a,ref_alien_y
+	sub	a,#$0a
+	ld	(sprite_y_offs,y),a
+	ldw	(2,sp),x	;save x away for later
+find_alien_that_fires
+	clrw	x
+	ld	a,(4,sp)
+	addw	x,current_player
+	ld	a,(aliens_offs,x)
+	jrne	found_alien_column
+	
+	ld	a,(sprite_y_offs,y)
+	add	a,$10
+	ld	(sprite_y_offs,y),a
+	ldw	x,(2,sp)
+activate_shot
+	ld	a,(shot_flags_offs,x)
+	or	a,shot_active
+	ld	(shot_flags_offs,x),a
+	inc	(shot_step_count_offs,x)
+	ret
+;============================================
+;
+;	Move the shot
+;
+;============================================
+move_shot.w
 	ret
 ;============================================
 ;
@@ -57,18 +134,20 @@ more_than_one_alien
 	ld	a,shot_sync
 	cp	a,#1
 	jreq	alien_shot_plunger_action_exit
-	ldw	x,#alien_plunger_shot
-	ldw	y,alien_squigly_shot
-	pushw	y
-	ldw	y,alien_rolling_shot
-	pushw 	y
 	ldw	y,#alien_plunger_shot_column
+	pushw	y
+	ldw	y,#alien_squigly_shot
+	pushw	y
+	ldw	y,#alien_rolling_shot
+	pushw 	y
+	ldw	x,#alien_plunger_shot
 	call	handle_alien_shot
 	popw	y
 	popw	y
+	popw	y
 	ldw	x,#alien_rolling_shot
-	cp	a,0
-	jrne	alien_shot_plunger_reset_data
+	ld	a,(shot_blow_count_offs,x)
+	jreq	alien_shot_plunger_reset_data
 alien_shot_plunger_action_exit
 	ret
 ; compute shot column
@@ -114,17 +193,19 @@ alien_plunger_shot_column_exit
 	jra	alien_shot_rolling_action_exit
 alien_shot_action_fire
 	ldw	x,#alien_rolling_shot
-	ldw	y,alien_plunger_shot
+	pushw 	y
+	ldw	y,#alien_plunger_shot
 	pushw	y
-	ldw	y,alien_squigly_shot
+	ldw	y,#alien_squigly_shot
 	pushw 	y
 	ldw	y,#alien_rolling_shot_column
 	call	handle_alien_shot
 	popw	y
 	popw	y
+	popw	y
 	ldw	x,#alien_rolling_shot
-	cp	a,0
-	jrne	alien_shot_rolling_reset_data
+	ld	a,(shot_blow_count_offs,x)
+	jreq	alien_shot_rolling_reset_data
 alien_shot_rolling_action_exit
 	ret
 ; compute shot column
@@ -176,17 +257,19 @@ squigly_shot_columns.w	dc.b $0B,$01,$06,$03,$01,$01,$0B
 	cp	a,#2
 	jreq	alien_shot_squigly_action_exit
 	ldw	x,#alien_squigly_shot
-	ldw	y,alien_plunger_shot
+	pushw 	y
+	ldw	y,#alien_plunger_shot
 	pushw	y
-	ldw	y,alien_rolling_shot
+	ldw	y,#alien_rolling_shot
 	pushw 	y
 	ldw	y,#alien_squigly_shot_column
 	call	handle_alien_shot
 	popw	y
 	popw	y
+	popw	y
 	ldw	x,#alien_rolling_shot
-	cp	a,0
-	jrne	alien_shot_squigly_reset_data
+	ld	a,(shot_blow_count_offs,x)
+	jreq	alien_shot_squigly_reset_data
 alien_shot_squigly_action_exit
 	ret
 ; compute shot column
