@@ -23,11 +23,11 @@ stm8/
 	bset	game_flags_1,#flag1_rack_dir_rtol
 rack_left_to_right
 	ld	a,#0
-	ld	ref_alien_delta_x,a
 	ld	saucer_score_index,a
 	ld	score_delta,a
 	ld	{score_delta+1},a
 	ld	alien_explode_timer,a
+	ld	shot_count,a
 
 	bset	game_flags_1,#flag1_player_ok
 	bres	game_flags_2,#flag2_alien_shot_enable

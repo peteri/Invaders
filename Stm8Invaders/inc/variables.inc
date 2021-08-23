@@ -57,6 +57,7 @@
 	EXTERN	alien_explode_x.w
 	EXTERN	alien_explode_x_offset.w
 	EXTERN	alien_explode_y.w
+	EXTERN	shot_count.w
 ; Subroutines	
 	EXTERN	clear_memory.w
 ;

@@ -6,6 +6,7 @@ stm8/
 	#include "playerbase.inc"
 	#include "playershot.inc"
 	#include "constants.inc"
+	#include "linerender.inc"
 	segment 'ram1'
 alien_character_cur_y	ds.b	1
 alien_character_cur_x	ds.b	1	
@@ -99,7 +100,7 @@ found_alien
 	sll	a
 	add	a,alien_character_cur_x
 	ld	alien_character_cur_x,a
-	ld	a,alien_character_cur_x
+	ld	a,ref_alien_x
 	and	a,#7
 	ld	alien_character_cur_x_offs,a
 	ld	a,xl
@@ -292,7 +293,7 @@ draw_alien_two_2
 	ld	a,alien_character_start
 	add	a,#$0a
 	cp	a,({screen-$40},x)
-	jrne	draw_alien_two_1
+	jrne	draw_alien_two_3
 	ld	a,alien_character_start
 	add	a,#$04
 	ld	({screen+$40},x),a
@@ -308,19 +309,170 @@ draw_alien_two_exit
 ;
 ;==============================================
 draw_alien_four	
+	btjf	game_flags_1,#flag1_rack_dir_rtol,draw_alien_four_ltor
+	ld	a,alien_character_start
+	add	a,#$0d
+	cp	a,({screen+$00},x)
+	jreq	draw_alien_four_rtl_0a
+	ld	a,alien_character_start
+	add	a,#$06
+	cp	a,({screen+$00},x)
+	jreq	draw_alien_four_rtl_0a
+	ld	a,alien_character_start
+	add	a,#$04
+	ld	({screen+$00},x),a
+	jra	draw_alien_four_rtl_middle
+draw_alien_four_rtl_0a	
+	ld	a,alien_character_start
+	add	a,#$0a
+	ld	({screen+$00},x),a
+draw_alien_four_rtl_middle	
+	ld	a,alien_character_start
+	add	a,#$05
+	ld	({screen+$20},x),a
+	
+	ld	a,alien_character_start
+	add	a,#$0e
+	cp	a,({screen+$40},x)
+	jreq	draw_alien_four_rtl_right
+	ld	a,alien_character_start
+	add	a,#$06
+	ld	({screen+$40},x),a
+	ret
+draw_alien_four_rtl_right	
+	ld	a,alien_character_start
+	add	a,#$0d
+	ld	({screen+$40},x),a
+	ret
+draw_alien_four_ltor
+	ld	a,alien_character_start
+	add	a,#$05
+	cp	a,({screen-$20},x)
+	jreq	draw_alien_four_ltr_0a
+	ld	a,alien_character_start
+	add	a,#$04
+	ld	({screen+$00},x),a
+	jra	draw_alien_four_ltr_middle
+draw_alien_four_ltr_0a	
+	ld	a,alien_character_start
+	add	a,#$0a
+	ld	({screen+$00},x),a
+draw_alien_four_ltr_middle	
+	ld	a,alien_character_start
+	add	a,#$05
+	ld	({screen+$20},x),a
+	
+	ld	a,alien_character_start
+	add	a,#$02
+	cp	a,({screen+$40},x)
+	jreq	draw_alien_four_ltr_right
+	ld	a,alien_character_start
+	add	a,#$06
+	ld	({screen+$40},x),a
+	ret
+draw_alien_four_ltr_right	
+	ld	a,alien_character_start
+	add	a,#$0b
+	ld	({screen+$40},x),a
+	ret
 ;==============================================
 ;
 ; draw the alien with a shifted offset of six
 ;
 ;==============================================
 draw_alien_six
+	btjf	game_flags_1,#flag1_rack_dir_rtol,draw_alien_six_ltor
+	ld	a,alien_character_start
+	add	a,#$09
+	cp	a,({screen+$00},x)
+	jreq	draw_alien_six_rtl_0e
+	ld	a,alien_character_start
+	add	a,#$0e
+	cp	a,({screen+$00},x)
+	jreq	draw_alien_six_rtl_0e
+	ld	a,alien_character_start
+	add	a,#$07
+	ld	({screen+$00},x),a
+	jra	draw_alien_six_rtl_middle
+draw_alien_six_rtl_0e	
+	ld	a,alien_character_start
+	add	a,#$0e
+	ld	({screen+$00},x),a
+draw_alien_six_rtl_middle
+	ld	a,alien_character_start
+	add	a,#$08
+	ld	({screen+$20},x),a
+	ld	a,alien_character_start
+	add	a,#$09
+	ld	({screen+$40},x),a
+	ret
+draw_alien_six_ltor	
+	ld	a,alien_character_cur_x
+	jreq	draw_alien_six_ltr_07
+	ld	a,alien_character_start
+	add	a,#$08
+	cp	a,({screen-$20},x)
+	jrne	draw_alien_six_ltr_07
+	ld	a,alien_character_start
+	add	a,#$0e
+	ld	({screen+$00},x),a
+	jra	draw_alien_six_ltr_middle
+draw_alien_six_ltr_07	
+	ld	a,alien_character_start
+	add	a,#$07
+	ld	({screen+$00},x),a
+draw_alien_six_ltr_middle
+	ld	a,alien_character_start
+	add	a,#$08
+	ld	({screen+$20},x),a
+
+	ld	a,alien_character_start
+	add	a,#$0a
+	cp	a,({screen+$40},x)
+	jreq	draw_alien_six_rtl_0c
+	ld	a,alien_character_start
+	add	a,#$09
+	ld	({screen+$40},x),a
+	ret
+draw_alien_six_rtl_0c	
+	ld	a,alien_character_start
+	add	a,#$0c
+	ld	({screen+$40},x),a
+	ret
+;==============================================
+;
+;	Bump the rack
+;
+;==============================================
+rack_bump
+	btjf	game_flags_1,#flag1_rack_dir_rtol,bump_ltor
+	ld	a,#9
+	call	play_field_line_is_blank
+	cp	a,#0
+	jreq	rack_bump_exit
+	mov	ref_alien_delta_x,#$02
+	ld	a,numaliens
+	cp	a,#1
+	jrne	rack_bump_more_than_one_alien
+	mov	ref_alien_delta_x,#$03
+rack_bump_more_than_one_alien	
+	mov	ref_alien_delta_y,#$F8
+	bres	game_flags_1,#flag1_rack_dir_rtol
+	jra	rack_bump_exit
+bump_ltor
+	ld	a,#213
+	call	play_field_line_is_blank
+	cp	a,#0
+	jreq	rack_bump_exit
+	mov	ref_alien_delta_x,#$FE
+	mov	ref_alien_delta_y,#$F8
+	bset	game_flags_1,#flag1_rack_dir_rtol
+rack_bump_exit
 	ret
 ;================================
 ; Stub routines start here
 ;================================
 draw_fast_single_alien	
-	ret
-rack_bump
 	ret
 erase_explosion
 	ret

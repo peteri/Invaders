@@ -174,9 +174,9 @@ NonHandledInterrupt.l
 handle_pause
 	btjt	game_flags_2,#flag2_pause_game,already_paused
 	ldw	y,frame_counter
-	cpw	y,#$273		; Part way through drawing aliens	
-	jreq	set_pause_flag
-	cpw	y,#989
+;	cpw	y,#$462		; First rack bump
+;	jreq	set_pause_flag
+	cpw	y,#$4d0		; Bug
 	jreq	set_pause_flag
 already_paused
 	; button up?

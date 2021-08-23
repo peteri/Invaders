@@ -125,5 +125,54 @@ next_sprite
 	ld	{renderbuff1+scr_width+1},a
 	ld	{renderbuff2+scr_width+1},a	
 	ret
+;
+;	Line to check is in A
+;	returns non-zero in A if there is something
+;	on this line 
+;
+.play_field_line_is_blank.w
+	mov	count,#23
+	; make x the start of the line
+	clrw	x
+	ld	{linenumber+1},a
+	and	a,#$f8
+	ld	xl,a
+	sllw	x
+	sllw	x
+	ld	a,xl
+	add	a,#4
+	ld	xl,a
+	ld	a,{linenumber+1}
+	and	a,#7
+	ld	linemasked,a
+	add	a,#{high charrom}
+	ld	romhi,a
+blank_loop:
+	ld	a,(screen,x)	;1
+	incw	x		;1
+	bcp	a,#$e0		;1
+	jrne	blank_rendercharacter ;1
+blank_renderudg
+	clrw	y	  	;1
+	sll	a		;1
+	sll	a		;1
+	sll	a		;1
+	add	a,linemasked	;1 
+	ld	yl,a		;1
+	ld	a,(udg,y)	;1
+	jrne	found_something
+	dec	count		;1
+	jrne	blank_loop	;1 =14
+found_something
+	ret
+blank_rendercharacter
+	ld	yl,a		;1
+	ld	a,romhi		;1
+	ld	yh,a		;1
+	ld	a,(y)         	;1
+	jrne	found_something
+	dec	count		;1
+	jrne	blank_loop	;2 =11
+	ret
 	end
 	
