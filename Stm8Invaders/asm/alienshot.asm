@@ -6,6 +6,7 @@ stm8/
 	#include "alienshot.inc"
 	#include "timerobject.inc"
 	#include "player.inc"
+	#include "playerbase.inc"
 	#include "sprite.inc"
 	#include "attractscreen.inc"
 	segment 'rom'	
@@ -35,7 +36,7 @@ reset_shot_data.w
 ;============================================
 handle_alien_shot.w
 	ld	a,(shot_flags_offs,x)
-	and	a,shot_active
+	and	a,#{1 shl shot_active}
 	jreq	shot_not_active
 	jp	move_shot
 shot_not_active	
@@ -43,6 +44,8 @@ shot_not_active
 	cpw	y,#ani_coin_pointer
 	jreq	activate_shot
 	btjt	game_flags_2,#flag2_alien_shot_enable,alien_shots_enabled
+	ret
+alien_shots_enabled	
 	ld	a,#0
 	ld	(shot_step_count_offs,x),a
 	ldw	y,(2,sp)
@@ -60,19 +63,21 @@ test_other_shot2
 	ret
 get_shot_column
 	ldw	y,(6,sp)
-	call	y
+	call	(y)	;Get the shot column for this type of shot
 	clrw	y
 	dec	a
 	ld	(4,sp),a	; Save away our result
-	sll	a
-	sll	a
+	sll	a	; Figure out the x coord
+	sll	a	; column*$10+7+refAlien_x
 	sll	a
 	sll	a
 	add	a,ref_alien_x
-	add	a,#7
-	exg	a,yl
+	add	a,#7	
+	exg	a,yl	;Stash it
+	; Get which sprite we're working with
 	ld	a,(shot_sprite_offs,x)
-	exg	a,yl
+	exg	a,yl	;Put this into the index register
+	; now x=shot,y=sprite for shot,a=shot x coord
 	ld	(sprite_x_offs,y),a
 	ld	a,ref_alien_y
 	sub	a,#$0a
@@ -80,27 +85,125 @@ get_shot_column
 	ldw	(2,sp),x	;save x away for later
 find_alien_that_fires
 	clrw	x
-	ld	a,(4,sp)
+	ld	a,(4,sp)	;Get index back
 	addw	x,current_player
 	ld	a,(aliens_offs,x)
-	jrne	found_alien_column
-	
+	jrne	found_alien_that_fires
 	ld	a,(sprite_y_offs,y)
 	add	a,$10
 	ld	(sprite_y_offs,y),a
-	ldw	x,(2,sp)
+	ld	a,(4,sp)	;Add 11 to our index
+	add	a,#11
+	ld	(4,sp),a	;save index back
+	cp	a,#55		;Out of aliens?
+	jrult	find_alien_that_fires
+	ldw	x,(2,sp)	;restore x for exit
+	ret
+found_alien_that_fires	
+	ldw	x,(2,sp)	;restore x 
 activate_shot
 	ld	a,(shot_flags_offs,x)
-	or	a,shot_active
+	or	a,#{1 shl shot_active}
 	ld	(shot_flags_offs,x),a
 	inc	(shot_step_count_offs,x)
 	ret
 ;============================================
 ;
 ;	Move the shot
+;	x=current shot
 ;
 ;============================================
 move_shot.w
+	ld	a,(shot_sprite_offs,x)
+	clrw	y
+	ld	yl,a
+	ld	a,(sprite_x_offs,y)
+	add	a,#$20
+	and	a,#$80
+	cp	a,vblank_status
+	jrne	move_shot_blank_ok
+	ret
+move_shot_blank_ok
+	ld	a,(shot_flags_offs,x)
+	and	a,#{1 shl shot_blowing_up}
+	jrne	animate_shot_explosion
+	inc	(shot_step_count_offs,x)
+	ld	a,(sprite_image_offs,y)
+	inc	a
+	cp	a,#4
+	jrult	image_no_wrap
+	ld	a,#0
+image_no_wrap	
+	ld	(sprite_image_offs,y),a
+	ld	a,#1
+	ld	(sprite_visible,y),a
+	ld	a,(sprite_y_offs,y)
+	add	a,alien_shot_delta_y
+	ld	(sprite_y_offs,y),a
+	cp	a,#$15
+	jrugt	check_collision
+	ld	a,(shot_flags_offs,x)
+	or	a,#{1 shl shot_blowing_up}
+	ld	(shot_flags_offs,x),a
+check_collision
+	exgw	x,y
+	call 	sprite_collided
+	exgw	x,y
+	cp	a,#0
+	jreq	alien_shot_set_image
+	ld	a,(shot_flags_offs,x)
+	or	a,#{1 shl shot_blowing_up}
+	ld	(shot_flags_offs,x),a
+	ld	a,(sprite_y_offs,y)
+	cp	a,#$1e
+	jrult	alien_shot_set_image
+	cp	a,#$27
+	jrugt	alien_shot_set_image
+	mov	player_alive,#player_alive_blowup_one
+alien_shot_set_image
+	ldw	x,y
+	call	sprite_set_image
+	ret
+	; x= shot y=sprite
+animate_shot_explosion
+	ld	a,(shot_blow_count_offs,x)
+	dec	a
+	ld	(shot_blow_count_offs,x),a
+	cp	a,#3
+	jreq	explode_shot
+	cp	a,#0
+	jrne	move_shot_exit
+	; Get the explosion sprite
+	ld	a,(shot_sprite_exp_offs,x)
+	clrw	y
+	ld	yl,a
+	ldw	x,y
+	call	sprite_battle_damage
+	ld	a,#0
+	ld	(sprite_visible,x),a
+move_shot_exit
+	ret
+explode_shot
+	ld	a,#0
+	ld	(sprite_visible,y),a
+	exgw	x,y
+	call	sprite_battle_damage
+	pushw	x
+	ld	a,(shot_sprite_exp_offs,y)
+	clrw	x
+	ld	xl,a
+	popw	y
+	;Now x=shot_sprite_exploded
+	;    y=shot_sprite
+	ld	a,(sprite_x_offs,y)
+	sub	a,2
+	ld	(sprite_x_offs,x),a
+	ld	a,(sprite_y_offs,y)
+	sub	a,2
+	ld	(sprite_y_offs,x),a
+	ld	a,#1
+	ld	(sprite_visible,x),a
+	call	sprite_set_image
 	ret
 ;============================================
 ;

@@ -60,7 +60,9 @@ sprite_setup
 ; Enter with x=sprite address
 ; Sets the current image for the 
 ; image number and y offset modulo 8 
+; x & y are saved
 .sprite_set_image.w
+	pushw	y
 	ldw	y,x
 	ldw	y,(sprite_data_offs,y)
 	incw	y	;add one for width in ROM.
@@ -81,10 +83,14 @@ sprite_setup
 	mul	y,a
 	addw	y,sprite_base
 	ldw	(sprite_data_cur_img_offs,x),y
+	popw	y
 	ret
 ; Enter with x=sprite address
+; x & y are saved
+; returns with non zero value in acc if collides
 .sprite_collided.w
 ; Enter with x=sprite address
+; x & y are saved
 .sprite_battle_damage.w	
 	ret
 .sprite_hide_all.w
