@@ -268,8 +268,8 @@ game_loop_game_mode
 ;=============================================
 player_fire_or_demo
 	ld	a,player_alive
-	cp	a,player_alive_alive
-	jreq	player_fire_or_demo_ret
+	cp	a,#player_alive_alive
+	jrne	player_fire_or_demo_ret
 	ldw	y,{player_base_timer+timer_tick_offs}
 	jrne	player_fire_or_demo_ret
 	ldw	y,player_shot_status
