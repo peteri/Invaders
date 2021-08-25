@@ -430,6 +430,11 @@ Next=Root.Include Files.inc\linerender.inc
 [Root.Include Files.inc\linerender.inc]
 ElemType=File
 PathName=inc\linerender.inc
+Next=Root.Include Files.inc\main.inc
+
+[Root.Include Files.inc\main.inc]
+ElemType=File
+PathName=inc\main.inc
 Next=Root.Include Files.inc\player.inc
 
 [Root.Include Files.inc\player.inc]
