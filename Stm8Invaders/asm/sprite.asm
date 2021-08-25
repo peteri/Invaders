@@ -8,6 +8,7 @@ stm8/
 	segment 'ram0'
 sprite_base	ds.w	1
 sprite_mod7	ds.b	1
+width_i		ds.b	1
 	segment 'rom'
 ;=======================================
 ;
@@ -43,8 +44,10 @@ sprite_mod7	ds.b	1
 	ldw	y,#alien_shot_explode_data
 	call	sprite_setup
 	ret
+;=======================================
 ; Enter with x=sprite address
 ; y=sprite rom address
+;=======================================
 sprite_setup
 	ldw	(sprite_data_offs,x),y
 	ld	a,(y)
@@ -53,6 +56,7 @@ sprite_setup
 	ld	(sprite_x_offs,x),a
 	ld	(sprite_y_offs,x),a
 	ld	(sprite_visible,x),a
+;=======================================
 ; Fall through into setting the image
 ;
 ; sprite_set_image
@@ -61,6 +65,7 @@ sprite_setup
 ; Sets the current image for the 
 ; image number and y offset modulo 8 
 ; x & y are saved
+;=======================================
 .sprite_set_image.w
 	pushw	y
 	ldw	y,x
@@ -85,15 +90,44 @@ sprite_setup
 	ldw	(sprite_data_cur_img_offs,x),y
 	popw	y
 	ret
+;=======================================
 ; Enter with x=sprite address
 ; x & y are saved
 ; returns with non zero value in acc if collides
+;=======================================
 .sprite_collided.w
+	pushw	y
+	pushw	x
+	ld	a,{sprite_width_offs,x)
+	ld	width_i,a
+	
+	ld	a,width_i
+	cp	a,{sprite_width_offs,x)
+	jrlt	sprite_collided_loop
+	ld	a,#0
+sprite_collided_pop_x_y
+	popw	x
+	popw	y
+	ret
+;=======================================
 ; Enter with x=sprite address
 ; x & y are saved
+;=======================================
 .sprite_battle_damage.w	
 	ret
+;=======================================
+;
+;	Hides the sprites
+;
+;=======================================
 .sprite_hide_all.w
+	ldw	x,#sprite_start
+	ld	a,#0
+sprite_hide_loop
+	ld	{sprite_visible,x),a
+	addw	x,#sprite_size
+	cpw	x,#sprite_end
+	jrult	sprite_hide_loop
 	ret
 	END
 	
