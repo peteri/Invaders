@@ -4,6 +4,7 @@ stm8/
 	#include "constants.inc"
 	#include "playerbase.inc"
 	#include "timerobject.inc"
+	#include "main.inc"
 Right	EQU	$01
 None	EQU	$00
 Left	EQU	$FF
@@ -17,7 +18,7 @@ demo_commands	dc.b	Right,Right,None,None,Right
 player_base_characters dc.b $56,$5c,$65,$6e,$77,$c0,$d0,$e0
 .player_base_init.w
 	mov	player_alive,#player_alive_alive
-	mov	player_x,#$10
+	mov	player_base_x,#$10
         mov	blow_up_counter,#5
         mov	blow_up_changes,#$0c
 	ldw	x,#$80
@@ -27,7 +28,7 @@ player_base_characters dc.b $56,$5c,$65,$6e,$77,$c0,$d0,$e0
 	ret
 player_base_action
 	ld	a,player_alive
-	cp	a,player_alive_alive
+	cp	a,#player_alive_alive
 	jreq	not_blowing_up
 	dec	blow_up_counter
 	jreq	counter_zero
@@ -38,10 +39,11 @@ counter_zero
 	mov	blow_up_counter,#5
 	dec	blow_up_changes
 	jrne	swap_blowup
-	ld	yl,#$23
+	ld	a,#$23
+	ld	yl,a
 	call	draw_player_sprite
 	call	player_base_init
-	btjf	game_flags_1,#flag2_game_mode,blow_up_exit
+	btjf	game_flags_1,#flag1_game_mode,blow_up_exit
 	jp	player_ship_blown_up
 blow_up_exit
 	ret
@@ -53,7 +55,7 @@ swap_blowup
 	jrne	blowup_is_two
 	incw	y
 blowup_is_two	
-	ld	a,player_x
+	ld	a,player_base_x
 	and	a,#$07
 	ld	xl,a
 	ld	a,#2
@@ -72,18 +74,46 @@ blowup_is_two_swap
 	jp	draw_player_sprite
 not_blowing_up
 	bset	game_flags_1,#flag1_player_ok
-Finish Me	
+	btjt	game_flags_2,#flag2_alien_shot_enable,aliens_can_fire
+	dec	alien_fire_delay
+	jrne	aliens_can_fire
+	bset	game_flags_2,#flag2_alien_shot_enable
+aliens_can_fire
+	btjf	game_flags_1,#flag1_demo_mode,read_switches
+	clrw	x
+	ld	a,demo_command
+	ld	xl,a
+	ld	a,(demo_commands,x)
+	jra	move_player_base
+read_switches
+	ld	a,#$00
+	;
+	;	TODO add code to read switches
+	;
+move_player_base
+	add	a,player_base_x
+	cp	a,#$10
+	jrult	no_move
+	cp	a,#$b9
+	jrugt	no_move
+	ld	player_base_x,a
+no_move
 	clrw	x
 	and	a,#$07
 	ld	xl,a
-	add	a,(player_base_characters,x)
+	ld	a,(player_base_characters,x)
 	ld	yl,a
 	jp	draw_player_sprite
-;
+;==========================================
 ; yl is the first character of our base
-;
+; if the character is #23 (blank) then
+; it erases the next 3 characters.
+; if the character code is less than $5c
+; it draws two characters, otherwise three
+; incrementing the character as it goes.
+;==========================================
 draw_player_sprite
-	ld	a,player_x
+	ld	a,player_base_x
 	srl	a
 	srl	a
 	srl	a
@@ -95,11 +125,11 @@ draw_player_sprite
 	ld	xl,a
 	ld	a,yl
 	ld	(screen,x),a
-	incw	x
+	addw	x,#scr_width
 	cp	a,#$23
 	jrne	not_erase
 	ld	(screen,x),a
-	incw	x
+	addw	x,#scr_width
 	ld	(screen,x),a
 	ret
 not_erase
@@ -109,7 +139,7 @@ not_erase
 	;so go home first.
 	cp	a,#$5c
 	jrult	draw_player_exit
-	incw	x
+	addw	x,#scr_width
 	inc	a
 	ld	(screen,x),a
 draw_player_exit

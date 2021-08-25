@@ -428,6 +428,8 @@ handle_coin_switch
 	ret
 enter_wait_start_loop
 	ret
+.player_ship_blown_up.w
+	jra	player_ship_blown_up
 ;=============================================
 ;
 ;	interrupt vector loop
