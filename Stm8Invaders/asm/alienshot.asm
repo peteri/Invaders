@@ -23,7 +23,9 @@ reset_shot_data.w
 	ld	a,(shot_sprite_offs,x)
 	clrw	y
 	ld	yl,a
-	ld	(y),a
+	ld	a,#0
+	ld	(sprite_visible,y),a
+	ld	(sprite_image_offs,y),a
 	ret
 ;============================================
 ;
