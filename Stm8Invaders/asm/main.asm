@@ -167,16 +167,20 @@ took_too_long
 	interrupt NonHandledInterrupt
 NonHandledInterrupt.l
 	iret
+;============================================================
+;
 ; Handles pausing the game
 ; Can either trigger off a frame counter.
 ; Can be single stepped by tapping button for less than 200ms
 ; long press removes pause entirely
+;
+;============================================================
 handle_pause
 	btjt	game_flags_2,#flag2_pause_game,already_paused
 	ldw	y,frame_counter
-;	cpw	y,#$462		; First rack bump
+;	cpw	y,#$2f5		; Player is drawn on screen
 ;	jreq	set_pause_flag
-	cpw	y,#$2f5		; Player is drawn on screen
+	cpw	y,#{$2f5+$2e}	; Alien bullets
 	jreq	set_pause_flag
 already_paused
 	; button up?
