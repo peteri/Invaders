@@ -148,7 +148,7 @@ draw_player_exit
 	inc	demo_command
 	ld	a,#10
 	cp	a,demo_command
-	jrult	inc_demo_exit
+	jruge	inc_demo_exit
 	mov	demo_command,#0
 inc_demo_exit	
 	ret

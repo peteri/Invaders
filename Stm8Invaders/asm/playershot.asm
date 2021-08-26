@@ -13,6 +13,8 @@ explosion_timer	ds.b	1
 	mov	explosion_timer,#$10
 	ldw	x,#player_shot_action
 	ldw	{player_shot_timer+timer_action_offs},x
+	ldw	x,#player_shot_available
+	ldw	player_shot_status,x
 	ret
 player_shot_action
 	ld	a,{sp_player_shot+sprite_x_offs}
@@ -32,6 +34,8 @@ do_player_shot_action
 	ld	a,player_base_x
 	add	a,#8
 	ld	{sp_player_shot+sprite_x_offs},a
+	ldw	x,#player_shot_normal_move
+	ldw	player_shot_status,x
 	ldw	x,#sp_player_shot
 	jp	sprite_set_image
 .player_shot_normal_move.w
@@ -43,7 +47,7 @@ do_player_shot_action
 	ldw	x,#sp_player_shot
 	call	sprite_collided
 	cp	a,#0
-	jrne	shot_normal_move_exit
+	jreq	shot_normal_move_exit
 	bset	game_flags_2,#flag2_alien_exploding
 shot_normal_move_exit	
 	ret
@@ -62,10 +66,10 @@ check_first_time
 	; Copy player shot sprite to explosion
 	ld	a,{sp_player_shot+sprite_x_offs}
 	sub	a,#3
-	ld	a,{sp_player_shot_exp+sprite_x_offs}
+	ld	{sp_player_shot_exp+sprite_x_offs},a
 	ld	a,{sp_player_shot+sprite_y_offs}
 	sub	a,#2
-	ld	a,{sp_player_shot_exp+sprite_y_offs}
+	ld	{sp_player_shot_exp+sprite_y_offs},a
 	mov	{sp_player_shot_exp+sprite_visible},#1
 	ldw	x,#sp_player_shot_exp
 	jp	sprite_set_image

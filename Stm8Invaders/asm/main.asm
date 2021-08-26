@@ -176,7 +176,7 @@ handle_pause
 	ldw	y,frame_counter
 ;	cpw	y,#$462		; First rack bump
 ;	jreq	set_pause_flag
-	cpw	y,#$4d0		; Bug
+	cpw	y,#$2f5		; Player is drawn on screen
 	jreq	set_pause_flag
 already_paused
 	; button up?
@@ -232,7 +232,7 @@ do_attract_screen
 run_game
 	call	game_loop_step
 	mov	vblank_status,#0
-	btjf	game_flags_1,#flag1_tweak,skip_run_game_objects
+	btjt	game_flags_1,#flag1_tweak,skip_run_game_objects
 	bset	game_flags_1,#flag1_skip_player
 	call	run_game_objects
 skip_run_game_objects
@@ -275,7 +275,7 @@ player_fire_or_demo
 	ldw	y,player_shot_status
 	cpw	y,#player_shot_available
 	jrne	player_fire_or_demo_ret
-	btjf	game_flags_1,#flag1_game_mode,player_fire_game
+	btjt	game_flags_1,#flag1_game_mode,player_fire_game
 	ldw	y,#player_shot_initiated
 	ldw	player_shot_status,y
 	jp	increment_demo_command

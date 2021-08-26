@@ -8,6 +8,7 @@ stm8/
 	segment 'ram0'
 sprite_base	ds.w	1
 sprite_mod7	ds.b	1
+	segment 'ram1'
 width_i		ds.b	1
 	segment 'rom'
 ;=======================================
@@ -98,12 +99,12 @@ sprite_setup
 .sprite_collided.w
 	pushw	y
 	pushw	x
-	ld	a,{sprite_width_offs,x)
+	ld	a,(sprite_width_offs,x)
 	ld	width_i,a
-	
+sprite_collided_loop	
 	ld	a,width_i
-	cp	a,{sprite_width_offs,x)
-	jrlt	sprite_collided_loop
+	cp	a,(sprite_width_offs,x)
+	jrult	sprite_collided_loop
 	ld	a,#0
 sprite_collided_pop_x_y
 	popw	x
@@ -121,13 +122,13 @@ sprite_collided_pop_x_y
 ;
 ;=======================================
 .sprite_hide_all.w
-	ldw	x,#sprite_start
+	ldw	x,#sprites_start
 	ld	a,#0
 sprite_hide_loop
-	ld	{sprite_visible,x),a
+	ld	(sprite_visible,x),a
 	addw	x,#sprite_size
-	cpw	x,#sprite_end
-	jrult	sprite_hide_loop
+	cpw	x,#sprites_end
+	jrne	sprite_hide_loop
 	ret
 	END
 	

@@ -38,7 +38,7 @@ ExternDep= asm\main.asm mapping.inc "c:\program files (x86)\stmicroelectronics\s
 ExternDep= asm\player.asm inc\player.inc inc\variables.inc inc\characterrom.inc inc\screenhelper.inc inc\constants.inc
 
 [Root.Source Files.asm\playerbase.asm.Config.0]
-ExternDep= asm\playerbase.asm inc\variables.inc inc\constants.inc
+ExternDep= asm\playerbase.asm inc\variables.inc inc\constants.inc inc\playerbase.inc inc\timerobject.inc inc\main.inc
 
 [Root.Source Files.asm\playershot.asm.Config.0]
 ExternDep= asm\playershot.asm inc\variables.inc inc\constants.inc inc\sprite.inc inc\alienshot.inc inc\timerobject.inc
