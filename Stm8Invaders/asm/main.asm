@@ -181,6 +181,7 @@ handle_pause
 ;	cpw	y,#$2f5		; Player is drawn on screen
 ;	jreq	set_pause_flag
 	cpw	y,#{$2f5+$2e}	; Alien bullets
+	cpw	y,#{$368}	; Alien bullets explodes
 	jreq	set_pause_flag
 already_paused
 	; button up?

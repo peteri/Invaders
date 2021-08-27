@@ -123,7 +123,7 @@ move_shot.w
 	add	a,#$20
 	and	a,#$80
 	cp	a,vblank_status
-	jrne	move_shot_blank_ok
+	jreq	move_shot_blank_ok
 	ret
 move_shot_blank_ok
 	ld	a,(shot_flags_offs,x)
@@ -147,6 +147,8 @@ image_no_wrap
 	ld	a,(shot_flags_offs,x)
 	or	a,#{1 shl shot_blowing_up}
 	ld	(shot_flags_offs,x),a
+	call	sprite_set_image
+	ret
 check_collision
 	exgw	x,y
 	call 	sprite_collided
@@ -227,12 +229,13 @@ plunger_shot_columns.w	dc.b $01,$07,$01,$01,$01,$04,$0B,$01
 ;destroys x register
 .alien_shot_plunger_reset_data.w
 	ldw	x,#alien_plunger_shot
+	call	reset_shot_data
 	ld	a,numaliens
 	cp	a,#1
 	jrne	more_than_one_alien
 	bres	{alien_plunger_shot+shot_flags_offs},#plunger_shot_active
 more_than_one_alien	
-	jp	reset_shot_data
+	ret
 ;call action	
 .alien_shot_plunger_action.w
 	btjf	{alien_plunger_shot+shot_flags_offs},#plunger_shot_active,alien_shot_plunger_action_exit
@@ -250,7 +253,7 @@ more_than_one_alien
 	popw	y
 	popw	y
 	popw	y
-	ldw	x,#alien_rolling_shot
+	ldw	x,#alien_plunger_shot
 	ld	a,(shot_blow_count_offs,x)
 	jreq	alien_shot_plunger_reset_data
 alien_shot_plunger_action_exit
@@ -287,9 +290,10 @@ alien_plunger_shot_column_exit
 ;Reset data
 .alien_shot_rolling_reset_data.w
 	ldw	x,#alien_rolling_shot
+	call	reset_shot_data
 	mov	{alien_rolling_timer+timer_extra_count_offs},#2
 	bres	{alien_rolling_shot+shot_flags_offs},#fire_shot
-	jp	reset_shot_data
+	ret
 ;call action	
 .alien_shot_rolling_action.w
 	mov	{alien_rolling_timer+timer_extra_count_offs},#2
@@ -354,11 +358,11 @@ squigly_shot_columns.w	dc.b $0B,$01,$06,$03,$01,$01,$0B
 ;destroys x register
 .alien_shot_squigly_reset_data.w
 	ldw	x,#alien_squigly_shot
-	ld	a,#$20
-	ld	(shot_current_shot_col_offs,x),a
-	jp	reset_shot_data
+	call	reset_shot_data
+	ret
 ;call action	
 .alien_shot_squigly_action.w
+	ld	a,shot_sync
 	cp	a,#2
 	jrne	alien_shot_squigly_action_exit
 	ldw	y,#alien_squigly_shot_column
@@ -372,7 +376,7 @@ squigly_shot_columns.w	dc.b $0B,$01,$06,$03,$01,$01,$0B
 	popw	y
 	popw	y
 	popw	y
-	ldw	x,#alien_rolling_shot
+	ldw	x,#alien_squigly_shot
 	ld	a,(shot_blow_count_offs,x)
 	jreq	alien_shot_squigly_reset_data
 alien_shot_squigly_action_exit
