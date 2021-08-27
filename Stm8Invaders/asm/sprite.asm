@@ -10,6 +10,8 @@ sprite_base	ds.w	1
 sprite_mod7	ds.b	1
 	segment 'ram1'
 width_i		ds.b	1
+xOffs	ds.b	1
+screen_pos	ds.w	1
 	segment 'rom'
 ;=======================================
 ;
@@ -115,6 +117,75 @@ sprite_collided_pop_x_y
 ; x & y are saved
 ;=======================================
 .sprite_battle_damage.w	
+	pushw	y
+	pushw	x
+	ld	a,(sprite_x_offs,x)
+	and	a,#7
+	ld	xOffs,a
+	
+	ld	a,(sprite_y_offs,x)
+	clrw	y
+	srl	a
+	srl	a
+	srl	a
+	ldw	screen_pos,y
+	ld	a,(sprite_x_offs,x)
+	srl	a
+	srl	a
+	srl	a
+	ld	yl,a
+	ld	a,#scr_width
+	mul	y,a
+	addw	y,screen_pos
+	ldw	screen_pos,y
+	ld	a,(sprite_width_offs,x)
+	ld	width_i,a
+	ldw	x,(sprite_data_cur_img_offs,x)
+battle_damage_loop
+	ldw	y,screen_pos
+	ld	a,(screen,y)
+	cp	a,#$20
+	jruge	battle_next_char
+	sll	a
+	sll	a
+	sll	a
+	add	a,xOffs
+	clrw	y
+	ld	yl,a
+	ld	a,(x)
+	cpl	a
+	and	a,(udg,y)
+	ld	(udg,y),a
+battle_next_char
+	incw	x
+	ldw	y,screen_pos
+	ld	a,({screen+1},y)
+	cp	a,#$20
+	jruge	battle_inc_xoffs
+	sll	a
+	sll	a
+	sll	a
+	add	a,xOffs
+	clrw	y
+	ld	yl,a
+	ld	a,(x)
+	cpl	a
+	and	a,(udg,y)
+	ld	(udg,y),a
+battle_inc_xoffs	
+	incw	x
+	inc	xOffs
+	btjf	xOffs,#3,battle_next_line
+	mov	xOffs,#0
+	ldw	y,screen_pos
+	addw	y,#scr_width
+	ldw	screen_pos,y
+battle_next_line
+	dec	width_i
+	jrne	battle_damage_loop
+battle_damage_exit	
+	popw	x
+	popw	y
 	ret
 ;=======================================
 ;
