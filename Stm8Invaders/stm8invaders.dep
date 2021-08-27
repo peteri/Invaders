@@ -14,7 +14,7 @@ ExternDep= asm\aliens.asm inc\variables.inc inc\player.inc inc\screenhelper.inc 
 ExternDep= asm\spritedata.asm
 
 [Root.Source Files.asm\alienshot.asm.Config.0]
-ExternDep= asm\alienshot.asm inc\variables.inc inc\constants.inc inc\alienshot.inc inc\timerobject.inc inc\player.inc inc\sprite.inc
+ExternDep= asm\alienshot.asm inc\variables.inc inc\constants.inc inc\alienshot.inc inc\timerobject.inc inc\player.inc inc\playerbase.inc inc\sprite.inc inc\attractscreen.inc
 
 [Root.Source Files.asm\attractscreen.asm.Config.0]
 ExternDep= asm\attractscreen.asm mapping.inc inc\variables.inc inc\constants.inc inc\screenhelper.inc inc\characterrom.inc inc\sprite.inc inc\alienshot.inc inc\timerobject.inc inc\gamedata.inc inc\player.inc inc\playerbase.inc inc\playershot.inc

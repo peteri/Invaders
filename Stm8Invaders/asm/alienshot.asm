@@ -147,6 +147,7 @@ image_no_wrap
 	ld	a,(shot_flags_offs,x)
 	or	a,#{1 shl shot_blowing_up}
 	ld	(shot_flags_offs,x),a
+	ldw	x,y
 	call	sprite_set_image
 	ret
 check_collision
@@ -188,6 +189,8 @@ animate_shot_explosion
 move_shot_exit
 	ret
 explode_shot
+;	x=current_shot
+;	y=current sprite.
 	ld	a,#0
 	ld	(sprite_visible,y),a
 	exgw	x,y
@@ -200,10 +203,10 @@ explode_shot
 	;Now x=shot_sprite_exploded
 	;    y=shot_sprite
 	ld	a,(sprite_x_offs,y)
-	sub	a,2
+	sub	a,#2
 	ld	(sprite_x_offs,x),a
 	ld	a,(sprite_y_offs,y)
-	sub	a,2
+	sub	a,#2
 	ld	(sprite_y_offs,x),a
 	ld	a,#1
 	ld	(sprite_visible,x),a
@@ -324,7 +327,9 @@ alien_shot_rolling_action_exit
 alien_rolling_shot_column
 	ld	a,player_base_x	;Aim at middle of player
 	add	a,#8
+	pushw	x
 	call	find_column	;can we find an invader?
+	popw	x
 	cp	a,#$ff
 	jrne	rolling_found	;Player is to right of stack....
 	ld	a,#1

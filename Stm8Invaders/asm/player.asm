@@ -241,7 +241,7 @@ no_alien
 	ld	yl,a
 find_column_loop
 	cp	a,col_x
-	jrugt	find_column_ret
+	jrult	find_column_ret
 	ld	a,col_x
 	add	a,#$10
 	ld	col_x,a
