@@ -469,14 +469,333 @@ bump_ltor
 	bset	game_flags_1,#flag1_rack_dir_rtol
 rack_bump_exit
 	ret
+;===================================================
+;
+;	Erase alien explosion
+;
+;===================================================
+erase_explosion
+	clrw	x
+	ld	a,alien_explode_x
+	ld	xl,a
+	ld	a,#scr_width
+	mul	x,a
+	ld	a,xl
+	add	a,alien_explode_y
+	ld	xl,a
+	ld	a,(screen,x)
+	cp	a,#$20
+	jruge	not_udg_explosion
+	; Fast alien drawn using udg so fill with spaces.
+	ld	a,#$23
+	ld	({screen+$00},x),a
+	ld	({screen+scr_width},x),a
+	ld	({screen+scr_width+scr_width},x),a
+	ret
+not_udg_explosion	
+	; Left hand side
+	ld	a,({screen-scr_width},x)
+	and	a,#$f0
+	ld	alien_character_start,a
+	ld	a,(screen,x)
+	and	a,#$0f
+	cp	a,#$00
+	jreq	middle_char
+	cp	a,#$0e
+	jreq	lhs_xf
+	cp	a,#$0f
+	jrne	lhs_test_x8
+lhs_xf	
+	ld	a,({screen-scr_width},x)
+	sub	a,#$40
+	ld	({screen-scr_width},x),a
+	jra	lhs_store_blank
+lhs_test_x8	
+	cp	a,#$08
+	jrne	lhs_test_x5
+	ld	a,alien_character_start
+	or	a,#$09
+	jra	store_lhs
+lhs_test_x5	
+	cp	a,#$05
+	jrne	lhs_store_blank
+	ld	a,alien_character_start
+	or	a,#$06
+	jra	store_lhs
+lhs_store_blank
+	ld	a,#$23
+store_lhs
+	ld	(screen,x),a
+middle_char	
+	; Middle
+	addw	x,#scr_width
+	ld	a,#$23
+	ld	(screen,x),a
+	addw	x,#scr_width
+	; Right hand side
+	ld	a,(screen,x)
+	;Type 1 Alien
+rhs_test_ca	
+	cp	a,#$ca
+	jrne	rhs_test_cb
+	ld	a,#$84
+	jra	store_rhs
+rhs_test_cb
+	cp	a,#$cb
+	jrne	rhs_test_cc
+	ld	a,#$82
+	jra	store_rhs
+rhs_test_cc
+	cp	a,#$cc
+	jrne	rhs_test_da
+	ld	a,#$84
+	jra	store_rhs
+	;Type 2 Alien
+rhs_test_da	
+	cp	a,#$da
+	jrne	rhs_test_db
+	ld	a,#$94
+	jra	store_rhs
+rhs_test_db
+	cp	a,#$db
+	jrne	rhs_test_dc
+	ld	a,#$92
+	jra	store_rhs
+rhs_test_dc
+	cp	a,#$dc
+	jrne	rhs_test_ea
+	ld	a,#$94
+	jra	store_rhs
+	;Type 3 Alien
+rhs_test_ea	
+	cp	a,#$ea
+	jrne	rhs_test_eb
+	ld	a,#$a4
+	jra	store_rhs
+rhs_test_eb
+	cp	a,#$eb
+	jrne	rhs_test_ec
+	ld	a,#$a2
+	jra	store_rhs
+rhs_test_ec
+	cp	a,#$ec
+	jrne	rhs_test_b1
+	ld	a,#$a4
+	jra	store_rhs
+rhs_test_b1	
+	cp	a,$b1
+	jreq	rhs_store_blank
+	cp	a,$b6
+	jreq	rhs_store_blank
+	cp	a,$b9
+	jreq	rhs_store_blank
+	ret
+rhs_store_blank
+	ld	a,#$23
+store_rhs
+	ld	(screen,x),a
+	ret
+;===================================================
+;
+;	Explode alien
+;
+;===================================================	
+.explode_alien.w
+	clrw	x
+	ld	a,alien_explode_x
+	ld	xl,a
+	ld	a,#scr_width
+	mul	x,a
+	ld	a,xl
+	add	a,alien_explode_y
+	ld	xl,a
+;	x=currOffset
+	ld	a,(screen,x)
+	cp	a,#$20
+	jruge	explode_non_udg_alien
+	jp	explode_udg_alien
+explode_non_udg_alien
+	cp	a,#$80
+	jrult	explode_alien_exit
+	cp	a,#$af
+	jrugt	explode_alien_exit
+	call	explode_lhs
+	addw	x,#scr_width
+	call	explode_middle
+	ld	a,(screen,x)
+	and	a,#$0f
+	cp	a,#$03
+	jreq	explode_alien_exit
+	addw	x,#scr_width
+	call	explode_rhs
+explode_alien_exit	
+	ret
+;
+;	Explode left hand bit of alien
+;
+explode_lhs
+	and	a,#$0f
+	cp	a,#1
+	jreq	explode_lhs_exit1
+	cp	a,#9
+	jrne	check_special_case
+explode_lhs_exit1	
+	ret
+check_special_case	
+	cp	a,#$0a
+	jruge	explode_lhs_special_case
+	cp	a,#$08
+	jrne	explode_lhs_or_b0
+	ld	a,({screen-scr_width},x)
+	and	a,#$0f
+	cp	a,#$0e
+	jreq	explode_lhs_add_left_40
+	cp	a,#$0f
+	jrne	explode_lhs_or_b0
+explode_lhs_add_left_40
+	ld	a,({screen-scr_width},x)
+	add	a,#$40
+	ld	({screen-scr_width},x),a
+explode_lhs_or_b0
+	ld	a,(screen,x)
+	or	a,#$b0
+	jra	explode_lhs_store
+explode_lhs_special_case
+	ld	a,({screen+scr_width},x)
+	and	a,#$0f
+	cp	a,#$05
+	jrne	explode_lhs_a_or_c_next_5
+	ld	a,(screen,x)
+	cp	a,#$8b
+	jrne	exp_lhs_test_9b
+	ld	a,#$c9
+	jra	explode_lhs_store
+exp_lhs_test_9b	
+	cp	a,#$9b
+	jrne	exp_lhs_test_ab
+	ld	a,#$d9
+	jra	explode_lhs_store
+exp_lhs_test_ab	
+	cp	a,#$ab
+	jrne	exp_lhs_test_9b
+	ld	a,#$e9
+	jra	explode_lhs_store
+exp_lhs_add_40
+	add	a,#$40
+	jra	explode_lhs_store
+explode_lhs_a_or_c_next_5
+	ld	a,(screen,x)
+exp_lhs_test_8a
+	cp	a,#$8a
+	jrne	exp_lhs_test_9a
+	ld	a,#$27
+	jra	explode_lhs_store
+exp_lhs_test_9a
+	cp	a,#$8a
+	jrne	exp_lhs_test_aa
+	ld	a,#$28
+	jra	explode_lhs_store
+exp_lhs_test_aa
+	cp	a,#$8a
+	jrne	exp_lhs_test_8c
+	ld	a,#$2b
+	jra	explode_lhs_store
+exp_lhs_test_8c
+	cp	a,#$8a
+	jrne	exp_lhs_test_9c
+	ld	a,#$2c
+	jra	explode_lhs_store
+exp_lhs_test_9c
+	cp	a,#$8a
+	jrne	exp_lhs_test_ac
+	ld	a,#$54
+	jra	explode_lhs_store
+exp_lhs_test_ac
+	cp	a,#$8a
+	jrne	explode_lhs_exit
+	ld	a,#$55
+	jra	explode_lhs_store
+explode_lhs_store
+	ld	(screen,x),a
+explode_lhs_exit
+	ret
+;
+;	Explode middle bit of alien
+;
+explode_middle
+	ld	a,(screen,x)
+	and	a,#$0f
+	cp	a,#$0a
+	jruge	exp_mid_odd
+	ld	a,(screen,x)
+	or	a,#$b0
+	jra	explode_middle_store
+exp_mid_odd
+	cp	a,#$0e
+	jrne	exp_mid_test_xf
+	ld	a,#$b9
+	jra	explode_middle_store
+exp_mid_test_xf
+	cp	a,#$0f
+	jrne	exp_mid_test_def
+	ld	a,#$b1
+	jra	explode_middle_store
+exp_mid_test_def
+	ld	a,(screen,x)
+	add	a,#$40
+explode_middle_store
+	ld	(screen,x),a
+	ret
+;
+;	Explode right hand side of alien
+;
+explode_rhs
+	ld	a,alien_explode_x_offset
+	cp	a,#$03
+	jruge	explode_rhs_rest
+	ld	a,(screen,x)
+	and	a,#$0f
+	cp	a,#$0a
+	jrne	exp_rhs_test_x6
+	ld	a,(screen,x)
+	add	a,#$40
+	jra	explode_rhs_store
+exp_rhs_test_x6	
+	cp	a,#$06
+	jrne	explode_rhs_exit
+	ld	a,#$b6
+	jra	explode_rhs_store
+explode_rhs_rest
+	ld	a,(screen,x)
+	and	a,#$0f
+	cp	a,#$0a
+	jruge	exp_rhs_odd
+	ld	a,(screen,x)
+	or	a,#$b0
+	jra	explode_rhs_store
+exp_rhs_odd	
+	cp	a,#$0e
+	jrne	exp_rhs_test_xd
+	ld	a,#$b9
+	jra	explode_rhs_store
+exp_rhs_test_xd
+	cp	a,#$0f
+	jrne	exp_rhs_test_def
+	ld	a,#$b6
+	jra	explode_rhs_store
+exp_rhs_test_def
+	ld	a,(screen,x)
+	add	a,#$40
+explode_rhs_store
+	ld	(screen,x),a
+explode_rhs_exit	
+	ret
 ;================================
 ; Stub routines start here
 ;================================
+explode_udg_alien
+	ret
 draw_fast_single_alien	
-	ret
-erase_explosion
-	ret
-.explode_alien.w
 	ret
 	END
 	

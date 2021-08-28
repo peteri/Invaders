@@ -104,10 +104,10 @@ namespace WpfInvaders
         private int timerCount = 0;
         private Thread timerThread;
         private readonly ManualResetEvent dieEvent = new ManualResetEvent(false);
-        private volatile bool invokeTick;
+        private volatile bool invokeTick=false;
         private volatile bool InIsr;
         private bool replayMode;
-        private int frameCounter = -6;
+        private int frameCounter = 0;
         private int replayIndex = 0;
         // Holding down Right Ctrl gives type B aliens
         // Holding down Left  Ctrl gives type C aliens
@@ -145,8 +145,8 @@ namespace WpfInvaders
             gameData.GameMode = false;
             gameData.DemoMode = false;
             timerThread = new Thread(WaitingTimer);
-            StartIsr();
             timerThread.Start();
+            StartIsr();
         }
 
         private void WaitingTimer()
@@ -173,6 +173,8 @@ namespace WpfInvaders
 
         private void IsrRoutine()
         {
+            if (invokeTick == false)
+                return;
             InIsr = true;
             frameCounter++;
             timerCount++;
@@ -213,6 +215,8 @@ namespace WpfInvaders
             GameTick();
             timeInIsrStopwatch.Stop();
             InIsr = false;
+            //if (frameCounter == 0x321)
+            //    StopIsr();
         }
 
         private void GameTick()
@@ -239,7 +243,7 @@ namespace WpfInvaders
 
                     // Mame draws the screen at this point
                     // when single stepping...
-                    RenderScreen();
+                    //RenderScreen();
 
                     // Now we do the bottom half of screen isr case
                     gameData.VblankStatus = 0x80;
@@ -1136,7 +1140,9 @@ namespace WpfInvaders
 
         private void FrameAdvance_Click(object sender, RoutedEventArgs e)
         {
+            invokeTick = true;
             IsrRoutine();
+            invokeTick = false;
         }
 
         internal void SaveScreenShot(string fname)
