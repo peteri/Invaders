@@ -5,6 +5,7 @@ stm8/
 	#include "constants.inc"
 	#include "sprite.inc"
 	#include "spritedata.inc"
+	#include "characterrom.inc"
 	segment 'ram0'
 sprite_base	ds.w	1
 sprite_mod7	ds.b	1
@@ -12,6 +13,7 @@ sprite_mod7	ds.b	1
 width_i		ds.b	1
 xOffs	ds.b	1
 screen_pos	ds.w	1
+screen_temp	ds.b	1
 	segment 'rom'
 ;=======================================
 ;
@@ -103,7 +105,64 @@ sprite_setup
 	pushw	x
 	ld	a,(sprite_width_offs,x)
 	ld	width_i,a
-sprite_collided_loop	
+	ldw	x,(sprite_data_cur_img_offs,x)
+	ldw	sprite_base,x
+sprite_collided_loop
+	ldw	x,(0,sp)
+	;x=sprite
+	;a=width_i
+	ld	sprite_mod7,a
+	call	compute_screen_pos
+	ldw	y,screen_pos
+	ld	a,(screen,y)
+	cp	a,#$20
+	jruge	screen_rom_1
+	sll	a	;udg?
+	sll	a
+	sll	a
+	add	a,xOffs
+	clrw	y
+	ld	yl,a
+	ld	a,(udg,y)
+	jra	test_1_and_inc
+screen_rom_1
+	ld	yl,a
+	ld	a,xOffs
+	add	a,#{high charrom}
+	ld	yh,a
+	ld	a,(y)
+test_1_and_inc
+	ldw	x,sprite_base
+	and	a,(x)
+	jrne	sprite_collided_pop_x_y
+	incw	x
+	ldw	sprite_base,x
+;Next cell up the screen	
+	ldw	y,screen_pos
+	ld	a,({screen+1},y)
+	cp	a,#$20
+	jruge	screen_rom_2
+	sll	a	;udg?
+	sll	a
+	sll	a
+	add	a,xOffs
+	clrw	y
+	ld	yl,a
+	ld	a,(udg,y)
+	jra	test_2_and_inc
+screen_rom_2
+	ld	yl,a
+	ld	a,xOffs
+	add	a,#{high charrom}
+	ld	yh,a
+	ld	a,(y)
+test_2_and_inc
+	ldw	x,sprite_base
+	and	a,(x)
+	jrne	sprite_collided_pop_x_y
+	incw	x
+	ldw	sprite_base,x
+	; Hit the end yet?
 	ld	a,width_i
 	cp	a,(sprite_width_offs,x)
 	jrult	sprite_collided_loop
@@ -112,14 +171,17 @@ sprite_collided_pop_x_y
 	popw	x
 	popw	y
 	ret
-;=======================================
-; Enter with x=sprite address
-; x & y are saved
-;=======================================
-.sprite_battle_damage.w	
-	pushw	y
-	pushw	x
+;=========================================
+;
+;	Compute the screen pos
+;	destroys y and accumulator
+;	popuplates screen_pos and xOffs
+;	adds sprite_mod7 to the x position
+;
+;=========================================
+compute_screen_pos
 	ld	a,(sprite_x_offs,x)
+	add	a,sprite_mod7
 	and	a,#7
 	ld	xOffs,a
 	
@@ -130,6 +192,7 @@ sprite_collided_pop_x_y
 	srl	a
 	ldw	screen_pos,y
 	ld	a,(sprite_x_offs,x)
+	add	a,sprite_mod7
 	srl	a
 	srl	a
 	srl	a
@@ -138,6 +201,16 @@ sprite_collided_pop_x_y
 	mul	y,a
 	addw	y,screen_pos
 	ldw	screen_pos,y
+	ret
+;=======================================
+; Enter with x=sprite address
+; x & y are saved
+;=======================================
+.sprite_battle_damage.w	
+	pushw	y
+	pushw	x
+	mov	sprite_mod7,#0
+	call	compute_screen_pos
 	ld	a,(sprite_width_offs,x)
 	ld	width_i,a
 	ldw	x,(sprite_data_cur_img_offs,x)

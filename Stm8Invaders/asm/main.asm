@@ -180,7 +180,8 @@ handle_pause
 	ldw	y,frame_counter
 ;	cpw	y,#$2f5		; Player is drawn on screen
 ;	jreq	set_pause_flag
-	cpw	y,#{$2f5+$2e}	; Alien bullets
+	cpw	y,#{$333}	; Player shot hits udg
+	jreq	set_pause_flag
 	cpw	y,#{$368}	; Alien bullets explodes
 	jreq	set_pause_flag
 already_paused
