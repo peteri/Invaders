@@ -101,14 +101,14 @@ sprite_setup
 ; returns with non zero value in acc if collides
 ;=======================================
 .sprite_collided.w
-	pushw	y
 	pushw	x
-	ld	a,(sprite_width_offs,x)
+	pushw	y
+	ld	a,#0
 	ld	width_i,a
 	ldw	x,(sprite_data_cur_img_offs,x)
 	ldw	sprite_base,x
+	ldw	x,(3,sp)
 sprite_collided_loop
-	ldw	x,(0,sp)
 	;x=sprite
 	;a=width_i
 	ld	sprite_mod7,a
@@ -163,13 +163,15 @@ test_2_and_inc
 	incw	x
 	ldw	sprite_base,x
 	; Hit the end yet?
+	ldw	x,(3,sp)
+	inc	width_i
 	ld	a,width_i
 	cp	a,(sprite_width_offs,x)
 	jrult	sprite_collided_loop
 	ld	a,#0
 sprite_collided_pop_x_y
-	popw	x
 	popw	y
+	popw	x
 	ret
 ;=========================================
 ;
@@ -190,6 +192,7 @@ compute_screen_pos
 	srl	a
 	srl	a
 	srl	a
+	ld	yl,a
 	ldw	screen_pos,y
 	ld	a,(sprite_x_offs,x)
 	add	a,sprite_mod7
