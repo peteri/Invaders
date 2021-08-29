@@ -792,7 +792,7 @@ explode_rhs_store
 explode_rhs_exit	
 	ret
 ;===============================
-;
+;	Explode a udg alien
 ;===============================
 explode_udg_alien
 	ld	a,#$b0
@@ -800,6 +800,7 @@ explode_udg_alien
 	jp	draw_fast_skip_flag
 ;===============================
 ;
+;	Draw a fast alien
 ;===============================
 draw_fast_single_alien
 	ld	a,#$23
@@ -828,7 +829,7 @@ draw_fast_skip_clear
 ; We then copy all 24 bytes into the destination.
 ;
 	ld	a,alien_character_start
-	or	a,alien_character_cur_x_offs
+	or	a,alien_explode_x_offset
 	btjt	game_flags_3,#flag3_single_alien_is_type1,draw_fast_skip_flag
 	or	a,#$08
 draw_fast_skip_flag	
