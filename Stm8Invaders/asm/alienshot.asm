@@ -152,22 +152,21 @@ image_no_wrap
 	ret
 check_collision
 	exgw	x,y
+	call	sprite_set_image
 	call 	sprite_collided
 	exgw	x,y
 	cp	a,#0
-	jreq	alien_shot_set_image
+	jreq	alien_shot_exit
 	ld	a,(shot_flags_offs,x)
 	or	a,#{1 shl shot_blowing_up}
 	ld	(shot_flags_offs,x),a
 	ld	a,(sprite_y_offs,y)
 	cp	a,#$1e
-	jrult	alien_shot_set_image
+	jrult	alien_shot_exit
 	cp	a,#$27
-	jrugt	alien_shot_set_image
+	jrugt	alien_shot_exit
 	mov	player_alive,#player_alive_blowup_one
-alien_shot_set_image
-	ldw	x,y
-	call	sprite_set_image
+alien_shot_exit
 	ret
 	; x= shot y=sprite
 animate_shot_explosion

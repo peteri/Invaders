@@ -143,7 +143,7 @@ print_message_wait_for_delay
 ; Wait for player to die in demo mode
 minor_play_demo_wait_death.w
 	ld	a,player_alive
-	cp	a,player_alive_alive
+	cp	a,#player_alive_alive
 	jrne	set_demo_wait_end
 	ld	a,credits
 	jrne	set_demo_wait_end
@@ -157,7 +157,7 @@ set_demo_wait_end
 ; Wait for player to stop exploding in demo mode
 minor_play_demo_wait_end_exp.w
 	ld	a,player_alive
-	cp	a,player_alive_alive
+	cp	a,#player_alive_alive
 	jreq	set_demo_wait_set_idle
 	ld	a,credits
 	jrne	set_demo_wait_set_idle
@@ -304,7 +304,7 @@ play_demo.w
 	bset	game_flags_1,#flag1_demo_mode
 	
 	ldw	x,#minor_play_demo_wait_death
-	ldw	attract_state,x
+	ldw	minor_state,x
 	ret
 after_play_delay.w
 	ld	a,#splash_delay_one_second

@@ -180,9 +180,9 @@ handle_pause
 	ldw	y,frame_counter
 ;	cpw	y,#$2f5		; Player is drawn on screen
 ;	jreq	set_pause_flag
-	cpw	y,#{$333}	; Player shot hits udg
-	jreq	set_pause_flag
-	cpw	y,#{$368}	; Alien bullets explodes
+;	cpw	y,#{$33d}	; Player shot hits udg
+;	jreq	set_pause_flag
+	cpw	y,#{$37f}	; Alien bullets explodes
 	jreq	set_pause_flag
 already_paused
 	; button up?
@@ -261,8 +261,9 @@ game_loop_step
 	call	player_fire_or_demo
 	call	player_shot_hit
 	call	count_aliens
-	btjf	game_flags_1,#flag1_game_mode,game_loop_game_mode
+	btjf	game_flags_1,#flag1_demo_mode,game_loop_game_mode
 	call	attract_task
+	ret
 game_loop_game_mode
 	;TODO Add non-demo mode code
 	ret
@@ -387,6 +388,9 @@ no_delta_x_adjust
 	and	a,#7
 	ld	alien_explode_x_offset,a
 	ld	a,{sp_player_shot+sprite_y_offs}
+	srl	a
+	srl	a
+	srl	a
 	ld	alien_explode_y,a
 	call	explode_alien
 	mov 	{sp_player_shot+sprite_visible},#0

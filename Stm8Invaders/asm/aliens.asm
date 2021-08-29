@@ -497,8 +497,8 @@ not_udg_explosion
 	; Left hand side
 	ld	a,({screen-scr_width},x)
 	and	a,#$f0
-	ld	alien_character_start,a
-	ld	a,(screen,x)
+	ld	yl,a
+	ld	a,({screen-scr_width},x)
 	and	a,#$0f
 	cp	a,#$00
 	jreq	middle_char
@@ -514,13 +514,13 @@ lhs_xf
 lhs_test_x8	
 	cp	a,#$08
 	jrne	lhs_test_x5
-	ld	a,alien_character_start
+	ld	a,yl
 	or	a,#$09
 	jra	store_lhs
 lhs_test_x5	
 	cp	a,#$05
 	jrne	lhs_store_blank
-	ld	a,alien_character_start
+	ld	a,yl
 	or	a,#$06
 	jra	store_lhs
 lhs_store_blank
@@ -584,11 +584,11 @@ rhs_test_ec
 	ld	a,#$a4
 	jra	store_rhs
 rhs_test_b1	
-	cp	a,$b1
+	cp	a,#$b1
 	jreq	rhs_store_blank
-	cp	a,$b6
+	cp	a,#$b6
 	jreq	rhs_store_blank
-	cp	a,$b9
+	cp	a,#$b9
 	jreq	rhs_store_blank
 	ret
 rhs_store_blank

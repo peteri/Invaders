@@ -81,6 +81,7 @@ rendercharacter
 	dec	count		;1
 	jrne	renderloop	;2 =11
 rendersprites
+	jp	add_elephant
 	ldw	x,#sprites_start	;1
 rendersprite_loop
 	ld	a,(x)			;1
@@ -119,6 +120,7 @@ next_sprite
 	cpw	x,#sprites_end		;2
 	jrult	rendersprite_loop	;2
 ;All done add some elephants	
+add_elephant
 	ld	a,#$00		
 	ld	{renderbuff1+$00},a
 	ld	{renderbuff2+$00},a
