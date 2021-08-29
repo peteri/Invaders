@@ -7,6 +7,7 @@ stm8/
 	#include "playershot.inc"
 	#include "constants.inc"
 	#include "linerender.inc"
+	#include "aliensrom.inc"
 	segment 'ram1'
 alien_character_cur_y	ds.b	1
 alien_character_cur_x	ds.b	1	
@@ -790,25 +791,59 @@ explode_rhs_store
 	ld	(screen,x),a
 explode_rhs_exit	
 	ret
-;================================
-; Stub routines start here
-;================================
+;===============================
+;
+;===============================
 explode_udg_alien
-	ret
+	ld	a,#$b0
+	or	a,alien_explode_x_offset
+	jp	draw_fast_skip_flag
+;===============================
+;
+;===============================
 draw_fast_single_alien
+	ld	a,#$23
+	cpw	x,#$0020
+	jrult	draw_fast_skip_clear
+	ld	({screen-$1f},x),a
+	ld	({screen-$20},x),a
+draw_fast_skip_clear	
+	ld	({screen+$41},x),a
+	ld	({screen+$60},x),a
+	ld	({screen+$61},x),a
 	ld	a,#$1c
 	ld	(screen,x),a
 	inc	a
 	ld	({screen+1},x),a
 	inc	a
 	ld	({screen+2},x),a
-	ld	a,start char
-	or	a,offset_x
-	or	a,Istype1
+;
+; Alien character range is $80-$af
+; alien_character_start is aaaa0000
+; type1 flag            is 0000f000
+; x post mod 7          is 00000xxx
+; To get an index into our table of words
+; final result looks like this:
+; aaafxxx0
+; We then copy all 24 bytes into the destination.
+;
+	ld	a,alien_character_start
+	or	a,alien_character_cur_x_offs
+	btjt	game_flags_3,#flag3_single_alien_is_type1,draw_fast_skip_flag
+	or	a,#$08
+draw_fast_skip_flag	
 	sll	a
 	clrw	y
 	ld	yl,a
+	ldw	y,(invader_lookup,y)
 	ldw	x,#0
+draw_fast_single_alien_loop
+	ld	a,(y)
+	ld	({udg+$e0},x),a
+	incw	y
+	incw	x
+	cpw	x,#24
+	jrult	draw_fast_single_alien_loop
 	ret
 	END
 	
