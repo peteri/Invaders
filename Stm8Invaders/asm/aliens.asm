@@ -795,7 +795,20 @@ explode_rhs_exit
 ;================================
 explode_udg_alien
 	ret
-draw_fast_single_alien	
+draw_fast_single_alien
+	ld	a,#$1c
+	ld	(screen,x),a
+	inc	a
+	ld	({screen+1},x),a
+	inc	a
+	ld	({screen+2},x),a
+	ld	a,start char
+	or	a,offset_x
+	or	a,Istype1
+	sll	a
+	clrw	y
+	ld	yl,a
+	ldw	x,#0
 	ret
 	END
 	
