@@ -127,6 +127,11 @@ renderloop
 	ldw x,#{renderbuff1+1}
 dorenderline	
 	call renderline
+	;wait for TIM 2 off
+wait_tim2_off	
+	btjt	TIM2_CR1,#0,wait_tim2_off
+	EXTERN	render_part2.w	
+	call	render_part2
 waitforcounterchange
 	ld a,TIM3_CNTRH	;Read current line counter
 	ld xh,a
@@ -182,7 +187,9 @@ handle_pause
 ;	jreq	set_pause_flag
 ;	cpw	y,#{$33d}	; Player shot hits udg
 ;	jreq	set_pause_flag
-	cpw	y,#{$37f}	; Alien bullets explodes
+;	cpw	y,#$33d	; Alien bullets explodes
+;	jreq	set_pause_flag
+	cpw	y,#$bf0	; Alien bullets explodes
 	jreq	set_pause_flag
 already_paused
 	; button up?

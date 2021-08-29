@@ -60,7 +60,7 @@ blowup_is_two
 	ld	xl,a
 	ld	a,#2
 	cpw	x,#0
-	jrne	size_is_two
+	jreq	size_is_two
 	inc	a
 size_is_two
 	mov	player_alive,#player_alive_blowup_one
@@ -148,7 +148,7 @@ draw_player_exit
 	inc	demo_command
 	ld	a,#10
 	cp	a,demo_command
-	jruge	inc_demo_exit
+	jrugt	inc_demo_exit
 	mov	demo_command,#0
 inc_demo_exit	
 	ret

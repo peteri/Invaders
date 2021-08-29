@@ -243,6 +243,11 @@ String.6.0=2021,7,3,12,53,11
 [Root.Source Files.mapping.asm]
 ElemType=File
 PathName=mapping.asm
+Next=Root.Source Files.asm\aliensrom.asm
+
+[Root.Source Files.asm\aliensrom.asm]
+ElemType=File
+PathName=asm\aliensrom.asm
 Next=Root.Source Files.asm\aliens.asm
 
 [Root.Source Files.asm\aliens.asm]
@@ -400,6 +405,11 @@ Next=Root.Include Files.inc\alienshot.inc
 [Root.Include Files.inc\alienshot.inc]
 ElemType=File
 PathName=inc\alienshot.inc
+Next=Root.Include Files.inc\aliensrom.inc
+
+[Root.Include Files.inc\aliensrom.inc]
+ElemType=File
+PathName=inc\aliensrom.inc
 Next=Root.Include Files.inc\attractscreen.inc
 
 [Root.Include Files.inc\attractscreen.inc]

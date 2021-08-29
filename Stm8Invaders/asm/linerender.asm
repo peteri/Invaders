@@ -82,6 +82,7 @@ rendercharacter
 	jrne	renderloop	;2 =11
 rendersprites
 	jp	add_elephant
+.render_part2.w	
 	ldw	x,#sprites_start	;1
 rendersprite_loop
 	ld	a,(x)			;1
