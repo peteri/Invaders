@@ -75,8 +75,8 @@ ten_points.w		dc.b	"=10 POINTS",0
 insert_ccoin_msg.w		dc.b	"INSERT CCOIN",0
 insert_coin_msg.w		dc.b	"INSERT  COIN",0
 one_or_two_players_msg.w	dc.b	"<1 OR 2 PLAYERS>",0
-one_player_one_coin_msg.w	dc.b	"1 PLAYER  1 COIN",0
-two_players_two_coins_msg.w dc.b	"2 PLAYERS 2 COINS",0
+one_player_one_coin_msg.w	dc.b	"*1 PLAYER  1 COIN",0
+two_players_two_coins_msg.w dc.b	"*2 PLAYERS 2 COINS",0
 ;
 ;	reset the attract state.
 ;
@@ -362,6 +362,7 @@ toggle_animate_state.w
 ; Setup for a delay and change minor state to wait
 ; a = number of ticks to delay
 splash_delay.w
+	dec	a
 	ld	isr_delay,a
 	ldw	y,#minor_wait
 	ldw	minor_state,y
