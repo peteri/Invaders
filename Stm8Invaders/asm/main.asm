@@ -189,6 +189,8 @@ handle_pause
 ;	jreq	set_pause_flag
 ;	cpw	y,#$33d	; Alien bullets explodes
 ;	jreq	set_pause_flag
+	cpw	y,#$383	; Alien bullets explodes
+	jreq	set_pause_flag
 	cpw	y,#$bf0	; Alien bullets explodes
 	jreq	set_pause_flag
 already_paused

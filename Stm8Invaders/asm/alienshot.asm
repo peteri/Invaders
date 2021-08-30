@@ -234,6 +234,7 @@ plunger_shot_columns.w	dc.b $01,$07,$01,$01,$01,$04,$0B,$01
 	call	reset_shot_data
 	ld	a,numaliens
 	cp	a,#1
+	bset	{alien_plunger_shot+shot_flags_offs},#plunger_shot_active
 	jrne	more_than_one_alien
 	bres	{alien_plunger_shot+shot_flags_offs},#plunger_shot_active
 more_than_one_alien	
