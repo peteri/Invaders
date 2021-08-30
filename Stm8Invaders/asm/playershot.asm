@@ -18,6 +18,7 @@ explosion_timer	ds.b	1
 	ret
 player_shot_action
 	ld	a,{sp_player_shot+sprite_x_offs}
+	add	a,#$20
 	and	a,#$80
 	cp	a,vblank_status
 	jreq	do_player_shot_action

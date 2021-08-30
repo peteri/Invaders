@@ -129,7 +129,7 @@ dorenderline
 	call renderline
 	;wait for TIM 2 off
 wait_tim2_off	
-	btjt	TIM2_CR1,#0,wait_tim2_off
+ 	btjt	TIM2_CR1,#0,wait_tim2_off
 	EXTERN	render_part2.w	
 	call	render_part2
 waitforcounterchange
