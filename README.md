@@ -21,7 +21,7 @@ Differences from the arcade version
 
 ## STM8 invaders
 
-Partially completed. Works on a STM8L Discovery board with a classic resistor and diode circuit to get a video signal.
+Partial port of the WPF version, enough to run the attract screen and demo games. Works on a STM8L Discovery board with a classic resistor and diode circuit to get a video signal.
 
 Uses a racing the beam strategy to draw the screen. Currently has the first two demo screens matching Mame and the WPF version.
 
@@ -29,7 +29,7 @@ STM8L Discovery board user button is a pause / single step button, short press p
 
 Note: the screen ripples a bit if you use the internal 16Mhz clock due to jitter. With an external clock the image is more stable, see commented out code in init_cpu (boardsetup.asm) to enable using external 16Mhz clocks (note code is for an oscillator not a crystal).
 
-When my cheap 9" lcd monitor is plugged in there is mild interference banding (I suspect from the LCD backlight) it might also cause the ST SWIM debugger to hang up occasionally (unsure if this is a ground issue between my PC USB and the monitor video input). Need to try adding a buffer transistor as I don't see the banding with other boards (retro computing).
+When my cheap 9" lcd monitor is plugged in there is mild interference banding (I suspect from the LCD backlight) it might also cause the ST SWIM debugger to hang up occasionally (unsure if this is a ground issue between my PC USB and the monitor video input). Need to try adding a buffer transistor as I don't see the banding with other boards (modernretro computing rebuilds).
 
 TODO list
 
