@@ -665,7 +665,7 @@ explode_lhs_special_case
 	ld	a,({screen+scr_width},x)
 	and	a,#$0f
 	cp	a,#$05
-	jrne	explode_lhs_a_or_c_next_5
+	jreq	explode_lhs_a_or_c_next_5
 	ld	a,(screen,x)
 	cp	a,#$8b
 	jrne	exp_lhs_test_9b
@@ -678,7 +678,7 @@ exp_lhs_test_9b
 	jra	explode_lhs_store
 exp_lhs_test_ab	
 	cp	a,#$ab
-	jrne	exp_lhs_test_9b
+	jrne	exp_lhs_add_40
 	ld	a,#$e9
 	jra	explode_lhs_store
 exp_lhs_add_40

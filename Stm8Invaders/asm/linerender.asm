@@ -83,6 +83,9 @@ rendercharacter
 rendersprites
 	jp	add_elephant
 .render_part2.w	
+	ld	a,{linenumber+1}
+	cp	a,#{scr_height mult 8}
+	jruge	add_elephant	;off screen?
 	ldw	x,#sprites_start	;1
 rendersprite_loop
 	ld	a,(x)			;1

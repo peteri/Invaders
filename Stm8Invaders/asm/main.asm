@@ -163,6 +163,13 @@ game_paused
 	; time to light up the error and die
 	jrne	took_too_long
 	bcpl PC_ODR,#7	;toggle led
+	btjf	game_flags_2,#flag2_pause_game,game_running
+	btjt	PC_ODR,#7,Timer3CompareInt_exit
+	bcpl PE_ODR,#7	;Toggle green led in pause
+	jp	Timer3CompareInt_exit
+game_running	
+	bres PE_ODR,#7	
+Timer3CompareInt_exit	
 	iret
 took_too_long
 	; turn on the green led die and loop
@@ -193,6 +200,10 @@ handle_pause
 ;	jreq	set_pause_flag
 ;	cpw	y,#$bf0	; Alien bullets explodes
 ;	jreq	set_pause_flag
+	cpw	y,#$12c3	
+	jreq	set_pause_flag
+	cpw	y,#$1371	; Just before crash
+	jreq	set_pause_flag
 already_paused
 	; button up?
 	btjf	PC_IDR,#1,button_down

@@ -11,7 +11,7 @@ ExternDep= mapping.asm mapping.inc
 ExternDep= asm\aliensrom.asm
 
 [Root.Source Files.asm\aliens.asm.Config.0]
-ExternDep= asm\aliens.asm inc\variables.inc inc\player.inc inc\screenhelper.inc inc\playerbase.inc inc\playershot.inc inc\constants.inc inc\linerender.inc
+ExternDep= asm\aliens.asm inc\variables.inc inc\player.inc inc\screenhelper.inc inc\playerbase.inc inc\playershot.inc inc\constants.inc inc\linerender.inc inc\aliensrom.inc
 
 [Root.Source Files.asm\spritedata.asm.Config.0]
 ExternDep= asm\spritedata.asm

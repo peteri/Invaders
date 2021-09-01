@@ -229,10 +229,10 @@ no_alien
 ;	needs optimisation
 ;=============================================
 .find_column.w
-	push	a
 	ldw	x,#$ffff
 	cp	a,ref_alien_x
 	jrult	find_column_ret
+	push	a
 	incw	x
 	ld	a,ref_alien_x
 	add	a,#$10
