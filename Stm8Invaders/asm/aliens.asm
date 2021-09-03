@@ -692,27 +692,27 @@ exp_lhs_test_8a
 	ld	a,#$27
 	jra	explode_lhs_store
 exp_lhs_test_9a
-	cp	a,#$8a
+	cp	a,#$9a
 	jrne	exp_lhs_test_aa
 	ld	a,#$28
 	jra	explode_lhs_store
 exp_lhs_test_aa
-	cp	a,#$8a
+	cp	a,#$aa
 	jrne	exp_lhs_test_8c
 	ld	a,#$2b
 	jra	explode_lhs_store
 exp_lhs_test_8c
-	cp	a,#$8a
+	cp	a,#$8c
 	jrne	exp_lhs_test_9c
 	ld	a,#$2c
 	jra	explode_lhs_store
 exp_lhs_test_9c
-	cp	a,#$8a
+	cp	a,#$9c
 	jrne	exp_lhs_test_ac
 	ld	a,#$54
 	jra	explode_lhs_store
 exp_lhs_test_ac
-	cp	a,#$8a
+	cp	a,#$ac
 	jrne	explode_lhs_exit
 	ld	a,#$55
 	jra	explode_lhs_store

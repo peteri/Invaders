@@ -343,6 +343,7 @@ ani_coin_exp_alien_in.w
 ani_coin_exp_fire_bullet.w
 	mov	{sp_alien_squigly_shot+sprite_x_offs},#{115+8}
 	mov	{sp_alien_squigly_shot+sprite_y_offs},#$c5
+	mov	{alien_squigly_shot+shot_flags_offs},#0
 	mov	alien_shot_delta_y,#$FF
 	mov	shot_sync,#2
 	ldw	y,#await_coin_shot_explosion

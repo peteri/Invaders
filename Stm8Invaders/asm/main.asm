@@ -200,9 +200,11 @@ handle_pause
 ;	jreq	set_pause_flag
 ;	cpw	y,#$bf0	; Alien bullets explodes
 ;	jreq	set_pause_flag
-	cpw	y,#$12c3	
-	jreq	set_pause_flag
-	cpw	y,#$1371	; Just before crash
+;	cpw	y,#$12c3	
+;	jreq	set_pause_flag
+;	cpw	y,#$1371	; Just before crash
+;	jreq	set_pause_flag
+	cpw	y,#$13C6	; Explosion drawn wrong.
 	jreq	set_pause_flag
 already_paused
 	; button up?
@@ -395,7 +397,7 @@ found_alien_row
 	cp	a,1
 	jreq	no_delta_x_adjust
 	ld	a,shothit_col_x
-	add	a,ref_alien_delta_x
+	sub	a,ref_alien_delta_x
 	ld	shothit_col_x,a
 no_delta_x_adjust
 	mov	alien_explode_timer,#$10
