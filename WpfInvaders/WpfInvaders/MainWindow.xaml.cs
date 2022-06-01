@@ -215,7 +215,7 @@ namespace WpfInvaders
             GameTick();
             timeInIsrStopwatch.Stop();
             InIsr = false;
-            //if (frameCounter == 0x321)
+            //if (frameCounter == 4980)
             //    StopIsr();
         }
 
