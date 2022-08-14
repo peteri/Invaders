@@ -1155,6 +1155,8 @@ namespace WpfInvaders
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
+            if ((Keyboard.FocusedElement == saveFilename) || (Keyboard.FocusedElement == targetCounter))
+                return;
             SwitchState clearMask = SwitchState.None;
             switch (e.Key)
             {
@@ -1184,10 +1186,13 @@ namespace WpfInvaders
                 case Key.F12: SaveScreenShot("c:\\temp\\invader.png"); break;
             }
             switchState &= ~clearMask;
+            e.Handled = true;
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if ((Keyboard.FocusedElement == saveFilename) || (Keyboard.FocusedElement == targetCounter))
+                return;
             SwitchState setMask = SwitchState.None;
             switch (e.Key)
             {
@@ -1204,6 +1209,7 @@ namespace WpfInvaders
                 case Key.RightShift: shiftKeyDown = true; break;
             }
             switchState |= setMask;
+            e.Handled = true;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -1217,10 +1223,12 @@ namespace WpfInvaders
             if (InIsr == true)
                 return;
             int targetFrame = int.Parse(targetCounter.Text);
+            invokeTick = true;
             while (frameCounter < targetFrame)
             {
                 IsrRoutine();
             }
+            invokeTick = false;
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
